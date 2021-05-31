@@ -16,7 +16,7 @@ import { RepositoriesModule } from './repositories/repositories.module'
           type: 'mysql',
           host: cfg.get('DB_HOST'),
           port: cfg.get('DB_PORT'),
-          database: cfg.get('DB_DATABSE'),
+          database: cfg.get('DB_DATABASE'),
           username: cfg.get('DB_USERNAME'),
           password: cfg.get('DB_PASSWORD'),
           entities: ['dist/**/*.entity{.ts,.js}'],
