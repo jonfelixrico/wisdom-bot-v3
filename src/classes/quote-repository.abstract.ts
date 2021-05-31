@@ -1,9 +1,3 @@
-export enum QuoteStatus {
-  ACCEPTED,
-  EXPIRED,
-  PENDING,
-}
-
 export interface INewQuote {
   content: string
 
@@ -21,19 +15,32 @@ export interface INewQuote {
 
 export interface IQuote extends INewQuote {
   quoteId: string
+  approveDt: Date
+}
 
-  acceptDt?: Date
-  expireDt?: Date
-
-  status: QuoteStatus
+export interface IPendingQuote extends INewQuote {
+  quoteId: string
+  expireDt: Date
+  approveDt?: Date
+  approvers: [
+    {
+      userId: string
+      approveDt: string
+    },
+  ]
+  requiredApprovalCount: number
 }
 
 export abstract class QuoteRepository {
-  abstract createQuote(newQuote: INewQuote): Promise<IQuote>
-
   abstract getQuote(quoteId: string): Promise<IQuote>
 
   abstract getRandomQuote(guildId: string): Promise<IQuote>
 
-  abstract approveQuote(quoteId: string): Promise<IQuote>
+  abstract createQuote(newQuote: INewQuote): Promise<IPendingQuote>
+
+  abstract getPendingQuotes(guildId: string): Promise<IPendingQuote[]>
+
+  abstract getPendingQuote(quoteId: string): Promise<IPendingQuote>
+
+  abstract addApprover(quoteId: string, userId: string): Promise<IPendingQuote>
 }
