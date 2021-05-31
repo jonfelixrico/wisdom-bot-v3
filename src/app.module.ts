@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 import { DiscordModule } from './discord/discord.module'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
+import { RepositoriesModule } from './repositories/repositories.module'
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
       inject: [ConfigService],
     }),
     DiscordModule,
+    RepositoriesModule,
   ],
 })
 export class AppModule {}
