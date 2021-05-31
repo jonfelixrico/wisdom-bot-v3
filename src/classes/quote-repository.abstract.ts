@@ -7,6 +7,9 @@ export enum QuoteStatus {
 export interface INewQuote {
   content: string
 
+  // for tracking
+  messageId: string
+
   authorId: string
   submitterId: string
 
