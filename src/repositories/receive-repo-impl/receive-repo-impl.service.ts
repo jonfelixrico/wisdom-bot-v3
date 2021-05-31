@@ -33,9 +33,15 @@ async function convertReceiveEntToObject({
 export class ReceiveRepoImplService extends ReceiveRepository {
   constructor(
     @InjectRepository(Receive) private recvRepo: Repository<Receive>,
-    @InjectRepository(Quote) private quoteRepo: Repository<Quote>,
   ) {
     super()
+  }
+
+  private getReceiveCount(quoteId: string): Promise<number> {
+    return this.recvRepo
+      .createQueryBuilder()
+      .where('quoteId = :quoteId', { quoteId })
+      .getCount()
   }
 
   async createRecieve({
@@ -44,8 +50,8 @@ export class ReceiveRepoImplService extends ReceiveRepository {
     guildId,
     userId,
   }: INewReceive): Promise<[IReceive, number]> {
-    const quote = await this.quoteRepo.findOne({ id: quoteId })
-    const receives = await quote.receives
+    const quote = new Quote()
+    quote.id = quoteId
 
     const newReceive = await this.recvRepo.create({
       quote: Promise.resolve(quote),
@@ -54,6 +60,9 @@ export class ReceiveRepoImplService extends ReceiveRepository {
       userId,
     })
 
-    return [await convertReceiveEntToObject(newReceive), receives.length + 1]
+    return [
+      await convertReceiveEntToObject(newReceive),
+      await this.getReceiveCount(quoteId),
+    ]
   }
 }
