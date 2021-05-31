@@ -27,6 +27,7 @@
     "@nestjs/platform-express": "^7.6.15",
     "discord.js": "^12.5.3",
     "mysql2": "^2.2.5",
+    "random": "^3.0.6",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
