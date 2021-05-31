@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { Receive } from './receive.entity'
-import { Approval } from './approver.entity'
+import { Approval } from './approval.entity'
 
 @Entity()
 export class Quote {
