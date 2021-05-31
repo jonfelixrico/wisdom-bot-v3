@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common'
+import random from 'random'
 import {
   INewQuote,
   IPendingQuote,
@@ -67,14 +68,23 @@ export class QuoteRepoImplService extends QuoteRepository {
   async getQuote(quoteId: string): Promise<IQuote> {
     const quote = await this.quoteTr
       .createQueryBuilder()
-      .where('quote.id = :quoteId AND quote.approveDt IS NOT NULL', { quoteId })
+      .where('id = :quoteId AND approveDt IS NOT NULL', { quoteId })
       .getOne()
 
     return quote ? convertQuoteToRepoObject(quote) : null
   }
 
-  getRandomQuote(guildId: string): Promise<IQuote> {
-    throw new Error('Method not implemented.')
+  async getRandomQuote(guildId: string): Promise<IQuote> {
+    const quotes = await this.quoteTr
+      .createQueryBuilder()
+      .where('guildId = :guildId AND approveDt IS NOT NULL', { guildId })
+      .getMany()
+
+    if (!quotes.length) {
+      return null
+    }
+
+    return convertQuoteToRepoObject(quotes[random.int(0, quotes.length - 1)])
   }
 
   async createQuote(newQuote: INewQuote): Promise<IPendingQuote> {
@@ -90,7 +100,7 @@ export class QuoteRepoImplService extends QuoteRepository {
   async getPendingQuote(quoteId: string): Promise<IPendingQuote> {
     const quote = await this.quoteTr
       .createQueryBuilder()
-      .where('quote.id = :quoteId AND quote.approveDt IS NULL', { quoteId })
+      .where('id = :quoteId AND quote.approveDt IS NULL', { quoteId })
       .getOne()
 
     return quote ? await convertPendingQuoteToRepoObject(quote) : null
