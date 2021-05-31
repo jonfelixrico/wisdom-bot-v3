@@ -17,4 +17,7 @@ export class Concur {
 
   @ManyToOne(() => Receive, (receive) => receive.concurs)
   receive: Promise<Receive>
+
+  @Column()
+  concurDt: Date
 }
