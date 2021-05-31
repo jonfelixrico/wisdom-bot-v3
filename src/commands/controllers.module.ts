@@ -4,4 +4,4 @@ import { DiscordModule } from 'src/discord/discord.module'
 @Module({
   imports: [DiscordModule],
 })
-export class ControllersModule {}
+export class CommandsModule {}

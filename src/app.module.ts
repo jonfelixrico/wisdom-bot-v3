@@ -3,7 +3,7 @@ import { DiscordModule } from './discord/discord.module'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { RepositoriesModule } from './repositories/repositories.module'
-import { ControllersModule } from './controllers/controllers.module';
+import { CommandsModule } from './commands/controllers.module'
 
 @Module({
   imports: [
@@ -28,7 +28,7 @@ import { ControllersModule } from './controllers/controllers.module';
     }),
     DiscordModule,
     RepositoriesModule,
-    ControllersModule,
+    CommandsModule,
   ],
 })
 export class AppModule {}
