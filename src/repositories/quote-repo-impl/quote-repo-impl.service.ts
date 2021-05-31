@@ -8,7 +8,7 @@ import {
 } from 'src/classes/quote-repository.abstract'
 import { Approval } from 'src/entities/approval.entity'
 import { Quote } from 'src/entities/quote.entity'
-import { Repository } from 'typeorm'
+import { Connection, Repository } from 'typeorm'
 
 function convertQuoteToRepoObject(quote: Quote): IQuote {
   const {
@@ -60,7 +60,7 @@ export class QuoteRepoImplService extends QuoteRepository {
     @InjectRepository(Quote)
     private quoteTr: Repository<Quote>,
     @InjectRepository(Approval)
-    private approvalTr: Repository<Approval>,
+    private connection: Connection,
   ) {
     super()
   }
@@ -92,23 +92,29 @@ export class QuoteRepoImplService extends QuoteRepository {
     throw new Error('Method not implemented.')
   }
 
-  async addApprover(quoteId: string, userId: string): Promise<IPendingQuote> {
-    let quote = await this.quoteTr.findOne({
-      id: quoteId,
+  addApprover(quoteId: string, userId: string): Promise<IPendingQuote> {
+    return this.connection.transaction(async (manager) => {
+      const quote = await manager.findOne(Quote, {
+        id: quoteId,
+      })
+
+      const approval = await manager.create(Approval, {
+        quote: Promise.resolve(quote),
+        approveDt: new Date(),
+        userId,
+      })
+
+      const existingApprovals = await quote.approvals
+
+      await manager.save(approval)
+      quote.approvals = Promise.resolve([...existingApprovals, approval])
+
+      if (existingApprovals.length + 1 >= quote.requiredApprovalCount) {
+        quote.approveDt = new Date()
+        await manager.save(quote)
+      }
+
+      return await convertPendingQuoteToRepoObject(quote)
     })
-
-    const approval = await this.approvalTr.create({
-      quote: Promise.resolve(quote),
-      approveDt: new Date(),
-      userId,
-    })
-
-    await this.approvalTr.save(approval)
-
-    quote = await this.quoteTr.findOne({
-      id: quoteId,
-    })
-
-    return await convertPendingQuoteToRepoObject(quote)
   }
 }
