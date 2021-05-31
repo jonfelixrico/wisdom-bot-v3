@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { RepositoriesModule } from './repositories/repositories.module'
 import { CommandsModule } from './commands/controllers.module'
+import { TypeormModule } from './typeorm/typeorm.module'
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { CommandsModule } from './commands/controllers.module'
     DiscordModule,
     RepositoriesModule,
     CommandsModule,
+    TypeormModule,
   ],
 })
 export class AppModule {}
