@@ -11,4 +11,7 @@ export class Approval {
 
   @Column()
   userId: string
+
+  @Column()
+  approveDt: Date
 }

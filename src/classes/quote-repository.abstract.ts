@@ -15,19 +15,16 @@ export interface INewQuote {
 
 export interface IQuote extends INewQuote {
   quoteId: string
-  approveDt: Date
 }
 
 export interface IPendingQuote extends INewQuote {
   quoteId: string
   expireDt: Date
   approveDt?: Date
-  approvers: [
-    {
-      userId: string
-      approveDt: string
-    },
-  ]
+  approvers: {
+    userId: string
+    approveDt: Date
+  }[]
   requiredApprovalCount: number
 }
 
