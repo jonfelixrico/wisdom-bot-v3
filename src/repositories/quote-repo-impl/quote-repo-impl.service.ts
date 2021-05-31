@@ -88,8 +88,13 @@ export class QuoteRepoImplService extends QuoteRepository {
     throw new Error('Method not implemented.')
   }
 
-  getPendingQuote(quoteId: string): Promise<IPendingQuote> {
-    throw new Error('Method not implemented.')
+  async getPendingQuote(quoteId: string): Promise<IPendingQuote> {
+    const quote = await this.quoteTr
+      .createQueryBuilder()
+      .where('quote.id = :quoteId AND quote.approveDt IS NULL', { quoteId })
+      .getOne()
+
+    return quote ? await convertPendingQuoteToRepoObject(quote) : null
   }
 
   addApprover(quoteId: string, userId: string): Promise<IPendingQuote> {
