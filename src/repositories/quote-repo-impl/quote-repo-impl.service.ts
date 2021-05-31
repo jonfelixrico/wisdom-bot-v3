@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import {
   INewQuote,
@@ -57,9 +57,9 @@ async function convertPendingQuoteToRepoObject(
 @Injectable()
 export class QuoteRepoImplService extends QuoteRepository {
   constructor(
-    @InjectRepository(Quote)
+    @Inject('QUOTE_ENTITY')
     private quoteTr: Repository<Quote>,
-    @InjectRepository(Approval)
+    @Inject('APPROVAL_ENTITY')
     private connection: Connection,
   ) {
     super()

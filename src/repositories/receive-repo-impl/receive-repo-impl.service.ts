@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
+import { Inject, Injectable } from '@nestjs/common'
 import {
   INewReceive,
   IReceive,
@@ -11,9 +10,7 @@ import { Quote } from 'src/typeorm/entities/quote.entity'
 
 @Injectable()
 export class ReceiveRepoImplService extends ReceiveRepository {
-  constructor(
-    @InjectRepository(Receive) private recvRepo: Repository<Receive>,
-  ) {
+  constructor(@Inject('RECEIVE_ENTITY') private recvRepo: Repository<Receive>) {
     super()
   }
 

@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
+import { Inject, Injectable } from '@nestjs/common'
 import {
   ConcurRepository,
   IConcur,
@@ -12,7 +11,7 @@ import { Repository } from 'typeorm'
 @Injectable()
 export class ConcurRepoImplService extends ConcurRepository {
   constructor(
-    @InjectRepository(Concur)
+    @Inject('CONCUR_ENTITY')
     private concurRepo: Repository<Concur>,
   ) {
     super()
