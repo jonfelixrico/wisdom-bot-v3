@@ -11,5 +11,5 @@ export interface IConcur extends INewConcur {
 }
 
 export abstract class ConcurRepository {
-  abstract createConcur(newConcur: INewConcur): Promise<IConcur>
+  abstract createConcur(newConcur: INewConcur): Promise<[IConcur, number]>
 }
