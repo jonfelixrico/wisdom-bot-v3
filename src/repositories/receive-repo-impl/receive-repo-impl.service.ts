@@ -9,26 +9,6 @@ import { Receive } from 'src/entities/receive.entity'
 import { Repository } from 'typeorm'
 import { Quote } from 'src/entities/quote.entity'
 
-async function convertReceiveEntToObject({
-  quote: pQuote,
-  channelId,
-  guildId,
-  userId,
-  receiveDt,
-  id: receiveId,
-}: Receive): Promise<IReceive> {
-  const quote = await pQuote
-
-  return {
-    channelId,
-    guildId,
-    userId,
-    receiveDt,
-    quoteId: quote.id,
-    receiveId,
-  }
-}
-
 @Injectable()
 export class ReceiveRepoImplService extends ReceiveRepository {
   constructor(
@@ -53,15 +33,23 @@ export class ReceiveRepoImplService extends ReceiveRepository {
     const quote = new Quote()
     quote.id = quoteId
 
-    const newReceive = await this.recvRepo.create({
+    const { id: receiveId, receiveDt } = await this.recvRepo.create({
       quote: Promise.resolve(quote),
       channelId,
       guildId,
       userId,
+      receiveDt: new Date(),
     })
 
     return [
-      await convertReceiveEntToObject(newReceive),
+      {
+        quoteId,
+        channelId,
+        guildId,
+        userId,
+        receiveId,
+        receiveDt,
+      },
       await this.getReceiveCount(quoteId),
     ]
   }
