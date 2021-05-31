@@ -6,8 +6,8 @@ import {
   IQuote,
   QuoteRepository,
 } from 'src/classes/quote-repository.abstract'
-import { Approval } from 'src/entities/approval.entity'
-import { Quote } from 'src/entities/quote.entity'
+import { Approval } from 'src/typeorm/entities/approval.entity'
+import { Quote } from 'src/typeorm/entities/quote.entity'
 import { Connection, Repository } from 'typeorm'
 
 function convertQuoteToRepoObject(quote: Quote): IQuote {

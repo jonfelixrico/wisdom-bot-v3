@@ -5,9 +5,9 @@ import {
   IReceive,
   ReceiveRepository,
 } from 'src/classes/receive-repository.abstract'
-import { Receive } from 'src/entities/receive.entity'
+import { Receive } from 'src/typeorm/entities/receive.entity'
 import { Repository } from 'typeorm'
-import { Quote } from 'src/entities/quote.entity'
+import { Quote } from 'src/typeorm/entities/quote.entity'
 
 @Injectable()
 export class ReceiveRepoImplService extends ReceiveRepository {

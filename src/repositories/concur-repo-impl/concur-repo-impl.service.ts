@@ -5,8 +5,8 @@ import {
   IConcur,
   INewConcur,
 } from 'src/classes/concur-repository.abstract'
-import { Concur } from 'src/entities/concur.entity'
-import { Receive } from 'src/entities/receive.entity'
+import { Concur } from 'src/typeorm/entities/concur.entity'
+import { Receive } from 'src/typeorm/entities/receive.entity'
 import { Repository } from 'typeorm'
 
 @Injectable()
