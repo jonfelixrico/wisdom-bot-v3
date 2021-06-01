@@ -7,16 +7,18 @@ import {
   CommandoMessage,
 } from 'discord.js-commando'
 
-export abstract class WrappedCommand extends Command {
+export abstract class WrappedCommand<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> extends Command {
   constructor(client: CommandoClient, info: CommandInfo) {
     super(client, info)
     client.registry.registerCommand(this)
   }
 
-  abstract run<T = unknown>(
+  abstract run(
     message: CommandoMessage,
-    args: string | Record<string, T> | string[],
+    args: string | T | string[],
     fromPattern: boolean,
-    result?: ArgumentCollectorResult<Record<string, T>>,
+    result?: ArgumentCollectorResult<T>,
   ): Promise<Message | Message[]>
 }

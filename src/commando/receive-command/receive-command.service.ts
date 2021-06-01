@@ -30,11 +30,11 @@ export class ReceiveCommandService extends WrappedCommand {
     super(client, COMMAND_INFO)
   }
 
-  run<T = unknown>(
+  run(
     message: CommandoMessage,
-    args: string | string[] | Record<string, T>,
+    args: string | Record<string, unknown> | string[],
     fromPattern: boolean,
-    result?: ArgumentCollectorResult<Record<string, T>>,
+    result?: ArgumentCollectorResult<Record<string, unknown>>,
   ): Promise<Message | Message[]> {
     throw new Error('Method not implemented.')
   }

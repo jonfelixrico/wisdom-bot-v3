@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common'
-import { Message } from 'discord.js'
+import { Message, User } from 'discord.js'
 import {
   ArgumentCollectorResult,
   CommandInfo,
   CommandoClient,
   CommandoMessage,
 } from 'discord.js-commando'
+import { QuoteRepository } from 'src/classes/quote-repository.abstract'
 import { WrappedCommand } from '../wrapped-command.class'
 
 const COMMAND_INFO: CommandInfo = {
@@ -37,15 +38,15 @@ const COMMAND_INFO: CommandInfo = {
 
 @Injectable()
 export class SubmitCommandService extends WrappedCommand {
-  constructor(client: CommandoClient) {
+  constructor(client: CommandoClient, private quoteRepo: QuoteRepository) {
     super(client, COMMAND_INFO)
   }
 
-  run<T = unknown>(
+  run(
     message: CommandoMessage,
-    args: string | string[] | Record<string, T>,
+    args: string | string[] | Record<string, unknown>,
     fromPattern: boolean,
-    result?: ArgumentCollectorResult<Record<string, T>>,
+    result?: ArgumentCollectorResult<Record<string, unknown>>,
   ): Promise<Message | Message[]> {
     throw new Error('Method not implemented.')
   }
