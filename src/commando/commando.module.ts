@@ -4,9 +4,15 @@ import { ReceiveCommandService } from './receive-command/receive-command.service
 import { DiscordModule } from 'src/discord/discord.module'
 import { RepositoriesModule } from 'src/repositories/repositories.module'
 import { SetupService } from './setup/setup.service'
+import { ConcurCommandService } from './concur-command/concur-command.service'
 
 @Module({
   imports: [DiscordModule, RepositoriesModule],
-  providers: [SetupService, SubmitCommandService, ReceiveCommandService],
+  providers: [
+    SetupService,
+    SubmitCommandService,
+    ReceiveCommandService,
+    ConcurCommandService,
+  ],
 })
 export class CommandoModule {}
