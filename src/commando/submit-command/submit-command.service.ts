@@ -5,7 +5,12 @@ import {
   CommandoClient,
   CommandoMessage,
 } from 'discord.js-commando'
-import { QuoteRepository } from 'src/classes/quote-repository.abstract'
+import { filter, take, tap } from 'rxjs/operators'
+import {
+  IPendingQuote,
+  QuoteRepository,
+} from 'src/classes/quote-repository.abstract'
+import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 
 const COMMAND_INFO: CommandInfo = {
@@ -37,7 +42,11 @@ interface ISubmitCommandArgs extends IArgumentMap {
 
 @Injectable()
 export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
-  constructor(client: CommandoClient, private quoteRepo: QuoteRepository) {
+  constructor(
+    client: CommandoClient,
+    private quoteRepo: QuoteRepository,
+    private listener: ReactionListenerService,
+  ) {
     super(client, COMMAND_INFO)
   }
 
@@ -56,6 +65,29 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
       guildId: message.guild.id,
     })
 
+    this.watchQuoteForApproval(newQuote.quoteId, response)
+    await response.react('🤔')
     return await response.edit(JSON.stringify(newQuote))
+  }
+
+  private async onApproval(quoteId: string, message: Message) {
+    await this.quoteRepo.setApproveDt(quoteId, new Date())
+    const { channel } = message
+    await message.delete()
+    await channel.send(quoteId)
+  }
+
+  private watchQuoteForApproval(quoteId: string, message: Message) {
+    const expireDt = new Date()
+    expireDt.setMinutes(expireDt.getMinutes() + 2)
+
+    this.listener
+      .createObserver(message.id, '🤔', 1, expireDt)
+      .pipe(
+        tap((a) => console.debug(a)),
+        filter((val) => val),
+        take(1),
+      )
+      .subscribe(() => this.onApproval(quoteId, message))
   }
 }
