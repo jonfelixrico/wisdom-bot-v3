@@ -74,11 +74,21 @@ export class QuoteRepoImplService extends QuoteRepository {
     return quote ? convertQuoteToRepoObject(quote) : null
   }
 
-  async getRandomQuote(guildId: string): Promise<IQuote> {
-    const quotes = await this.quoteTr
-      .createQueryBuilder()
-      .where('guildId = :guildId AND approveDt IS NOT NULL', { guildId })
-      .getMany()
+  async getRandomQuote(guildId: string, authorId?: string): Promise<IQuote> {
+    const queryBuilder = this.quoteTr.createQueryBuilder()
+
+    if (!authorId) {
+      queryBuilder.where('guildId = :guildId AND approveDt IS NOT NULL', {
+        guildId,
+      })
+    } else {
+      queryBuilder.where(
+        'guildId = :guildId AND authorId = :authorId AND approveDt IS NOT NULL',
+        { guildId, authorId },
+      )
+    }
+
+    const quotes = await queryBuilder.getMany()
 
     if (!quotes.length) {
       return null

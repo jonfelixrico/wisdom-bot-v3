@@ -31,7 +31,7 @@ export interface IPendingQuote extends IQuote {
 export abstract class QuoteRepository {
   abstract getQuote(quoteId: string): Promise<IQuote>
 
-  abstract getRandomQuote(guildId: string): Promise<IQuote>
+  abstract getRandomQuote(guildId: string, authorId?: string): Promise<IQuote>
 
   abstract createQuote(newQuote: INewQuote): Promise<IPendingQuote>
 
