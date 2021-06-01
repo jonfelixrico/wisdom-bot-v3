@@ -1,5 +1,8 @@
+// due to unknown reasons, import random from 'random' returns undefined
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const random = require('random')
+
 import { Inject, Injectable } from '@nestjs/common'
-import random from 'random'
 import {
   INewQuote,
   IPendingQuote,
@@ -94,7 +97,8 @@ export class QuoteRepoImplService extends QuoteRepository {
       return null
     }
 
-    return convertQuoteToRepoObject(quotes[random.int(0, quotes.length - 1)])
+    const idx = random.int(0, quotes.length - 1)
+    return convertQuoteToRepoObject(quotes[idx])
   }
 
   async createQuote({
