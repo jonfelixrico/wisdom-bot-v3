@@ -53,7 +53,7 @@ export class ReceiveRepoImplService extends ReceiveRepository {
     const quote = new Quote()
     quote.id = quoteId
 
-    const receive = await this.recvRepo.create({
+    const receive = await this.recvRepo.save({
       quote: Promise.resolve(quote),
       channelId,
       guildId,

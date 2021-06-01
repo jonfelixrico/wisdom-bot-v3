@@ -33,7 +33,7 @@ export class ConcurRepoImplService extends ConcurRepository {
     const receive = new Receive()
     receive.id = receiveId
 
-    const { id: concurId, concurDt } = await this.concurRepo.create({
+    const { id: concurId, concurDt } = await this.concurRepo.save({
       receive: Promise.resolve(receive),
       channelId,
       guildId,
