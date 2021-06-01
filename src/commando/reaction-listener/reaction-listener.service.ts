@@ -31,16 +31,22 @@ function buildSubjects(client: CommandoClient) {
   )
 }
 
+function getMessageReactionForEmoji(message: Message, emojiName: string) {
+  return message.reactions.cache.array().find((r) => r.emoji.name === emojiName)
+}
+
 @Injectable()
 export class ReactionListenerService {
   private reactionChange$: Observable<Message>
   private unsubscribe$ = new Subject<string>()
+  private client: CommandoClient
 
   constructor(client: CommandoClient) {
+    this.client = client
     this.reactionChange$ = buildSubjects(client)
   }
 
-  private createWatcher(
+  createObserver(
     messageId: string,
     emojiName: string,
     count: number,
@@ -58,10 +64,13 @@ export class ReactionListenerService {
 
     const complete$ = this.reactionChange$.pipe(
       filter(({ id }) => id === messageId),
-      map(({ reactions }) =>
-        reactions.cache.array().find((r) => r.emoji.name === emojiName),
+      map((message) => getMessageReactionForEmoji(message, emojiName)),
+      filter(
+        (mr) =>
+          !!mr &&
+          mr.users.cache.filter((u) => u.id !== this.client.user.id).size >=
+            count,
       ),
-      filter((mr) => !!mr && mr.count >= count),
       mapTo(true),
     )
 
