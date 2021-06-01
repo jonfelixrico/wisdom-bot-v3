@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common'
-import { Message } from 'discord.js'
+import { Message, User } from 'discord.js'
 import {
-  CommandoMessage,
-  ArgumentCollectorResult,
   CommandoClient,
   CommandInfo,
+  ArgumentCollectorResult,
+  CommandoMessage,
 } from 'discord.js-commando'
-import { WrappedCommand } from '../wrapped-command.class'
+import { QuoteRepository } from 'src/classes/quote-repository.abstract'
+import { ReceiveRepository } from 'src/classes/receive-repository.abstract'
+import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 
 const COMMAND_INFO: CommandInfo = {
   name: 'receive',
@@ -24,18 +26,39 @@ const COMMAND_INFO: CommandInfo = {
   ],
 }
 
+export interface IReceiveCommandArgs extends IArgumentMap {
+  user?: User
+}
+
 @Injectable()
-export class ReceiveCommandService extends WrappedCommand {
-  constructor(client: CommandoClient) {
+export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
+  constructor(
+    client: CommandoClient,
+    private quoteRepo: QuoteRepository,
+    private receiveRepo: ReceiveRepository,
+  ) {
     super(client, COMMAND_INFO)
   }
 
-  run(
+  async run(
     message: CommandoMessage,
-    args: string | Record<string, unknown> | string[],
-    fromPattern: boolean,
-    result?: ArgumentCollectorResult<Record<string, unknown>>,
+    args: string | IReceiveCommandArgs | string[],
   ): Promise<Message | Message[]> {
-    throw new Error('Method not implemented.')
+    const { channel, guild, author } = message
+    const response = await channel.send('Teka wait lang boss.')
+
+    const quote = await this.quoteRepo.getRandomQuote(guild.id)
+    if (!quote) {
+      return response.edit('No quotes available.')
+    }
+
+    const receive = await this.receiveRepo.createRecieve({
+      channelId: channel.id,
+      guildId: guild.id,
+      quoteId: quote.quoteId,
+      userId: author.id,
+    })
+
+    return await response.edit(JSON.stringify({ quote, receive }))
   }
 }
