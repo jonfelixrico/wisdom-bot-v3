@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Message } from 'discord.js'
 import {
+  ArgumentCollectorResult,
   CommandInfo,
   CommandoClient,
   CommandoMessage,
@@ -40,7 +41,12 @@ export class SubmitCommandService extends WrappedCommand {
     super(client, COMMAND_INFO)
   }
 
-  public async run(message: CommandoMessage): Promise<Message | Message[]> {
-    return await message.channel.send('Received submission.')
+  run<T = unknown>(
+    message: CommandoMessage,
+    args: string | string[] | Record<string, T>,
+    fromPattern: boolean,
+    result?: ArgumentCollectorResult<Record<string, T>>,
+  ): Promise<Message | Message[]> {
+    throw new Error('Method not implemented.')
   }
 }

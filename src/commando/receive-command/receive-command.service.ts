@@ -6,7 +6,7 @@ import {
   CommandoClient,
   CommandInfo,
 } from 'discord.js-commando'
-import { UnknownRecord, WrappedCommand } from '../wrapped-command.class'
+import { WrappedCommand } from '../wrapped-command.class'
 
 const COMMAND_INFO: CommandInfo = {
   name: 'receive',
@@ -26,15 +26,16 @@ const COMMAND_INFO: CommandInfo = {
 
 @Injectable()
 export class ReceiveCommandService extends WrappedCommand {
-  run(
-    message: CommandoMessage,
-    args: string | UnknownRecord | string[],
-    fromPattern: boolean,
-    result?: ArgumentCollectorResult<UnknownRecord>,
-  ): Promise<Message | Message[]> {
-    throw new Error('Method not implemented.')
-  }
   constructor(client: CommandoClient) {
     super(client, COMMAND_INFO)
+  }
+
+  run<T = unknown>(
+    message: CommandoMessage,
+    args: string | string[] | Record<string, T>,
+    fromPattern: boolean,
+    result?: ArgumentCollectorResult<Record<string, T>>,
+  ): Promise<Message | Message[]> {
+    throw new Error('Method not implemented.')
   }
 }
