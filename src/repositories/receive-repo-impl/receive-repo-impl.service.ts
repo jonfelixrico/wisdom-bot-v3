@@ -26,16 +26,19 @@ export class ReceiveRepoImplService extends ReceiveRepository {
     channelId,
     guildId,
     userId,
+    messageId,
+    receiveDt,
   }: INewReceive): Promise<[IReceive, number]> {
     const quote = new Quote()
     quote.id = quoteId
 
-    const { id: receiveId, receiveDt } = await this.recvRepo.create({
+    const { id: receiveId } = await this.recvRepo.create({
       quote: Promise.resolve(quote),
       channelId,
       guildId,
       userId,
-      receiveDt: new Date(),
+      receiveDt: receiveDt || new Date(),
+      messageId,
     })
 
     return [
@@ -46,6 +49,7 @@ export class ReceiveRepoImplService extends ReceiveRepository {
         userId,
         receiveId,
         receiveDt,
+        messageId,
       },
       await this.getReceiveCount(quoteId),
     ]

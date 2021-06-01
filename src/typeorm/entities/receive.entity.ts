@@ -30,4 +30,7 @@ export class Receive {
 
   @OneToMany(() => Concur, (concur) => concur.receive)
   concurs: Promise<Concur[]>
+
+  @Column()
+  messageId: string
 }

@@ -3,6 +3,8 @@ export interface INewReceive {
   userId: string
   channelId: string
   guildId: string
+  messageId: string
+  receiveDt?: Date
 }
 
 export interface IReceive extends INewReceive {
