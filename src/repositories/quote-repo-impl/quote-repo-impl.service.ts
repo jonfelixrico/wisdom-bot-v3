@@ -147,4 +147,17 @@ export class QuoteRepoImplService extends QuoteRepository {
       return await convertPendingQuoteToRepoObject(quote)
     })
   }
+
+  async setApproveDt(quoteId: string, approveDt?: Date): Promise<boolean> {
+    const updateResult = await this.quoteTr.update(
+      {
+        id: quoteId,
+      },
+      {
+        approveDt: approveDt || new Date(),
+      },
+    )
+
+    return updateResult.affected > 0
+  }
 }
