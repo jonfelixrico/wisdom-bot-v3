@@ -28,8 +28,6 @@ const COMMAND_INFO: CommandInfo = {
     {
       key: 'year',
       type: 'number',
-      max: 3000,
-      min: 1970,
       prompt: '',
     },
   ],
