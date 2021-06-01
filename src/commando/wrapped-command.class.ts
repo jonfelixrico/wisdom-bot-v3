@@ -7,8 +7,12 @@ import {
   CommandoMessage,
 } from 'discord.js-commando'
 
+export interface IArgumentMap {
+  [key: string]: unknown
+}
+
 export abstract class WrappedCommand<
-  T extends Record<string, unknown> = Record<string, unknown>,
+  T extends IArgumentMap = IArgumentMap,
 > extends Command {
   constructor(client: CommandoClient, info: CommandInfo) {
     super(client, info)
