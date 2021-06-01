@@ -87,8 +87,14 @@ export class QuoteRepoImplService extends QuoteRepository {
     return convertQuoteToRepoObject(quotes[random.int(0, quotes.length - 1)])
   }
 
-  async createQuote(newQuote: INewQuote): Promise<IPendingQuote> {
-    const quote = this.quoteTr.create(newQuote)
+  async createQuote({
+    submitDt,
+    ...others
+  }: INewQuote): Promise<IPendingQuote> {
+    const quote = this.quoteTr.create({
+      ...others,
+      submitDt: submitDt || new Date(),
+    })
     await this.quoteTr.save(quote)
     return await convertPendingQuoteToRepoObject(quote)
   }
