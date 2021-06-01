@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { Message, User } from 'discord.js'
 import {
-  ArgumentCollectorResult,
   CommandInfo,
   CommandoClient,
   CommandoMessage,
 } from 'discord.js-commando'
 import { QuoteRepository } from 'src/classes/quote-repository.abstract'
-import { WrappedCommand } from '../wrapped-command.class'
+import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 
 const COMMAND_INFO: CommandInfo = {
   name: 'submit',
@@ -27,27 +26,36 @@ const COMMAND_INFO: CommandInfo = {
       type: 'string',
       prompt: '',
     },
-    {
-      key: 'year',
-      type: 'integer',
-      prompt: '',
-    },
   ],
   argsPromptLimit: 0,
 }
 
+interface ISubmitCommandArgs extends IArgumentMap {
+  author: User
+  quote: string
+}
+
 @Injectable()
-export class SubmitCommandService extends WrappedCommand {
+export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
   constructor(client: CommandoClient, private quoteRepo: QuoteRepository) {
     super(client, COMMAND_INFO)
   }
 
-  run(
+  async run(
     message: CommandoMessage,
-    args: string | string[] | Record<string, unknown>,
-    fromPattern: boolean,
-    result?: ArgumentCollectorResult<Record<string, unknown>>,
+    { quote, author }: ISubmitCommandArgs,
   ): Promise<Message | Message[]> {
-    throw new Error('Method not implemented.')
+    const response = await message.channel.send('Teka wait lang ha.')
+
+    const newQuote = await this.quoteRepo.createQuote({
+      authorId: author.id,
+      submitterId: author.id,
+      channelId: message.channel.id,
+      content: quote,
+      messageId: response.id,
+      guildId: message.guild.id,
+    })
+
+    return await response.edit(JSON.stringify(newQuote))
   }
 }
