@@ -3,7 +3,6 @@ import { Message, User } from 'discord.js'
 import {
   CommandoClient,
   CommandInfo,
-  ArgumentCollectorResult,
   CommandoMessage,
 } from 'discord.js-commando'
 import { QuoteRepository } from 'src/classes/quote-repository.abstract'
@@ -42,12 +41,12 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
 
   async run(
     message: CommandoMessage,
-    args: string | IReceiveCommandArgs | string[],
+    { user }: IReceiveCommandArgs,
   ): Promise<Message | Message[]> {
     const { channel, guild, author } = message
     const response = await channel.send('Teka wait lang boss.')
 
-    const quote = await this.quoteRepo.getRandomQuote(guild.id)
+    const quote = await this.quoteRepo.getRandomQuote(guild.id, user?.id)
     if (!quote) {
       return response.edit('No quotes available.')
     }
