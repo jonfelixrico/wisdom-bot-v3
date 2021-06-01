@@ -6,10 +6,7 @@ import {
   CommandoMessage,
 } from 'discord.js-commando'
 import { filter, take, tap } from 'rxjs/operators'
-import {
-  IPendingQuote,
-  QuoteRepository,
-} from 'src/classes/quote-repository.abstract'
+import { QuoteRepository } from 'src/classes/quote-repository.abstract'
 import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 
