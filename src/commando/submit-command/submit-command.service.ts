@@ -27,7 +27,7 @@ const COMMAND_INFO: CommandInfo = {
     },
     {
       key: 'year',
-      type: 'number',
+      type: 'integer',
       prompt: '',
     },
   ],
