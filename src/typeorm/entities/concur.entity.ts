@@ -15,6 +15,9 @@ export class Concur {
   @Column()
   guildId: string
 
+  @Column({ nullable: true })
+  receiveId: string
+
   @ManyToOne(() => Receive, (receive) => receive.concurs)
   receive: Promise<Receive>
 
