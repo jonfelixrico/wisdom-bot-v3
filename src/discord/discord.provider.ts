@@ -1,13 +1,13 @@
 import { Provider } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { Client } from 'discord.js'
+import { CommandoClient } from 'discord.js-commando'
 
 export const discordProvider: Provider = {
-  provide: Client,
+  provide: CommandoClient,
   useFactory: (cfg: ConfigService) =>
     new Promise(async (resolve, reject) => {
       try {
-        const client = new Client()
+        const client = new CommandoClient()
         client.once('ready', () => {
           resolve(client)
         })
