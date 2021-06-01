@@ -25,6 +25,9 @@ export class Receive {
   @Column()
   receiveDt: Date
 
+  @Column({ nullable: true })
+  quoteId: string
+
   @ManyToOne(() => Quote, (quote) => quote.receives)
   quote: Promise<Quote>
 

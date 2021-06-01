@@ -6,20 +6,18 @@ import {
 } from 'src/classes/receive-repository.abstract'
 import { Receive } from 'src/typeorm/entities/receive.entity'
 import { Repository } from 'typeorm'
-import { Quote } from 'src/typeorm/entities/quote.entity'
 
-async function convertReceiveEntToObject({
+function convertReceiveEntToObject({
   channelId,
   guildId,
   userId,
   id: receiveId,
   receiveDt,
   messageId,
-  quote: pQuote,
-}: Receive): Promise<IReceive> {
-  const quote = await pQuote
+  quoteId,
+}: Receive) {
   return {
-    quoteId: quote.id,
+    quoteId,
     channelId,
     guildId,
     userId,
@@ -50,11 +48,8 @@ export class ReceiveRepoImplService extends ReceiveRepository {
     messageId,
     receiveDt,
   }: INewReceive): Promise<[IReceive, number]> {
-    const quote = new Quote()
-    quote.id = quoteId
-
     const receive = await this.recvRepo.save({
-      quote: Promise.resolve(quote),
+      quoteId,
       channelId,
       guildId,
       userId,
@@ -70,6 +65,6 @@ export class ReceiveRepoImplService extends ReceiveRepository {
 
   async findReceiveByMessageId(messageId: string): Promise<IReceive> {
     const receive = await this.recvRepo.findOne({ messageId })
-    return receive ? await convertReceiveEntToObject(receive) : null
+    return receive ? convertReceiveEntToObject(receive) : null
   }
 }
