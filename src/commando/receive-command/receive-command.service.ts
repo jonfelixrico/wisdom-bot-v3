@@ -56,7 +56,7 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
       guildId: guild.id,
       quoteId: quote.quoteId,
       userId: author.id,
-      messageId: message.id,
+      messageId: response.id,
     })
 
     return await response.edit(JSON.stringify({ quote, receive }))
