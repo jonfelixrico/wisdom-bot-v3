@@ -8,6 +8,27 @@ import { Receive } from 'src/typeorm/entities/receive.entity'
 import { Repository } from 'typeorm'
 import { Quote } from 'src/typeorm/entities/quote.entity'
 
+async function convertReceiveEntToObject({
+  channelId,
+  guildId,
+  userId,
+  id: receiveId,
+  receiveDt,
+  messageId,
+  quote: pQuote,
+}: Receive): Promise<IReceive> {
+  const quote = await pQuote
+  return {
+    quoteId: quote.id,
+    channelId,
+    guildId,
+    userId,
+    receiveId,
+    receiveDt,
+    messageId,
+  }
+}
+
 @Injectable()
 export class ReceiveRepoImplService extends ReceiveRepository {
   constructor(@Inject('RECEIVE_ENTITY') private recvRepo: Repository<Receive>) {
@@ -32,7 +53,7 @@ export class ReceiveRepoImplService extends ReceiveRepository {
     const quote = new Quote()
     quote.id = quoteId
 
-    const { id: receiveId } = await this.recvRepo.create({
+    const receive = await this.recvRepo.create({
       quote: Promise.resolve(quote),
       channelId,
       guildId,
@@ -42,16 +63,13 @@ export class ReceiveRepoImplService extends ReceiveRepository {
     })
 
     return [
-      {
-        quoteId,
-        channelId,
-        guildId,
-        userId,
-        receiveId,
-        receiveDt,
-        messageId,
-      },
+      await convertReceiveEntToObject(receive),
       await this.getReceiveCount(quoteId),
     ]
+  }
+
+  async findReceiveByMessageId(messageId: string): Promise<IReceive> {
+    const receive = await this.recvRepo.findOne({ messageId })
+    return receive ? await convertReceiveEntToObject(receive) : null
   }
 }

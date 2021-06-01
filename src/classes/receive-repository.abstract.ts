@@ -14,4 +14,6 @@ export interface IReceive extends INewReceive {
 
 export abstract class ReceiveRepository {
   abstract createRecieve(receive: INewReceive): Promise<[IReceive, number]>
+
+  abstract findReceiveByMessageId(messageId: string): Promise<IReceive>
 }
