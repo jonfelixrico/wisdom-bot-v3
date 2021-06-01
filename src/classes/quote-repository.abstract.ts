@@ -10,15 +10,15 @@ export interface INewQuote {
   guildId: string
   channelId: string
 
-  submitDt: Date
+  submitDt?: Date
 }
 
 export interface IQuote extends INewQuote {
+  submitDt: Date
   quoteId: string
 }
 
-export interface IPendingQuote extends INewQuote {
-  quoteId: string
+export interface IPendingQuote extends IQuote {
   expireDt: Date
   approveDt?: Date
   approvers: {
