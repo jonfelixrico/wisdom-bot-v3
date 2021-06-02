@@ -42,4 +42,6 @@ export abstract class QuoteRepository {
   abstract addApprover(quoteId: string, userId: string): Promise<IPendingQuote>
 
   abstract setApproveDt(quoteId: string, approveDt?: Date): Promise<boolean>
+
+  abstract getGuildsWithPendingQuotes(): Promise<string[]>
 }

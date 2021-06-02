@@ -168,4 +168,15 @@ export class QuoteRepoImplService extends QuoteRepository {
 
     return updateResult.affected > 0
   }
+
+  async getGuildsWithPendingQuotes(): Promise<string[]> {
+    const quotesWithGuildIdOnly = await this.quoteTr
+      .createQueryBuilder()
+      .select('guildId')
+      .distinct()
+      .where('approveDt IS NULL AND expireDt >= :now', { now: new Date() })
+      .getMany()
+
+    return quotesWithGuildIdOnly.map(({ guildId }) => guildId)
+  }
 }
