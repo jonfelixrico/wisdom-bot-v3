@@ -73,7 +73,7 @@ export class ReactionListenerService {
     this.unwatchSubj.next(messageId)
   }
 
-  createObserver(
+  private createObserver(
     messageId: string,
     emojiName: string,
     count: number,
