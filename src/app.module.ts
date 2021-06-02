@@ -8,7 +8,7 @@ import { CommandoModule } from './commando/commando.module'
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.dev.env',
+      envFilePath: ['.env', '.dev.env'],
       isGlobal: true,
     }),
     TypeormModule,
