@@ -190,4 +190,20 @@ export class QuoteRepoImplService extends QuoteRepository {
       return map
     }, {})
   }
+
+  async getPendingQuoteByMessageId(messageId: string): Promise<IPendingQuote> {
+    const pendingQuote = await this.quoteTr.findOne({ messageId })
+    return pendingQuote ? pendingQuoteEntToObj(pendingQuote) : null
+  }
+
+  async setMessageId(quoteId: string, messageId: string): Promise<boolean> {
+    const { affected } = await this.quoteTr.update(
+      {
+        id: quoteId,
+      },
+      { messageId },
+    )
+
+    return affected > 0
+  }
 }

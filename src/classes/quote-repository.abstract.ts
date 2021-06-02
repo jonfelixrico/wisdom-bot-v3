@@ -43,9 +43,13 @@ export abstract class QuoteRepository {
 
   abstract getPendingQuote(quoteId: string): Promise<IPendingQuote>
 
+  abstract getPendingQuoteByMessageId(messageId: string): Promise<IPendingQuote>
+
   abstract addApprover(quoteId: string, userId: string): Promise<IPendingQuote>
 
   abstract setApproveDt(quoteId: string, approveDt?: Date): Promise<boolean>
 
   abstract getIdsOfGuildsAndChannelsWithPendingQuotes(): Promise<IGuildsAndChannelsWithPendingQuotes>
+
+  abstract setMessageId(quoteId: string, messageId: string): Promise<boolean>
 }
