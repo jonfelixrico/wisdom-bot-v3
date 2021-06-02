@@ -14,15 +14,12 @@ export class QuoteApproverService {
     messageId,
     channelId,
   }: IQuote): Promise<void> {
-    const channel = await this.guildRepo.getTextChannel(guildId, channelId)
-
-    if (!channel) {
-      // TODO log warnings
-      return
-    }
-
-    const { messages } = channel
-    return await messages.delete(messageId, 'Quote has been approved.')
+    this.guildRepo.deleteMessage(
+      guildId,
+      channelId,
+      messageId,
+      'Quote has been approve.d',
+    )
   }
 
   private async announceApproval({
