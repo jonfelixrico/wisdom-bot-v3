@@ -11,6 +11,9 @@ export interface INewQuote {
   channelId: string
 
   submitDt?: Date
+
+  // TODO separate INewQuote with expireDt
+  expireDt?: Date
 }
 
 export interface IQuote extends INewQuote {
