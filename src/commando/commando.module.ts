@@ -7,8 +7,8 @@ import { SetupService } from './setup/setup.service'
 import { ConcurCommandService } from './concur-command/concur-command.service'
 import { ReactionListenerService } from './reaction-listener/reaction-listener.service'
 import { PendingQuoteMessageRecacherService } from './pending-quote-message-recacher/pending-quote-message-recacher.service'
-import { PendingQuoteRegeneratorService } from './pending-quote-regenerator/pending-quote-regenerator.service'
 import { QuoteApproverService } from './quote-approver/quote-approver.service'
+import { QuoteRegeneratorService } from './quote-regenerator/quote-regenerator.service'
 
 @Module({
   imports: [DiscordModule, RepositoriesModule],
@@ -19,8 +19,8 @@ import { QuoteApproverService } from './quote-approver/quote-approver.service'
     ConcurCommandService,
     ReactionListenerService,
     PendingQuoteMessageRecacherService,
-    PendingQuoteRegeneratorService,
     QuoteApproverService,
+    QuoteRegeneratorService,
   ],
 })
 export class CommandoModule {}
