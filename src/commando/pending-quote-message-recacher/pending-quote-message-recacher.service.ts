@@ -12,7 +12,24 @@ export class PendingQuoteMessageRecacherService {
     private reactListener: ReactionListenerService,
     private quoteRepo: QuoteRepository,
     private regen: QuoteRegeneratorService,
-  ) {}
+  ) {
+    this.setUp()
+  }
+
+  private async setUp() {
+    const map =
+      await this.quoteRepo.getIdsOfGuildsAndChannelsWithPendingQuotes()
+
+    console.debug(map)
+
+    const entries = Object.entries(map)
+
+    for (const [guildId, channelIds] of entries) {
+      for (const channelId of channelIds) {
+        await this.cachePendingQuoteMessages(guildId, channelId)
+      }
+    }
+  }
 
   private async reCacheMessages(
     { messages }: TextChannel,
@@ -36,7 +53,7 @@ export class PendingQuoteMessageRecacherService {
     }
   }
 
-  async regenerateLostMessages(lost: string[] = []) {
+  private async regenerateLostMessages(lost: string[] = []) {
     for (const messageId of lost) {
       try {
         // TODO make a bulk regenerateMessage maybe?
@@ -45,6 +62,15 @@ export class PendingQuoteMessageRecacherService {
         // TODO add better handling
         console.error(e)
       }
+    }
+  }
+
+  private rewatchFoundMessages(found: string[] = []) {
+    // TODO stop using a dummy expireDt
+    const expireDt = new Date()
+    expireDt.setMinutes(expireDt.getMinutes() + 2)
+    for (const messageId of found) {
+      this.reactListener.watch(messageId, '🤔', 1, expireDt)
     }
   }
 
@@ -61,14 +87,14 @@ export class PendingQuoteMessageRecacherService {
       .filter(({ messageId }) => !!messageId)
       .map(({ messageId }) => messageId)
 
-    if (messageIds.length) {
+    if (!messageIds.length) {
       return
     }
 
     const { lost, found } = await this.reCacheMessages(channel, messageIds)
 
     // TODO call ApprovedQuoteAnnouncer
-    console.debug(channelId, found)
+    this.rewatchFoundMessages(found)
 
     // TODO call PendingQuoteMessageRegenerator
     this.regenerateLostMessages(lost)
