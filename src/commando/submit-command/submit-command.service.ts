@@ -67,23 +67,10 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     return await response.edit(JSON.stringify(newQuote))
   }
 
-  private async onApproval(quoteId: string, message: Message) {
-    await this.quoteRepo.setApproveDt(quoteId, new Date())
-    const { channel } = message
-    await message.delete()
-    await channel.send(quoteId)
-  }
-
   private watchQuoteForApproval(quoteId: string, message: Message) {
     const expireDt = new Date()
     expireDt.setMinutes(expireDt.getMinutes() + 2)
 
-    this.listener
-      .createObserver(message.id, '🤔', 1, expireDt)
-      .pipe(
-        filter((val) => !!val),
-        take(1),
-      )
-      .subscribe(() => this.onApproval(quoteId, message))
+    this.listener.watch(message.id, '🤔', 1, expireDt)
   }
 }
