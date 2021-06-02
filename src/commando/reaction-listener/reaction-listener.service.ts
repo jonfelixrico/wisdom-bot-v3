@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { Message, MessageReaction } from 'discord.js'
 import { CommandoClient } from 'discord.js-commando'
 import { merge, Observable, of, race, Subject, timer } from 'rxjs'
-import { debounceTime, filter, map, mapTo } from 'rxjs/operators'
+import { debounceTime, filter, map, mapTo, takeUntil } from 'rxjs/operators'
 
 function fromMessageReactionEvent(
   client: CommandoClient,
@@ -19,10 +19,7 @@ function buildSubjects(client: CommandoClient) {
   return merge(
     fromMessageReactionEvent(client, 'messageReactionAdd'),
     fromMessageReactionEvent(client, 'messageReactionRemove'),
-  ).pipe(
-    filter(({ author }) => author.id === client.user.id),
-    debounceTime(2500),
-  )
+  ).pipe(filter(({ author }) => author.id === client.user.id))
 }
 
 function getMessageReactionForEmoji(message: Message, emojiName: string) {
@@ -40,6 +37,10 @@ export class ReactionListenerService {
     this.reactionChange$ = buildSubjects(client)
   }
 
+  destroyObserver(messageId: string) {
+    this.unsubscribe$.next(messageId)
+  }
+
   createObserver(
     messageId: string,
     emojiName: string,
@@ -51,12 +52,11 @@ export class ReactionListenerService {
     }
 
     const expire$ = timer(expireDt).pipe(mapTo(false))
-    const cancel$ = this.unsubscribe$.pipe(
-      filter((val) => val === messageId),
-      mapTo(null),
-    )
+    const cancel$ = this.unsubscribe$.pipe(filter((val) => val === messageId))
 
     const complete$ = this.reactionChange$.pipe(
+      takeUntil(cancel$),
+      debounceTime(2500),
       filter(({ id }) => id === messageId),
       map((message) => getMessageReactionForEmoji(message, emojiName)),
       filter(
@@ -68,6 +68,6 @@ export class ReactionListenerService {
       mapTo(true),
     )
 
-    return race(expire$, complete$, cancel$)
+    return race(expire$, complete$)
   }
 }

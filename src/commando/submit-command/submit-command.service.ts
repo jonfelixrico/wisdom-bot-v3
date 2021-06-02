@@ -5,7 +5,7 @@ import {
   CommandoClient,
   CommandoMessage,
 } from 'discord.js-commando'
-import { filter, take, tap } from 'rxjs/operators'
+import { filter, take } from 'rxjs/operators'
 import { QuoteRepository } from 'src/classes/quote-repository.abstract'
 import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
@@ -81,8 +81,7 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     this.listener
       .createObserver(message.id, '🤔', 1, expireDt)
       .pipe(
-        tap((a) => console.debug(a)),
-        filter((val) => val),
+        filter((val) => !!val),
         take(1),
       )
       .subscribe(() => this.onApproval(quoteId, message))
