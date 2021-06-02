@@ -44,11 +44,11 @@ export class ReactionListenerService {
     this.reactionChange$ = buildSubjects(client)
   }
 
-  watch() {
+  watch(messageId: string) {
     // yeet
   }
 
-  unwatch() {
+  unwatch(messageId: string) {
     // yeet
   }
 

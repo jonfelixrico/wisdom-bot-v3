@@ -1,13 +1,44 @@
 import { Injectable } from '@nestjs/common'
-import { IQuote, QuoteRepository } from 'src/classes/quote-repository.abstract'
+import { filter, map } from 'rxjs/operators'
+import {
+  IPendingQuote,
+  IQuote,
+  QuoteRepository,
+} from 'src/classes/quote-repository.abstract'
 import { GuildRepoService } from 'src/discord/guild-repo/guild-repo.service'
+import { DeleteListenerService } from '../delete-listener/delete-listener.service'
+import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
 
 @Injectable()
 export class QuoteApproverService {
   constructor(
     private guildRepo: GuildRepoService,
     private quoteRepo: QuoteRepository,
-  ) {}
+    private reactListener: ReactionListenerService,
+    private deleteListener: DeleteListenerService,
+  ) {
+    this.setUp()
+  }
+
+  private setUp() {
+    const { reactListener } = this
+    reactListener.emitter
+      .pipe(
+        filter(({ status }) => status === 'COMPLETE'),
+        map(({ messageId }) => messageId),
+      )
+      .subscribe(this.approveQuoteByMessageId.bind(this))
+  }
+
+  private async approveQuoteByMessageId(messageId: string) {
+    const quote = await this.quoteRepo.getPendingQuoteByMessageId(messageId)
+    if (!quote) {
+      // TODO add logging here
+      return
+    }
+
+    await this.processQuote(quote)
+  }
 
   private async deleteMessage({
     guildId,
@@ -18,7 +49,7 @@ export class QuoteApproverService {
       guildId,
       channelId,
       messageId,
-      'Quote has been approve.d',
+      'Quote has been approved.',
     )
   }
 
@@ -38,19 +69,26 @@ export class QuoteApproverService {
     channel.send([submitterId, authorId, content].join(' '))
   }
 
-  async approveQuote(quoteId: string): Promise<IQuote> {
-    const { quoteRepo } = this
+  private async processQuote(quote: IPendingQuote) {
+    const { quoteId, messageId } = quote
+    await this.quoteRepo.setApproveDt(quoteId)
 
-    const quote = await quoteRepo.getPendingQuote(quoteId)
+    this.deleteListener.unwatch(messageId)
+    this.reactListener.unwatch(messageId)
+
+    await this.deleteMessage(quote)
+    // TODO unsubscribe regenerator
+    // TODO unsubscribe watcher
+    await this.announceApproval(quote)
+  }
+
+  async approveQuote(quoteId: string): Promise<IQuote> {
+    const quote = await this.quoteRepo.getPendingQuote(quoteId)
     if (!quote) {
       // TODO log warnings
       return
     }
 
-    await quoteRepo.setApproveDt(quoteId)
-    await this.deleteMessage(quote)
-    // TODO unsubscribe regenerator
-    // TODO unsubscribe watcher
-    await this.announceApproval(quote)
+    await this.processQuote(quote)
   }
 }
