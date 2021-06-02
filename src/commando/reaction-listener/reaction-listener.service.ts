@@ -26,15 +26,34 @@ function getMessageReactionForEmoji(message: Message, emojiName: string) {
   return message.reactions.cache.array().find((r) => r.emoji.name === emojiName)
 }
 
+export interface IReactionListenerEmission {
+  messageId: string
+  status: 'COMPLETE' | 'EXPIRED'
+}
+
 @Injectable()
 export class ReactionListenerService {
   private reactionChange$: Observable<Message>
   private unsubscribe$ = new Subject<string>()
   private client: CommandoClient
 
+  private emitterSubj = new Subject<IReactionListenerEmission>()
+
   constructor(client: CommandoClient) {
     this.client = client
     this.reactionChange$ = buildSubjects(client)
+  }
+
+  watch() {
+    // yeet
+  }
+
+  unwatch() {
+    // yeet
+  }
+
+  get emitter() {
+    return this.emitterSubj.asObservable()
   }
 
   destroyObserver(messageId: string) {
