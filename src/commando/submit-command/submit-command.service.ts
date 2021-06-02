@@ -5,7 +5,6 @@ import {
   CommandoClient,
   CommandoMessage,
 } from 'discord.js-commando'
-import { filter, take } from 'rxjs/operators'
 import { QuoteRepository } from 'src/classes/quote-repository.abstract'
 import { DeleteListenerService } from '../delete-listener/delete-listener.service'
 import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
@@ -55,6 +54,9 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
   ): Promise<Message | Message[]> {
     const response = await message.channel.send('Teka wait lang ha.')
 
+    const expireDt = new Date()
+    expireDt.setMinutes(expireDt.getMinutes() + 2)
+
     const newQuote = await this.quoteRepo.createQuote({
       authorId: author.id,
       submitterId: author.id,
@@ -62,6 +64,7 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
       content: quote,
       messageId: response.id,
       guildId: message.guild.id,
+      expireDt,
     })
 
     this.watchQuoteForApproval(newQuote.quoteId, response)
