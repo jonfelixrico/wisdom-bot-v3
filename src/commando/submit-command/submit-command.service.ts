@@ -7,6 +7,7 @@ import {
 } from 'discord.js-commando'
 import { filter, take } from 'rxjs/operators'
 import { QuoteRepository } from 'src/classes/quote-repository.abstract'
+import { DeleteListenerService } from '../delete-listener/delete-listener.service'
 import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 
@@ -42,7 +43,8 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
   constructor(
     client: CommandoClient,
     private quoteRepo: QuoteRepository,
-    private listener: ReactionListenerService,
+    private reactionListener: ReactionListenerService,
+    private deleteListener: DeleteListenerService,
   ) {
     super(client, COMMAND_INFO)
   }
@@ -71,6 +73,7 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     const expireDt = new Date()
     expireDt.setMinutes(expireDt.getMinutes() + 2)
 
-    this.listener.watch(message.id, '🤔', 1, expireDt)
+    this.reactionListener.watch(message.id, '🤔', 1, expireDt)
+    this.deleteListener.watch(message.id)
   }
 }
