@@ -26,30 +26,43 @@ function getMessageReactionForEmoji(message: Message, emojiName: string) {
   return message.reactions.cache.array().find((r) => r.emoji.name === emojiName)
 }
 
+type StatusString = 'COMPLETE' | 'EXPIRED'
 export interface IReactionListenerEmission {
   messageId: string
-  status: 'COMPLETE' | 'EXPIRED'
+  status: StatusString
 }
 
 @Injectable()
 export class ReactionListenerService {
-  private reactionChange$: Observable<Message>
-  private unsubscribe$ = new Subject<string>()
+  private reaction$: Observable<Message>
+  private unwatchSubj = new Subject<string>()
+  private watched = new Set<string>()
   private client: CommandoClient
 
   private emitterSubj = new Subject<IReactionListenerEmission>()
 
   constructor(client: CommandoClient) {
     this.client = client
-    this.reactionChange$ = buildSubjects(client)
+    this.reaction$ = buildSubjects(client)
   }
 
-  watch(messageId: string) {
-    // yeet
+  watch(messageId: string, emojiName: string, count: number, expireDt: Date) {
+    if (this.watched.has(messageId)) {
+      return
+    }
+
+    this.watched.add(messageId)
+    this.createObserver(messageId, emojiName, count, expireDt).subscribe(
+      (val) => {
+        this.watched.delete(messageId)
+        this.emitterSubj.next(val)
+      },
+    )
   }
 
   unwatch(messageId: string) {
-    // yeet
+    this.watched.delete(messageId)
+    this.unwatchSubj.next(messageId)
   }
 
   get emitter() {
@@ -57,7 +70,7 @@ export class ReactionListenerService {
   }
 
   destroyObserver(messageId: string) {
-    this.unsubscribe$.next(messageId)
+    this.unwatchSubj.next(messageId)
   }
 
   createObserver(
@@ -67,13 +80,16 @@ export class ReactionListenerService {
     expireDt: Date,
   ) {
     if (expireDt < new Date()) {
-      return of(false)
+      return of<IReactionListenerEmission>({
+        messageId,
+        status: 'EXPIRED',
+      })
     }
 
-    const expire$ = timer(expireDt).pipe(mapTo(false))
-    const cancel$ = this.unsubscribe$.pipe(filter((val) => val === messageId))
+    const expire$ = timer(expireDt).pipe(mapTo('EXPIRED'))
+    const cancel$ = this.unwatchSubj.pipe(filter((val) => val === messageId))
 
-    const complete$ = this.reactionChange$.pipe(
+    const complete$ = this.reaction$.pipe(
       takeUntil(cancel$),
       debounceTime(2500),
       filter(({ id }) => id === messageId),
@@ -84,9 +100,14 @@ export class ReactionListenerService {
           mr.users.cache.filter((u) => u.id !== this.client.user.id).size >=
             count,
       ),
-      mapTo(true),
+      mapTo('COMPLETE'),
     )
 
-    return race(expire$, complete$)
+    return race(expire$, complete$).pipe(
+      map<StatusString, IReactionListenerEmission>((status) => ({
+        messageId,
+        status,
+      })),
+    )
   }
 }
