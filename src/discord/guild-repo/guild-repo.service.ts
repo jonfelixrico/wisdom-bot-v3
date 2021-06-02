@@ -34,4 +34,20 @@ export class GuildRepoService {
 
     return channel
   }
+
+  async deleteMessage(
+    guildId: string,
+    channelId: string,
+    messageId: string,
+    reason?: string,
+  ): Promise<boolean> {
+    const channel = await this.getTextChannel(guildId, channelId)
+    if (!channel) {
+      return false
+    }
+
+    const { messages } = channel
+    await messages.delete(messageId, reason)
+    return true
+  }
 }
