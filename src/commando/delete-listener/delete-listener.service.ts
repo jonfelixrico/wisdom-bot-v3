@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Client, Message } from 'discord.js'
 import { Observable, Subject } from 'rxjs'
-import { filter, map } from 'rxjs/operators'
+import { filter, map, tap } from 'rxjs/operators'
 
 @Injectable()
 export class DeleteListenerService {
@@ -36,8 +36,9 @@ export class DeleteListenerService {
   get delete$(): Observable<string> {
     return this.deleteSubj.pipe(
       filter(({ author }) => author.id === this.client.user.id),
-      filter(({ id }) => this.watched.has(id)),
       map(({ id }) => id),
+      filter((id) => this.watched.has(id)),
+      tap((mesageId) => this.watched.delete(mesageId)),
     )
   }
 }
