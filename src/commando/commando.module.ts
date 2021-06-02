@@ -6,6 +6,7 @@ import { RepositoriesModule } from 'src/repositories/repositories.module'
 import { SetupService } from './setup/setup.service'
 import { ConcurCommandService } from './concur-command/concur-command.service'
 import { ReactionListenerService } from './reaction-listener/reaction-listener.service'
+import { ApprovalRewatcherService } from './approval-rewatcher/approval-rewatcher.service'
 
 @Module({
   imports: [DiscordModule, RepositoriesModule],
@@ -15,6 +16,7 @@ import { ReactionListenerService } from './reaction-listener/reaction-listener.s
     ReceiveCommandService,
     ConcurCommandService,
     ReactionListenerService,
+    ApprovalRewatcherService,
   ],
 })
 export class CommandoModule {}
