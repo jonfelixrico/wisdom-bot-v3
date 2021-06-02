@@ -33,7 +33,7 @@ export class DeleteListenerService {
     this.watched.delete(messageId)
   }
 
-  get delete$(): Observable<string> {
+  get emitter(): Observable<string> {
     return this.deleteSubj.pipe(
       filter(({ author }) => author.id === this.client.user.id),
       map(({ id }) => id),
