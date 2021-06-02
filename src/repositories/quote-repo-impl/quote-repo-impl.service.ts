@@ -109,7 +109,10 @@ export class QuoteRepoImplService extends QuoteRepository {
   async getPendingQuotes(guildId: string): Promise<IPendingQuote[]> {
     const quoteEnts = await this.quoteTr
       .createQueryBuilder()
-      .where('guildId = :guildId AND approveDt IS NULL', { guildId })
+      .where('guildId = :guildId AND approveDt IS NULL AND expireDt >= :now', {
+        guildId,
+        now: new Date(),
+      })
       .getMany()
 
     return quoteEnts.map((ent) => pendingQuoteEntToObj(ent))
@@ -118,7 +121,10 @@ export class QuoteRepoImplService extends QuoteRepository {
   async getPendingQuote(quoteId: string): Promise<IPendingQuote> {
     const quote = await this.quoteTr
       .createQueryBuilder()
-      .where('id = :quoteId AND approveDt IS NULL', { quoteId })
+      .where('id = :quoteId AND approveDt IS NULL AND expireDt >= :now', {
+        quoteId,
+        now: new Date(),
+      })
       .getOne()
 
     return quote ? await pendingQuoteEntToObj(quote) : null
