@@ -6,7 +6,7 @@ import { RepositoriesModule } from 'src/repositories/repositories.module'
 import { SetupService } from './setup/setup.service'
 import { ConcurCommandService } from './concur-command/concur-command.service'
 import { ReactionListenerService } from './reaction-listener/reaction-listener.service'
-import { ApprovalRewatcherService } from './approval-rewatcher/approval-rewatcher.service'
+import { PendingQuoteMessageRecacherService } from './pending-quote-message-recacher/pending-quote-message-recacher.service'
 
 @Module({
   imports: [DiscordModule, RepositoriesModule],
@@ -16,7 +16,7 @@ import { ApprovalRewatcherService } from './approval-rewatcher/approval-rewatche
     ReceiveCommandService,
     ConcurCommandService,
     ReactionListenerService,
-    ApprovalRewatcherService,
+    PendingQuoteMessageRecacherService,
   ],
 })
 export class CommandoModule {}
