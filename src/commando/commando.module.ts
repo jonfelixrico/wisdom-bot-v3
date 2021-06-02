@@ -8,7 +8,7 @@ import { ConcurCommandService } from './concur-command/concur-command.service'
 import { ReactionListenerService } from './reaction-listener/reaction-listener.service'
 import { PendingQuoteMessageRecacherService } from './pending-quote-message-recacher/pending-quote-message-recacher.service'
 import { PendingQuoteRegeneratorService } from './pending-quote-regenerator/pending-quote-regenerator.service'
-import { AcceptedQuoteAnnouncerService } from './accepted-quote-announcer/accepted-quote-announcer.service'
+import { QuoteApproverService } from './quote-approver/quote-approver.service'
 
 @Module({
   imports: [DiscordModule, RepositoriesModule],
@@ -20,7 +20,7 @@ import { AcceptedQuoteAnnouncerService } from './accepted-quote-announcer/accept
     ReactionListenerService,
     PendingQuoteMessageRecacherService,
     PendingQuoteRegeneratorService,
-    AcceptedQuoteAnnouncerService,
+    QuoteApproverService,
   ],
 })
 export class CommandoModule {}
