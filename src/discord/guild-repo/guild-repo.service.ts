@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { Guild, GuildChannel, TextChannel } from 'discord.js'
-import { CommandoClient } from 'discord.js-commando'
+import { Client, Guild, GuildChannel, TextChannel } from 'discord.js'
 
 @Injectable()
 export class GuildRepoService {
-  constructor(private client: CommandoClient) {}
+  constructor(private client: Client) {}
 
   async getGuild(guildId: string): Promise<Guild | null> {
     const { guilds } = this.client
