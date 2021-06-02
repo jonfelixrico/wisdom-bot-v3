@@ -13,7 +13,7 @@ import { Approval } from 'src/typeorm/entities/approval.entity'
 import { Quote } from 'src/typeorm/entities/quote.entity'
 import { Connection, Repository } from 'typeorm'
 
-function convertQuoteToRepoObject(quote: Quote): IQuote {
+function quoteEntToObject(quote: Quote): IQuote {
   const {
     id: quoteId,
     content,
@@ -37,22 +37,15 @@ function convertQuoteToRepoObject(quote: Quote): IQuote {
   }
 }
 
-async function convertPendingQuoteToRepoObject(
-  quote: Quote,
-): Promise<IPendingQuote> {
-  const base = convertQuoteToRepoObject(quote)
+function pendingQuoteEntToObj(quote: Quote): IPendingQuote {
+  const base = quoteEntToObject(quote)
   const { expireDt, approveDt, requiredApprovalCount } = quote
-
-  const approvals = (await quote.approvals) || []
 
   return {
     expireDt,
     approveDt,
     requiredApprovalCount,
-    approvers: approvals.map(({ userId, approveDt }) => ({
-      userId,
-      approveDt,
-    })),
+    approvers: [],
     ...base,
   }
 }
@@ -74,7 +67,7 @@ export class QuoteRepoImplService extends QuoteRepository {
       .where('id = :quoteId AND approveDt IS NOT NULL', { quoteId })
       .getOne()
 
-    return quote ? convertQuoteToRepoObject(quote) : null
+    return quote ? quoteEntToObject(quote) : null
   }
 
   async getRandomQuote(guildId: string, authorId?: string): Promise<IQuote> {
@@ -98,7 +91,7 @@ export class QuoteRepoImplService extends QuoteRepository {
     }
 
     const idx = random.int(0, quotes.length - 1)
-    return convertQuoteToRepoObject(quotes[idx])
+    return quoteEntToObject(quotes[idx])
   }
 
   async createQuote({
@@ -110,20 +103,25 @@ export class QuoteRepoImplService extends QuoteRepository {
       submitDt: submitDt || new Date(),
     })
     await this.quoteTr.save(quote)
-    return await convertPendingQuoteToRepoObject(quote)
+    return await pendingQuoteEntToObj(quote)
   }
 
-  getPendingQuotes(guildId: string): Promise<IPendingQuote[]> {
-    throw new Error('Method not implemented.')
+  async getPendingQuotes(guildId: string): Promise<IPendingQuote[]> {
+    const quoteEnts = await this.quoteTr
+      .createQueryBuilder()
+      .where('guildId = :guildId AND approveDt IS NULL', { guildId })
+      .getMany()
+
+    return quoteEnts.map((ent) => pendingQuoteEntToObj(ent))
   }
 
   async getPendingQuote(quoteId: string): Promise<IPendingQuote> {
     const quote = await this.quoteTr
       .createQueryBuilder()
-      .where('id = :quoteId AND quote.approveDt IS NULL', { quoteId })
+      .where('id = :quoteId AND approveDt IS NULL', { quoteId })
       .getOne()
 
-    return quote ? await convertPendingQuoteToRepoObject(quote) : null
+    return quote ? await pendingQuoteEntToObj(quote) : null
   }
 
   addApprover(quoteId: string, userId: string): Promise<IPendingQuote> {
@@ -148,7 +146,7 @@ export class QuoteRepoImplService extends QuoteRepository {
         await manager.save(quote)
       }
 
-      return await convertPendingQuoteToRepoObject(quote)
+      return await pendingQuoteEntToObj(quote)
     })
   }
 
