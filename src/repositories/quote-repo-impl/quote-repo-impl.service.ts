@@ -179,6 +179,7 @@ export class QuoteRepoImplService extends QuoteRepository {
       .select('DISTINCT guildId, channelId')
       .where('approveDt IS NULL AND expireDt >= :now', { now: new Date() })
       .getRawMany<{ guildId: string; channelId: string }>()
+    // TODO place this in a separate interface
 
     return res.reduce((map, { guildId, channelId }) => {
       if (!map[guildId]) {
