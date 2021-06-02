@@ -7,12 +7,6 @@ export class GuildRepoService {
 
   async getGuild(guildId: string): Promise<Guild | null> {
     const { guilds } = this.client
-
-    const cached = guilds.cache.get(guildId)
-    if (cached) {
-      return cached
-    }
-
     return await guilds.fetch(guildId)
   }
 
@@ -26,12 +20,6 @@ export class GuildRepoService {
     }
 
     const { channels } = guild
-
-    const cached = channels.cache.get(channelId)
-    if (cached) {
-      return cached
-    }
-
     return await channels.resolve(channelId)
   }
 
