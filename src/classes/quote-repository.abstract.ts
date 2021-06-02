@@ -28,6 +28,10 @@ export interface IPendingQuote extends IQuote {
   requiredApprovalCount: number
 }
 
+export interface IGuildsAndChannelsWithPendingQuotes {
+  [guildId: string]: string[]
+}
+
 export abstract class QuoteRepository {
   abstract getQuote(quoteId: string): Promise<IQuote>
 
@@ -35,7 +39,7 @@ export abstract class QuoteRepository {
 
   abstract createQuote(newQuote: INewQuote): Promise<IPendingQuote>
 
-  abstract getPendingQuotes(guildId: string): Promise<IPendingQuote[]>
+  abstract getChannelPendingQuotes(channelId: string): Promise<IPendingQuote[]>
 
   abstract getPendingQuote(quoteId: string): Promise<IPendingQuote>
 
@@ -43,5 +47,5 @@ export abstract class QuoteRepository {
 
   abstract setApproveDt(quoteId: string, approveDt?: Date): Promise<boolean>
 
-  abstract getGuildsWithPendingQuotes(): Promise<string[]>
+  abstract getIdsOfGuildsAndChannelsWithPendingQuotes(): Promise<IGuildsAndChannelsWithPendingQuotes>
 }

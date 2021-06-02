@@ -4,6 +4,7 @@ const random = require('random')
 
 import { Inject, Injectable } from '@nestjs/common'
 import {
+  IGuildsAndChannelsWithPendingQuotes,
   INewQuote,
   IPendingQuote,
   IQuote,
@@ -106,13 +107,16 @@ export class QuoteRepoImplService extends QuoteRepository {
     return await pendingQuoteEntToObj(quote)
   }
 
-  async getPendingQuotes(guildId: string): Promise<IPendingQuote[]> {
+  async getChannelPendingQuotes(channelId: string): Promise<IPendingQuote[]> {
     const quoteEnts = await this.quoteTr
       .createQueryBuilder()
-      .where('guildId = :guildId AND approveDt IS NULL AND expireDt >= :now', {
-        guildId,
-        now: new Date(),
-      })
+      .where(
+        'channelId = :channelId AND approveDt IS NULL AND expireDt >= :now',
+        {
+          channelId,
+          now: new Date(),
+        },
+      )
       .getMany()
 
     return quoteEnts.map((ent) => pendingQuoteEntToObj(ent))
@@ -169,14 +173,21 @@ export class QuoteRepoImplService extends QuoteRepository {
     return updateResult.affected > 0
   }
 
-  async getGuildsWithPendingQuotes(): Promise<string[]> {
-    const quotesWithGuildIdOnly = await this.quoteTr
+  async getIdsOfGuildsAndChannelsWithPendingQuotes(): Promise<IGuildsAndChannelsWithPendingQuotes> {
+    const res = await this.quoteTr
       .createQueryBuilder()
-      .select('guildId')
-      .distinct()
+      .select('DISTINCT guildId, channelId')
       .where('approveDt IS NULL AND expireDt >= :now', { now: new Date() })
-      .getMany()
+      .getRawMany<[string, string]>()
 
-    return quotesWithGuildIdOnly.map(({ guildId }) => guildId)
+    return res.reduce((map, [guildId, channelId]) => {
+      if (!map[guildId]) {
+        map[guildId] = []
+      }
+
+      map[guildId].push(channelId)
+
+      return map
+    }, {})
   }
 }
