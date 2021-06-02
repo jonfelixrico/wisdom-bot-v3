@@ -9,6 +9,7 @@ import { ReactionListenerService } from './reaction-listener/reaction-listener.s
 import { PendingQuoteMessageRecacherService } from './pending-quote-message-recacher/pending-quote-message-recacher.service'
 import { QuoteApproverService } from './quote-approver/quote-approver.service'
 import { QuoteRegeneratorService } from './quote-regenerator/quote-regenerator.service'
+import { DeleteListenerService } from './delete-listener/delete-listener.service'
 
 @Module({
   imports: [DiscordModule, RepositoriesModule],
@@ -21,6 +22,7 @@ import { QuoteRegeneratorService } from './quote-regenerator/quote-regenerator.s
     PendingQuoteMessageRecacherService,
     QuoteApproverService,
     QuoteRegeneratorService,
+    DeleteListenerService,
   ],
 })
 export class CommandoModule {}
