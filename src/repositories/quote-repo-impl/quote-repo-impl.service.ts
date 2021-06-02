@@ -178,9 +178,9 @@ export class QuoteRepoImplService extends QuoteRepository {
       .createQueryBuilder()
       .select('DISTINCT guildId, channelId')
       .where('approveDt IS NULL AND expireDt >= :now', { now: new Date() })
-      .getRawMany<[string, string]>()
+      .getRawMany<{ guildId: string; channelId: string }>()
 
-    return res.reduce((map, [guildId, channelId]) => {
+    return res.reduce((map, { guildId, channelId }) => {
       if (!map[guildId]) {
         map[guildId] = []
       }
