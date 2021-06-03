@@ -10,6 +10,7 @@ import { PendingQuoteMessageRecacherService } from './pending-quote-message-reca
 import { QuoteApproverService } from './quote-approver/quote-approver.service'
 import { QuoteRegeneratorService } from './quote-regenerator/quote-regenerator.service'
 import { DeleteListenerService } from './delete-listener/delete-listener.service'
+import { StatsCommandService } from './stats-command/stats-command.service'
 
 @Module({
   imports: [DiscordModule, RepositoriesModule],
@@ -23,6 +24,7 @@ import { DeleteListenerService } from './delete-listener/delete-listener.service
     QuoteApproverService,
     QuoteRegeneratorService,
     DeleteListenerService,
+    StatsCommandService,
   ],
 })
 export class CommandoModule {}
