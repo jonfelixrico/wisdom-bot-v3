@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, Logger, LoggerService } from '@nestjs/common'
 import { Message, User } from 'discord.js'
 import {
   CommandInfo,
@@ -10,6 +10,7 @@ import { PendingQuoteRepository } from 'src/classes/pending-quote-repository.abs
 import { DeleteListenerService } from '../delete-listener/delete-listener.service'
 import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
 
 const COMMAND_INFO: CommandInfo = {
   name: 'submit',
@@ -46,6 +47,8 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     private guildRepo: GuildRepository,
     private reactionListener: ReactionListenerService,
     private deleteListener: DeleteListenerService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: Logger,
   ) {
     super(client, COMMAND_INFO)
   }
@@ -69,7 +72,7 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
       [quoteLine, instructionsLine].join('\n'),
     )
 
-    await this.pendingRepo.createPendingQuote({
+    const { quoteId } = await this.pendingRepo.createPendingQuote({
       authorId: author.id,
       submitterId: message.author.id,
       channelId: message.channel.id,
@@ -80,6 +83,11 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
       approvalCount: approveCount,
       approvalEmoji: approveEmoji,
     })
+
+    this.logger.log(
+      `Created quote ${quoteId} in guild ${guildId}`,
+      SubmitCommandService.name,
+    )
 
     this.reactionListener.watch(
       response.id,
