@@ -9,7 +9,7 @@ export class Quote {
   @Column()
   content: string
 
-  @Column()
+  @Column({ nullable: true })
   messageId: string
 
   @Column()
@@ -21,24 +21,24 @@ export class Quote {
   @Column()
   guildId: string
 
-  @Column()
+  @Column({ nullable: true })
   channelId: string
 
   @Column()
   submitDt: Date
 
-  @Column()
+  @Column({ nullable: true })
   expireDt: Date
 
-  @Column()
+  @Column({ nullable: true })
   approveDt: Date
 
   @OneToMany(() => Receive, (receive) => receive.quote)
   receives: Promise<Receive[]>
 
-  @Column()
+  @Column({ nullable: true })
   approvalEmoji: string
 
-  @Column()
+  @Column({ nullable: true })
   approvalCount: number
 }
