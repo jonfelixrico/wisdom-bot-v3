@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common'
 import { filter, map } from 'rxjs/operators'
-import {
-  IPendingQuote,
-  IQuote,
-  QuoteRepository,
-} from 'src/classes/quote-repository.abstract'
 import { GuildRepoService } from 'src/discord/guild-repo/guild-repo.service'
 import { DeleteListenerService } from '../delete-listener/delete-listener.service'
 import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
+import {
+  IPendingQuote,
+  PendingQuoteRepository,
+} from 'src/classes/pending-quote-repository.abstract'
 
 @Injectable()
 export class QuoteApproverService {
   constructor(
     private guildRepo: GuildRepoService,
-    private quoteRepo: QuoteRepository,
+    private pendingRepo: PendingQuoteRepository,
     private reactListener: ReactionListenerService,
     private deleteListener: DeleteListenerService,
   ) {
@@ -31,7 +30,7 @@ export class QuoteApproverService {
   }
 
   private async approveQuoteByMessageId(messageId: string) {
-    const quote = await this.quoteRepo.getPendingQuoteByMessageId(messageId)
+    const quote = await this.pendingRepo.getPendingQuoteByMessageId(messageId)
     if (!quote) {
       // TODO add logging here
       return
@@ -44,7 +43,7 @@ export class QuoteApproverService {
     guildId,
     messageId,
     channelId,
-  }: IQuote): Promise<void> {
+  }: IPendingQuote): Promise<void> {
     this.guildRepo.deleteMessage(
       guildId,
       channelId,
@@ -59,7 +58,7 @@ export class QuoteApproverService {
     submitterId,
     authorId,
     content,
-  }: IQuote): Promise<void> {
+  }: IPendingQuote): Promise<void> {
     const channel = await this.guildRepo.getTextChannel(guildId, channelId)
     if (!channel) {
       // TODO log warnings
@@ -71,7 +70,7 @@ export class QuoteApproverService {
 
   private async processQuote(quote: IPendingQuote) {
     const { quoteId, messageId } = quote
-    await this.quoteRepo.setApproveDt(quoteId)
+    await this.pendingRepo.approvePendingQuote(quoteId)
 
     this.deleteListener.unwatch(messageId)
     this.reactListener.unwatch(messageId)
@@ -82,8 +81,8 @@ export class QuoteApproverService {
     await this.announceApproval(quote)
   }
 
-  async approveQuote(quoteId: string): Promise<IQuote> {
-    const quote = await this.quoteRepo.getPendingQuote(quoteId)
+  async approveQuote(quoteId: string): Promise<IPendingQuote> {
+    const quote = await this.pendingRepo.getPendingQuote(quoteId)
     if (!quote) {
       // TODO log warnings
       return

@@ -1,26 +1,23 @@
 import { Injectable } from '@nestjs/common'
-import { QuoteRepository } from 'src/classes/quote-repository.abstract'
 import { GuildRepoService } from 'src/discord/guild-repo/guild-repo.service'
 import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
 import { TextChannel } from 'discord.js'
 import { QuoteRegeneratorService } from '../quote-regenerator/quote-regenerator.service'
+import { PendingQuoteRepository } from 'src/classes/pending-quote-repository.abstract'
 
 @Injectable()
 export class PendingQuoteMessageRecacherService {
   constructor(
     private guildRepo: GuildRepoService,
     private reactListener: ReactionListenerService,
-    private quoteRepo: QuoteRepository,
+    private pendingRepo: PendingQuoteRepository,
     private regen: QuoteRegeneratorService,
   ) {
     this.setUp()
   }
 
   private async setUp() {
-    const map =
-      await this.quoteRepo.getIdsOfGuildsAndChannelsWithPendingQuotes()
-
-    console.debug(map)
+    const map = await this.pendingRepo.getPendingQuoteOverview()
 
     const entries = Object.entries(map)
 
@@ -39,11 +36,12 @@ export class PendingQuoteMessageRecacherService {
     const lost = []
 
     for (const messageId of messageIds) {
-      const message = await messages.fetch(messageId)
-      if (!message) {
-        lost.push(messageId)
-      } else {
+      try {
+        await messages.fetch(messageId)
         found.push(messageId)
+      } catch (e) {
+        lost.push(messageId)
+        console.debug(e)
       }
     }
 
@@ -82,7 +80,7 @@ export class PendingQuoteMessageRecacherService {
       return
     }
 
-    const quotes = await this.quoteRepo.getChannelPendingQuotes(channelId)
+    const quotes = await this.pendingRepo.getPendingQuotesByChannelId(channelId)
     const messageIds = quotes
       .filter(({ messageId }) => !!messageId)
       .map(({ messageId }) => messageId)

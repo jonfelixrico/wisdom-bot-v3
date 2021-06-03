@@ -1,6 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { Receive } from './receive.entity'
-import { Approval } from './approval.entity'
 
 @Entity()
 export class Quote {
@@ -10,7 +9,7 @@ export class Quote {
   @Column()
   content: string
 
-  @Column()
+  @Column({ nullable: true })
   messageId: string
 
   @Column()
@@ -22,28 +21,24 @@ export class Quote {
   @Column()
   guildId: string
 
-  @Column()
+  @Column({ nullable: true })
   channelId: string
 
   @Column()
   submitDt: Date
 
-  @OneToMany(() => Receive, (receive) => receive.quote)
-  receives: Promise<Receive[]>
-
-  // -- end of essential quote properties --
-
-  // -- start of pending quote properties --
-
-  @OneToMany(() => Approval, (approval) => approval.quote)
-  approvals: Promise<Approval[]>
-
   @Column({ nullable: true })
   expireDt: Date
 
   @Column({ nullable: true })
-  requiredApprovalCount: number
+  approveDt: Date
+
+  @OneToMany(() => Receive, (receive) => receive.quote)
+  receives: Promise<Receive[]>
 
   @Column({ nullable: true })
-  approveDt: Date
+  approvalEmoji: string
+
+  @Column({ nullable: true })
+  approvalCount: number
 }

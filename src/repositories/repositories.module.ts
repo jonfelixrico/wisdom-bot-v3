@@ -8,6 +8,8 @@ import { ReceiveRepository } from 'src/classes/receive-repository.abstract'
 import { ConcurRepository } from 'src/classes/concur-repository.abstract'
 import { GuildRepoImplService } from './guild-repo-impl/guild-repo-impl.service'
 import { GuildRepository } from 'src/classes/guild-repository.abstract'
+import { PendingQuoteRepoImplService } from './pending-quote-repo-impl/pending-quote-repo-impl.service'
+import { PendingQuoteRepository } from 'src/classes/pending-quote-repository.abstract'
 
 const providers = [
   {
@@ -25,6 +27,10 @@ const providers = [
   {
     useClass: GuildRepoImplService,
     provide: GuildRepository,
+  },
+  {
+    useClass: PendingQuoteRepoImplService,
+    provide: PendingQuoteRepository,
   },
 ]
 

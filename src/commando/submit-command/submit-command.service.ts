@@ -6,7 +6,7 @@ import {
   CommandoMessage,
 } from 'discord.js-commando'
 import { GuildRepository } from 'src/classes/guild-repository.abstract'
-import { QuoteRepository } from 'src/classes/quote-repository.abstract'
+import { PendingQuoteRepository } from 'src/classes/pending-quote-repository.abstract'
 import { DeleteListenerService } from '../delete-listener/delete-listener.service'
 import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
@@ -42,7 +42,7 @@ interface ISubmitCommandArgs extends IArgumentMap {
 export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
   constructor(
     client: CommandoClient,
-    private quoteRepo: QuoteRepository,
+    private pendingRepo: PendingQuoteRepository,
     private guildRepo: GuildRepository,
     private reactionListener: ReactionListenerService,
     private deleteListener: DeleteListenerService,
@@ -63,7 +63,7 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     // TODO implement actual response
     const response = await message.channel.send(JSON.stringify(quote))
 
-    await this.quoteRepo.createQuote({
+    await this.pendingRepo.createPendingQuote({
       authorId: author.id,
       submitterId: author.id,
       channelId: message.channel.id,
@@ -71,15 +71,17 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
       messageId: response.id,
       guildId,
       expireDt,
+      approvalCount: approveCount,
+      approvalEmoji: approveEmoji,
     })
 
     this.reactionListener.watch(
-      message.id,
+      response.id,
       approveEmoji,
       approveCount,
       expireDt,
     )
-    this.deleteListener.watch(message.id)
+    this.deleteListener.watch(response.id)
 
     await response.react(approveEmoji)
     return response

@@ -1,7 +1,6 @@
 import { Provider } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Connection, createConnection, EntityTarget } from 'typeorm'
-import { Approval } from './entities/approval.entity'
 import { Concur } from './entities/concur.entity'
 import { Quote } from './entities/quote.entity'
 import { Receive } from './entities/receive.entity'
@@ -33,8 +32,8 @@ export const typeormProviders = [
       }),
     inject: [ConfigService],
   },
+
   generateEntityProvider('QUOTE_ENTITY', Quote),
   generateEntityProvider('RECEIVE_ENTITY', Receive),
   generateEntityProvider('CONCUR_ENTITY', Concur),
-  generateEntityProvider('APPROVAL_ENTITY', Approval),
 ]
