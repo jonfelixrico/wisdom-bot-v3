@@ -10,47 +10,30 @@ const str = fs.readFileSync(filename, {
   encoding: 'utf-8',
 })
 
-const idMapping = {}
-function getUuid(id) {
-  if (!idMapping[id]) {
-    idMapping[id] = uuid.v4()
-  }
-
-  return idMapping[id]
-}
-
 const parsedJson = JSON.parse(str)
 
 const quotes = []
 const receives = []
 
+const convertToMySql = (dateStr) =>
+  dateStr
+    ? new Date(dateStr).toISOString().slice(0, 19).replace('T', ' ')
+    : 'NULL'
+
 function processReceive(
   quoteId,
-  {
-    channelId,
-    messageId,
-    receiverId,
-    serverId: guildId,
-    receiverId: userId,
-    receiveDt,
-  },
+  { channelId, messageId, serverId: guildId, receiverId: userId, receiveDt },
 ) {
   receives.push({
     id: uuid.v4(),
     channelId,
     messageId,
-    receiverId,
     guildId,
     userId,
-    receiveDt: receiveDt.$date,
+    receiveDt: convertToMySql(receiveDt.$date),
     quoteId,
   })
 }
-
-const convertToMySql = (dateStr) =>
-  dateStr
-    ? new Date(dateStr).toISOString().slice(0, 19).replace('T', ' ')
-    : null
 
 function processQuote({
   submitterId,
@@ -79,15 +62,15 @@ function processQuote({
       expireDt: convertToMySql(expireDt.$date),
       approvalEmoji: emoji,
       approvalCount: count,
-      approveDt: null,
+      approveDt: 'NULL',
     })
   } else {
     Object.assign(quote, {
-      channelId: null,
-      messageId: null,
-      expireDt: null,
-      approvalEmoji: null,
-      approvalCount: null,
+      channelId: 'NULL',
+      messageId: 'NULL',
+      expireDt: 'NULL',
+      approvalEmoji: 'NULL',
+      approvalCount: 'NULL',
       approveDt: convertToMySql(submitDt.$date),
     })
   }
