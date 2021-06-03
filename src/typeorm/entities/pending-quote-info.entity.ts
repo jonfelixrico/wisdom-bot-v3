@@ -18,11 +18,14 @@ export class PendingQuoteInfo {
   @Column()
   requiredCount: number
 
-  @Column({ nullable: true })
-  quoteId: string
-
   @Column()
   expireDt: Date
+
+  @Column()
+  messageId: string
+
+  @Column({ nullable: true })
+  quoteId: string
 
   @OneToOne(() => Quote)
   @JoinColumn()
