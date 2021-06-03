@@ -50,12 +50,13 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
     { user }: IReceiveCommandArgs,
   ): Promise<Message | Message[]> {
     const { channel, guild, author } = message
-    const response = await channel.send('Teka wait lang boss.')
 
     const quote = await this.quoteRepo.getRandomQuote(guild.id, user?.id)
     if (!quote) {
-      return response.edit('No quotes available.')
+      return channel.send('No quotes available.')
     }
+
+    const response = await channel.send(generateResponseString(quote))
 
     await this.receiveRepo.createRecieve({
       channelId: channel.id,
@@ -65,6 +66,6 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
       messageId: response.id,
     })
 
-    return await response.edit(generateResponseString(quote))
+    return response
   }
 }
