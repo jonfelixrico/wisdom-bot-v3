@@ -34,9 +34,7 @@ export abstract class PendingQuoteRepository {
 
   abstract getPendingQuote(quoteId: string): Promise<IPendingQuote>
 
-  abstract getPendingQuotesByMessageId(
-    messageId: string,
-  ): Promise<IPendingQuote>
+  abstract getPendingQuoteByMessageId(messageId: string): Promise<IPendingQuote>
 
   abstract approvePendingQuote(
     quoteId: string,
