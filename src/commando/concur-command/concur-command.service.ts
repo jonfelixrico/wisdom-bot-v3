@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, Logger } from '@nestjs/common'
 import { Message } from 'discord.js'
 import {
   CommandInfo,
   CommandoClient,
   CommandoMessage,
 } from 'discord.js-commando'
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
 import { ConcurRepository } from 'src/classes/concur-repository.abstract'
 import { ReceiveRepository } from 'src/classes/receive-repository.abstract'
 import { WrappedCommand } from '../wrapped-command.class'
@@ -23,16 +24,15 @@ export class ConcurCommandService extends WrappedCommand {
     client: CommandoClient,
     private recvRepo: ReceiveRepository,
     private concurRepo: ConcurRepository,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: Logger,
   ) {
     super(client, COMMAND_INFO)
   }
 
-  async run({
-    channel,
-    reference,
-    author,
-    guild,
-  }: CommandoMessage): Promise<Message | Message[]> {
+  async run(message: CommandoMessage): Promise<Message | Message[]> {
+    const { channel, reference, author, guild } = message
+
     if (!reference) {
       return await channel.send('Invalid invocation.')
     }
@@ -45,7 +45,22 @@ export class ConcurCommandService extends WrappedCommand {
       return await channel.send('Invalid invocation.')
     }
 
-    const [concur, concurCount] = await this.concurRepo.createConcur({
+    const concurs = await this.concurRepo.findConcursByReceiveId(
+      receive.receiveId,
+    )
+
+    const hasUserConcurred = concurs.some(({ userId }) => author.id === userId)
+    if (hasUserConcurred) {
+      this.logger.warn(
+        `User ${author.id} has already concurred quote ${receive.quoteId}`,
+        ConcurCommandService.name,
+      )
+
+      message.reply('you have already concurred this quote.')
+      return
+    }
+
+    const [concur] = await this.concurRepo.createConcur({
       channelId: channel.id,
       // TODO remove guild and channel information
       guildId: guild.id,
@@ -53,6 +68,11 @@ export class ConcurCommandService extends WrappedCommand {
       receiveId: receive.receiveId,
     })
 
-    return await channel.send([JSON.stringify(concur), concurCount].join('/'))
+    this.logger.log(
+      `Created concur ${concur.concurId} for receive ${receive.receiveId}.`,
+      ConcurCommandService.name,
+    )
+
+    await channel.send(`${author} has concurred.`)
   }
 }
