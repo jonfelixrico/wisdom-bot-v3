@@ -7,5 +7,5 @@ export interface IQuoteStats {
 export abstract class StatsRepository {
   abstract getSubmittedQuoteStats(userId: string): Promise<IQuoteStats>
 
-  abstract getAuthoredQuoteStats(userId: string): Promise<IQuoteStats>
+  abstract getPersonalQuoteStats(userId: string): Promise<IQuoteStats>
 }
