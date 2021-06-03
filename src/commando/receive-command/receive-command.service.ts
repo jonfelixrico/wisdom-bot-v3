@@ -5,7 +5,7 @@ import {
   CommandInfo,
   CommandoMessage,
 } from 'discord.js-commando'
-import { QuoteRepository } from 'src/classes/quote-repository.abstract'
+import { IQuote, QuoteRepository } from 'src/classes/quote-repository.abstract'
 import { ReceiveRepository } from 'src/classes/receive-repository.abstract'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 
@@ -27,6 +27,12 @@ const COMMAND_INFO: CommandInfo = {
 
 export interface IReceiveCommandArgs extends IArgumentMap {
   user?: User
+}
+
+function generateResponseString(quote: IQuote) {
+  return `**"${quote.content}"** - <@${
+    quote.authorId
+  }>, ${quote.submitDt.getFullYear()}`
 }
 
 @Injectable()
@@ -51,7 +57,7 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
       return response.edit('No quotes available.')
     }
 
-    const receive = await this.receiveRepo.createRecieve({
+    await this.receiveRepo.createRecieve({
       channelId: channel.id,
       guildId: guild.id,
       quoteId: quote.quoteId,
@@ -59,6 +65,6 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
       messageId: response.id,
     })
 
-    return await response.edit(JSON.stringify({ quote, receive }))
+    return await response.edit(generateResponseString(quote))
   }
 }
