@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinTable,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -37,6 +38,10 @@ export class Quote {
   @OneToMany(() => Receive, (receive) => receive.quote)
   receives: Promise<Receive[]>
 
+  @Column({ nullable: true })
+  pendingInfoId: string
+
   @OneToOne(() => PendingQuoteInfo, (p) => p.quote)
+  @JoinTable()
   pendingInfo: Promise<PendingQuoteInfo>
 }

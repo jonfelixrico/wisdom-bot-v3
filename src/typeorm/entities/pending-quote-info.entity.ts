@@ -1,16 +1,10 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm'
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { Quote } from './quote.entity'
 
 @Entity()
 export class PendingQuoteInfo {
   @PrimaryGeneratedColumn('uuid')
-  pendingQuoteId: string
+  id: string
 
   @Column()
   emoji: string
@@ -24,10 +18,9 @@ export class PendingQuoteInfo {
   @Column()
   messageId: string
 
-  @Column({ nullable: true })
-  quoteId: string
+  @Column()
+  approveDt: string
 
-  @OneToOne(() => Quote)
-  @JoinColumn()
+  @OneToOne(() => Quote, (q) => q.pendingInfo)
   quote: Promise<Quote>
 }
