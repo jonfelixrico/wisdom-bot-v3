@@ -7,6 +7,7 @@ import {
 const GUILD_SETTINGS: IGuildSettings = {
   approveEmoji: '🤔',
   expireMillis: new Date('1970/1/3').getTime(),
+  approveCount: 1,
 }
 
 @Injectable()
