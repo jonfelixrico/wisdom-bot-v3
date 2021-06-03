@@ -60,8 +60,14 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
 
     const expireDt = new Date(Date.now() + expireMillis)
 
-    // TODO implement actual response
-    const response = await message.channel.send(JSON.stringify(quote))
+    const quoteLine = `**"${quote}"** - ${author}, ${new Date().getFullYear()}`
+    const instructionsLine = `_This submission needs ${
+      approveCount + 1
+    } ${approveEmoji} reacts to get reactions on or before *${expireDt}*._`
+
+    const response = await message.channel.send(
+      [quoteLine, instructionsLine].join('\n'),
+    )
 
     await this.pendingRepo.createPendingQuote({
       authorId: author.id,
