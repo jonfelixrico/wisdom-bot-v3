@@ -78,7 +78,7 @@ export class PendingQuoteRepoImplService extends PendingQuoteRepository {
     return pendingQuoteEntToObj(quoteEnt)
   }
 
-  async getPendingQuoteByChannelId(
+  async getPendingQuotesByChannelId(
     channelId: string,
   ): Promise<IPendingQuote[]> {
     const quoteEnts = await this.quoteTr
@@ -107,7 +107,7 @@ export class PendingQuoteRepoImplService extends PendingQuoteRepository {
     return quoteEnt && pendingQuoteEntToObj(quoteEnt)
   }
 
-  async getPendingQuotesByMessageId(messageId: string): Promise<IPendingQuote> {
+  async getPendingQuoteByMessageId(messageId: string): Promise<IPendingQuote> {
     const quoteEnt = await this.quoteTr
       .createQueryBuilder()
       .where(
