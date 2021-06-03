@@ -8,6 +8,18 @@ import {
   PendingQuoteRepository,
 } from 'src/classes/pending-quote-repository.abstract'
 
+function generateResponseString({
+  content,
+  submitterId,
+  authorId,
+  submitDt,
+}: IPendingQuote) {
+  const quoteLine = `**"${content}"** - <@${authorId}>, ${submitDt.getFullYear()}`
+  const acceptLine = `<@${submitterId}>, your submission has been accepted.`
+
+  return [quoteLine, acceptLine].join('\n')
+}
+
 @Injectable()
 export class QuoteApproverService {
   constructor(
@@ -52,20 +64,18 @@ export class QuoteApproverService {
     )
   }
 
-  private async announceApproval({
-    guildId,
-    channelId,
-    submitterId,
-    authorId,
-    content,
-  }: IPendingQuote): Promise<void> {
-    const channel = await this.guildRepo.getTextChannel(guildId, channelId)
+  private async announceApproval(quote: IPendingQuote): Promise<void> {
+    const channel = await this.guildRepo.getTextChannel(
+      quote.guildId,
+      quote.channelId,
+    )
+
     if (!channel) {
       // TODO log warnings
       return
     }
 
-    channel.send([submitterId, authorId, content].join(' '))
+    channel.send(generateResponseString(quote))
   }
 
   private async processQuote(quote: IPendingQuote) {
