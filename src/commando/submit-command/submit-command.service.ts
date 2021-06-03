@@ -68,9 +68,8 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
       approveCount + 1
     } ${approveEmoji} reacts to get reactions on or before *${expireDt}*._`
 
-    const response = await message.channel.send(
-      [quoteLine, instructionsLine].join('\n'),
-    )
+    const response = await message.channel.send('🤔')
+    await response.edit([quoteLine, instructionsLine].join('\n'))
 
     const { quoteId } = await this.pendingRepo.createPendingQuote({
       authorId: author.id,

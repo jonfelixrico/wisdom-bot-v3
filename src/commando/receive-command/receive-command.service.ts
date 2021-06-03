@@ -59,7 +59,8 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
       return channel.send('No quotes available.')
     }
 
-    const response = await channel.send(generateResponseString(quote))
+    const response = await channel.send('🤔')
+    await response.edit(generateResponseString(quote))
 
     const [{ receiveId }] = await this.receiveRepo.createRecieve({
       channelId: channel.id,
