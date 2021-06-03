@@ -35,11 +35,20 @@ export class QuoteRegeneratorService {
       expireDt,
       approvalEmoji,
       approvalCount,
+      authorId,
+      content,
     } = quote
 
     const channel = await this.guildRepo.getTextChannel(guildId, channelId)
 
-    const regenerated = await channel.send(['regenerated', quoteId].join('/'))
+    const quoteLine = `**"${content}"** - <@${authorId}>, ${new Date().getFullYear()}`
+    const instructionsLine = `_This submission needs ${
+      approvalCount + 1
+    } ${approvalEmoji} reacts to get reactions on or before *${expireDt}*._`
+
+    const regenerated = await channel.send(
+      ['**QUOTE REGENERATED**', quoteLine, instructionsLine].join('\n'),
+    )
 
     this.reactionListener.watch(
       regenerated.id,
