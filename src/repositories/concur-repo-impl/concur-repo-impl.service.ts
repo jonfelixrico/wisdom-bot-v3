@@ -7,6 +7,24 @@ import {
 import { Concur } from 'src/typeorm/entities/concur.entity'
 import { Repository } from 'typeorm'
 
+function concurEntToObj({
+  channelId,
+  guildId,
+  receiveId,
+  userId,
+  concurDt,
+  id: concurId,
+}: Concur): IConcur {
+  return {
+    channelId,
+    guildId,
+    receiveId,
+    userId,
+    concurDt,
+    concurId,
+  }
+}
+
 @Injectable()
 export class ConcurRepoImplService extends ConcurRepository {
   constructor(
@@ -29,7 +47,7 @@ export class ConcurRepoImplService extends ConcurRepository {
     receiveId,
     userId,
   }: INewConcur): Promise<[IConcur, number]> {
-    const { id: concurId, concurDt } = await this.concurRepo.save({
+    const concurEnt = await this.concurRepo.save({
       receiveId,
       channelId,
       guildId,
@@ -37,16 +55,11 @@ export class ConcurRepoImplService extends ConcurRepository {
       concurDt: new Date(),
     })
 
-    return [
-      {
-        channelId,
-        guildId,
-        receiveId,
-        userId,
-        concurDt,
-        concurId,
-      },
-      await this.getConcurCount(receiveId),
-    ]
+    return [concurEntToObj(concurEnt), await this.getConcurCount(receiveId)]
+  }
+
+  async findConcursByReceiveId(receiveId: string): Promise<IConcur[]> {
+    const receives = await this.concurRepo.find({ receiveId })
+    return receives.map(concurEntToObj)
   }
 }
