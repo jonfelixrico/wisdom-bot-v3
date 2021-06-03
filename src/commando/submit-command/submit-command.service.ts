@@ -71,7 +71,7 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
 
     await this.pendingRepo.createPendingQuote({
       authorId: author.id,
-      submitterId: author.id,
+      submitterId: message.author.id,
       channelId: message.channel.id,
       content: quote,
       messageId: response.id,
