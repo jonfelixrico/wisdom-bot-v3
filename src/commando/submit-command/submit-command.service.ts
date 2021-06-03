@@ -5,6 +5,7 @@ import {
   CommandoClient,
   CommandoMessage,
 } from 'discord.js-commando'
+import { GuildRepository } from 'src/classes/guild-repository.abstract'
 import { QuoteRepository } from 'src/classes/quote-repository.abstract'
 import { DeleteListenerService } from '../delete-listener/delete-listener.service'
 import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
@@ -42,6 +43,7 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
   constructor(
     client: CommandoClient,
     private quoteRepo: QuoteRepository,
+    private guildRepo: GuildRepository,
     private reactionListener: ReactionListenerService,
     private deleteListener: DeleteListenerService,
   ) {
@@ -52,31 +54,34 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     message: CommandoMessage,
     { quote, author }: ISubmitCommandArgs,
   ): Promise<Message | Message[]> {
-    const response = await message.channel.send('Teka wait lang ha.')
+    const guildId = message.guild.id
+    const { expireMillis, approveEmoji, approveCount } =
+      await this.guildRepo.getQuoteSettings(guildId)
 
-    const expireDt = new Date()
-    expireDt.setMinutes(expireDt.getMinutes() + 2)
+    const expireDt = new Date(Date.now() + expireMillis)
 
-    const newQuote = await this.quoteRepo.createQuote({
+    // TODO implement actual response
+    const response = await message.channel.send(JSON.stringify(quote))
+
+    await this.quoteRepo.createQuote({
       authorId: author.id,
       submitterId: author.id,
       channelId: message.channel.id,
       content: quote,
       messageId: response.id,
-      guildId: message.guild.id,
+      guildId,
       expireDt,
     })
 
-    this.watchQuoteForApproval(newQuote.quoteId, response)
-    await response.react('🤔')
-    return await response.edit(JSON.stringify(newQuote))
-  }
-
-  private watchQuoteForApproval(quoteId: string, message: Message) {
-    const expireDt = new Date()
-    expireDt.setMinutes(expireDt.getMinutes() + 2)
-
-    this.reactionListener.watch(message.id, '🤔', 1, expireDt)
+    this.reactionListener.watch(
+      message.id,
+      approveEmoji,
+      approveCount,
+      expireDt,
+    )
     this.deleteListener.watch(message.id)
+
+    await response.react(approveEmoji)
+    return response
   }
 }
