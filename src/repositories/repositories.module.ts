@@ -10,6 +10,8 @@ import { GuildRepoImplService } from './guild-repo-impl/guild-repo-impl.service'
 import { GuildRepository } from 'src/classes/guild-repository.abstract'
 import { PendingQuoteRepoImplService } from './pending-quote-repo-impl/pending-quote-repo-impl.service'
 import { PendingQuoteRepository } from 'src/classes/pending-quote-repository.abstract'
+import { StatsRepoImplService } from './stats-repo-impl/stats-repo-impl.service'
+import { StatsRepository } from 'src/classes/stats-repository.abstract'
 
 const providers = [
   {
@@ -31,6 +33,10 @@ const providers = [
   {
     useClass: PendingQuoteRepoImplService,
     provide: PendingQuoteRepository,
+  },
+  {
+    useClass: StatsRepoImplService,
+    provide: StatsRepository,
   },
 ]
 
