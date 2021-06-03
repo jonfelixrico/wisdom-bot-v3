@@ -7,6 +7,7 @@ import { QuoteRepository } from 'src/classes/quote-repository.abstract'
 import { ReceiveRepository } from 'src/classes/receive-repository.abstract'
 import { ConcurRepository } from 'src/classes/concur-repository.abstract'
 import { GuildRepoImplService } from './guild-repo-impl/guild-repo-impl.service'
+import { GuildRepository } from 'src/classes/guild-repository.abstract'
 
 const providers = [
   {
@@ -21,12 +22,15 @@ const providers = [
     useClass: ConcurRepoImplService,
     provide: ConcurRepository,
   },
+  {
+    useClass: GuildRepoImplService,
+    provide: GuildRepository,
+  },
 ]
 
 @Module({
   imports: [TypeormModule],
   providers,
   exports: providers,
-  providers: [GuildRepoImplService],
 })
 export class RepositoriesModule {}
