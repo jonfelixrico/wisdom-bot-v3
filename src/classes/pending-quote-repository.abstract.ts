@@ -28,7 +28,7 @@ export interface IPendingQuoteOverview {
 export abstract class PendingQuoteRepository {
   abstract createPendingQuote(newQuote: ISubmittedQuote): Promise<IPendingQuote>
 
-  abstract getPendingQuoteByChannelId(
+  abstract getPendingQuotesByChannelId(
     channelId: string,
   ): Promise<IPendingQuote[]>
 
