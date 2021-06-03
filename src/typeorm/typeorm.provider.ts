@@ -2,7 +2,6 @@ import { Provider } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Connection, createConnection, EntityTarget } from 'typeorm'
 import { Concur } from './entities/concur.entity'
-import { PendingQuoteInfo } from './entities/pending-quote-info.entity'
 import { Quote } from './entities/quote.entity'
 import { Receive } from './entities/receive.entity'
 
@@ -37,5 +36,4 @@ export const typeormProviders = [
   generateEntityProvider('QUOTE_ENTITY', Quote),
   generateEntityProvider('RECEIVE_ENTITY', Receive),
   generateEntityProvider('CONCUR_ENTITY', Concur),
-  generateEntityProvider('PENDING_QUOTE_INFO_ENTITY', PendingQuoteInfo),
 ]

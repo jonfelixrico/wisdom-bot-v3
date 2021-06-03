@@ -1,12 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinTable,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm'
-import { PendingQuoteInfo } from './pending-quote-info.entity'
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { Receive } from './receive.entity'
 
 @Entity()
@@ -35,13 +27,18 @@ export class Quote {
   @Column()
   submitDt: Date
 
+  @Column()
+  expireDt: Date
+
+  @Column()
+  approveDt: Date
+
   @OneToMany(() => Receive, (receive) => receive.quote)
   receives: Promise<Receive[]>
 
-  @Column({ nullable: true })
-  pendingInfoId: string
+  @Column()
+  approvalEmoji: string
 
-  @OneToOne(() => PendingQuoteInfo, (p) => p.quote)
-  @JoinTable()
-  pendingInfo: Promise<PendingQuoteInfo>
+  @Column()
+  approvalCount: number
 }
