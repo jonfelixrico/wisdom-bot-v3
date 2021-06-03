@@ -29,7 +29,7 @@ function submittedQuoteObjToEnt({
   ent.expireDt = expireDt
   ent.guildId = guildId
   ent.messageId = messageId
-  ent.submitDt = submitDt
+  ent.submitDt = submitDt || new Date()
   ent.submitterId = submitterId
 
   return ent
@@ -98,7 +98,7 @@ export class PendingQuoteRepoImplService extends PendingQuoteRepository {
   async getPendingQuote(quoteId: string): Promise<IPendingQuote> {
     const quoteEnt = await this.quoteTr
       .createQueryBuilder()
-      .where('id = :quoteId AND approveDt IS NOT NULL AND expireDt >= :now', {
+      .where('id = :quoteId AND approveDt IS NULL AND expireDt >= :now', {
         quoteId,
         now: new Date(),
       })
@@ -111,7 +111,7 @@ export class PendingQuoteRepoImplService extends PendingQuoteRepository {
     const quoteEnt = await this.quoteTr
       .createQueryBuilder()
       .where(
-        'messageId = :messageId AND approveDt IS NOT NULL AND expireDt >= :now',
+        'messageId = :messageId AND approveDt IS NULL AND expireDt >= :now',
         { messageId, now: new Date() },
       )
       .getOne()

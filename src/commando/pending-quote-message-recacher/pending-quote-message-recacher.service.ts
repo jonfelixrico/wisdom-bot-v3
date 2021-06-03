@@ -36,11 +36,12 @@ export class PendingQuoteMessageRecacherService {
     const lost = []
 
     for (const messageId of messageIds) {
-      const message = await messages.fetch(messageId)
-      if (!message) {
-        lost.push(messageId)
-      } else {
+      try {
+        await messages.fetch(messageId)
         found.push(messageId)
+      } catch (e) {
+        lost.push(messageId)
+        console.debug(e)
       }
     }
 

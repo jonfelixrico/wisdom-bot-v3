@@ -76,12 +76,12 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     })
 
     this.reactionListener.watch(
-      message.id,
+      response.id,
       approveEmoji,
       approveCount,
       expireDt,
     )
-    this.deleteListener.watch(message.id)
+    this.deleteListener.watch(response.id)
 
     await response.react(approveEmoji)
     return response
