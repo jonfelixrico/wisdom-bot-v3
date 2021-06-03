@@ -6,6 +6,7 @@ import { TypeormModule } from 'src/typeorm/typeorm.module'
 import { QuoteRepository } from 'src/classes/quote-repository.abstract'
 import { ReceiveRepository } from 'src/classes/receive-repository.abstract'
 import { ConcurRepository } from 'src/classes/concur-repository.abstract'
+import { GuildRepoImplService } from './guild-repo-impl/guild-repo-impl.service'
 
 const providers = [
   {
@@ -26,5 +27,6 @@ const providers = [
   imports: [TypeormModule],
   providers,
   exports: providers,
+  providers: [GuildRepoImplService],
 })
 export class RepositoriesModule {}
