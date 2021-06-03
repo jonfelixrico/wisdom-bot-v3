@@ -9,7 +9,7 @@ export interface ISubmittedQuote {
   guildId: string
   channelId: string
 
-  submitDt: Date
+  submitDt?: Date
   expireDt: Date
 
   approvalCount: number
@@ -18,6 +18,7 @@ export interface ISubmittedQuote {
 
 export interface IPendingQuote extends ISubmittedQuote {
   quoteId: string
+  submitDt: Date
 }
 
 export interface IPendingQuoteOverview {
