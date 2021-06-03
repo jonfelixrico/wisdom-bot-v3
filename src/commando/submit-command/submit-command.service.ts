@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, LoggerService } from '@nestjs/common'
+import { Inject, Injectable, Logger } from '@nestjs/common'
 import { Message, User } from 'discord.js'
 import {
   CommandInfo,

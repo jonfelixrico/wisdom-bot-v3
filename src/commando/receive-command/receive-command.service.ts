@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, Logger } from '@nestjs/common'
 import { Message, User } from 'discord.js'
 import {
   CommandoClient,
@@ -8,6 +8,7 @@ import {
 import { IQuote, QuoteRepository } from 'src/classes/quote-repository.abstract'
 import { ReceiveRepository } from 'src/classes/receive-repository.abstract'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
 
 const COMMAND_INFO: CommandInfo = {
   name: 'receive',
@@ -41,6 +42,8 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
     client: CommandoClient,
     private quoteRepo: QuoteRepository,
     private receiveRepo: ReceiveRepository,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: Logger,
   ) {
     super(client, COMMAND_INFO)
   }
@@ -58,13 +61,18 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
 
     const response = await channel.send(generateResponseString(quote))
 
-    await this.receiveRepo.createRecieve({
+    const [{ receiveId }] = await this.receiveRepo.createRecieve({
       channelId: channel.id,
       guildId: guild.id,
       quoteId: quote.quoteId,
       userId: author.id,
       messageId: response.id,
     })
+
+    this.logger.log(
+      `Created receive ${receiveId} for quote ${quote.quoteId}`,
+      ReceiveCommandService.name,
+    )
 
     return response
   }

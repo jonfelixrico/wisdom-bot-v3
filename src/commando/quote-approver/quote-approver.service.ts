@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, Logger } from '@nestjs/common'
 import { filter, map } from 'rxjs/operators'
 import { GuildRepoService } from 'src/discord/guild-repo/guild-repo.service'
 import { DeleteListenerService } from '../delete-listener/delete-listener.service'
 import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
 import {
   IPendingQuote,
   PendingQuoteRepository,
@@ -27,6 +28,8 @@ export class QuoteApproverService {
     private pendingRepo: PendingQuoteRepository,
     private reactListener: ReactionListenerService,
     private deleteListener: DeleteListenerService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: Logger,
   ) {
     this.setUp()
   }
@@ -79,8 +82,12 @@ export class QuoteApproverService {
   }
 
   private async processQuote(quote: IPendingQuote) {
-    const { quoteId, messageId } = quote
+    const { quoteId, messageId, guildId } = quote
     await this.pendingRepo.approvePendingQuote(quoteId)
+    this.logger.log(
+      `Approved quote ${quoteId} of guild ${guildId}`,
+      QuoteApproverService.name,
+    )
 
     this.deleteListener.unwatch(messageId)
     this.reactListener.unwatch(messageId)
