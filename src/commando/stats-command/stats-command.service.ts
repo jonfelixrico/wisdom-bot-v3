@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { Message, User } from 'discord.js'
+import { sprintf } from 'sprintf-js'
 import {
   CommandInfo,
   CommandoClient,
@@ -39,10 +40,26 @@ export class StatsCommandService extends WrappedCommand<IReceiveCommandArgs> {
     { user }: IReceiveCommandArgs,
   ): Promise<Message | Message[]> {
     const userId = user ? user.id : message.author.id
+    const guildId = message.guild.id
     const authoredStats = await this.statsRepo.getSubmittedQuoteStats(
       userId,
-      message.guild.id,
+      guildId,
     )
-    return await message.channel.send(JSON.stringify(authoredStats))
+
+    const personalStats = await this.statsRepo.getPersonalQuoteStats(
+      userId,
+      guildId,
+    )
+
+    const texts = [
+      sprintf('Quotes authored: **%d**', authoredStats.quotes),
+      sprintf('Total number of receives: **%d**', authoredStats.receives),
+      sprintf('Total number of concurs: **%d**', authoredStats.concurs),
+      sprintf('No. of quotes submitted: **%d**', personalStats.quotes),
+      sprintf('No. of wisdom received: **%d**', personalStats.receives),
+      sprintf('Times concurred: **%d**', personalStats.concurs),
+    ]
+
+    return await message.channel.send(texts.join('\n'))
   }
 }
