@@ -3,7 +3,7 @@
 const fs = require('fs')
 const uuid = require('uuid')
 const path = require('path')
-const jsonexport = require('jsonexport')
+const { Parser } = require('json2csv')
 
 const [filename] = process.argv.slice(2)
 const str = fs.readFileSync(filename, {
@@ -15,24 +15,35 @@ const parsedJson = JSON.parse(str)
 const quotes = []
 const receives = []
 
-const convertToMySql = (dateStr) =>
+const convertDateToMysqlDate = (dateStr) =>
   dateStr
     ? new Date(dateStr).toISOString().slice(0, 19).replace('T', ' ')
-    : 'NULL'
+    : null
+
+function convertNullsToMySqlNull(obj) {
+  const entries = Object.entries(obj).map(([key, value]) => [
+    key,
+    value || 'NULL',
+  ])
+
+  return Object.fromEntries(entries)
+}
 
 function processReceive(
   quoteId,
   { channelId, messageId, serverId: guildId, receiverId: userId, receiveDt },
 ) {
-  receives.push({
+  const receive = {
     id: uuid.v4(),
     channelId,
     messageId,
     guildId,
     userId,
-    receiveDt: convertToMySql(receiveDt.$date),
+    receiveDt: convertDateToMysqlDate(receiveDt.$date),
     quoteId,
-  })
+  }
+
+  receives.push(convertNullsToMySqlNull(receive))
 }
 
 function processQuote({
@@ -44,10 +55,11 @@ function processQuote({
   submissionStatus,
   receives = [],
 }) {
+  content = content.replace(/[\n\r\"]/g, '')
   const id = uuid.v4()
   const quote = {
     submitterId,
-    submitDt: convertToMySql(submitDt.$date),
+    submitDt: convertDateToMysqlDate(submitDt.$date),
     content,
     guildId,
     authorId,
@@ -59,37 +71,40 @@ function processQuote({
     Object.assign(quote, {
       channelId,
       messageId,
-      expireDt: convertToMySql(expireDt.$date),
+      expireDt: convertDateToMysqlDate(expireDt.$date),
       approvalEmoji: emoji,
       approvalCount: count,
-      approveDt: 'NULL',
+      approveDt: null,
     })
   } else {
     Object.assign(quote, {
-      channelId: 'NULL',
-      messageId: 'NULL',
-      expireDt: 'NULL',
-      approvalEmoji: 'NULL',
-      approvalCount: 'NULL',
-      approveDt: convertToMySql(submitDt.$date),
+      channelId: null,
+      messageId: null,
+      expireDt: null,
+      approvalEmoji: null,
+      approvalCount: null,
+      approveDt: convertDateToMysqlDate(submitDt.$date),
     })
   }
 
-  quotes.push(quote)
+  quotes.push(convertNullsToMySqlNull(quote))
   receives.forEach((r) => processReceive(id, r))
 }
 
 parsedJson.forEach(processQuote)
 
+function convertToCsvAndSave(objectOrArray, destination) {
+  const parser = new Parser()
+  const csv = parser.parse(objectOrArray)
+  fs.writeFileSync(destination, csv, {
+    encoding: 'utf-8',
+  })
+}
+
 async function exportFiles() {
-  const quotesCsv = await jsonexport(quotes)
-  const receivesCsv = await jsonexport(receives)
-  fs.writeFileSync(path.join(__dirname, 'quotes-export.csv'), quotesCsv, {
-    encoding: 'utf-8',
-  })
-  fs.writeFileSync(path.join(__dirname, 'receives-export.csv'), receivesCsv, {
-    encoding: 'utf-8',
-  })
+  convertToCsvAndSave(receives, path.join(__dirname, 'receives-export.csv'))
+  convertToCsvAndSave(quotes, path.join(__dirname, 'quotes-export.csv'))
+
   fs.writeFileSync(
     path.join(__dirname, 'receives-export.json'),
     JSON.stringify(receives),
@@ -97,12 +112,17 @@ async function exportFiles() {
       encoding: 'utf-8',
     },
   )
+
   fs.writeFileSync(
     path.join(__dirname, 'quotes-export.json'),
     JSON.stringify(quotes),
     {
       encoding: 'utf-8',
     },
+  )
+
+  console.debug(
+    `Exported ${quotes.length} quotes and ${receives.length} receives.`,
   )
 }
 
