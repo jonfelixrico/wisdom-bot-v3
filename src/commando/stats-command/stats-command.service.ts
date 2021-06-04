@@ -39,7 +39,10 @@ export class StatsCommandService extends WrappedCommand<IReceiveCommandArgs> {
     { user }: IReceiveCommandArgs,
   ): Promise<Message | Message[]> {
     const userId = user ? user.id : message.author.id
-    const authoredStats = await this.statsRepo.getSubmittedQuoteStats(userId)
+    const authoredStats = await this.statsRepo.getSubmittedQuoteStats(
+      userId,
+      message.guild.id,
+    )
     return await message.channel.send(JSON.stringify(authoredStats))
   }
 }

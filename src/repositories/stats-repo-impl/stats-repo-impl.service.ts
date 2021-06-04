@@ -20,12 +20,18 @@ export class StatsRepoImplService extends StatsRepository {
     super()
   }
 
-  async getSubmittedQuoteStats(userId: string): Promise<IQuoteStats> {
+  async getSubmittedQuoteStats(
+    userId: string,
+    guildId: string,
+  ): Promise<IQuoteStats> {
     const quotes = await this.quoteTr
       .createQueryBuilder('quote')
       .leftJoinAndSelect('quote.receives', 'receive')
       .leftJoinAndSelect('receive.concurs', 'concur')
-      .where('quote.authorId = :userId', { userId })
+      .where('quote.authorId = :userId AND quote.guildId = :guildId', {
+        userId,
+        guildId,
+      })
       .getMany()
 
     const stats: IQuoteStats = {
@@ -50,11 +56,14 @@ export class StatsRepoImplService extends StatsRepository {
     return stats
   }
 
-  async getPersonalQuoteStats(userId: string): Promise<IQuoteStats> {
+  async getPersonalQuoteStats(
+    userId: string,
+    guildId: string,
+  ): Promise<IQuoteStats> {
     return {
-      quotes: await this.quoteTr.count({ submitterId: userId }),
-      receives: await this.receiveTr.count({ userId }),
-      concurs: await this.concurTr.count({ userId }),
+      quotes: await this.quoteTr.count({ submitterId: userId, guildId }),
+      receives: await this.receiveTr.count({ userId, guildId }),
+      concurs: await this.concurTr.count({ userId, guildId }),
     }
   }
 }
