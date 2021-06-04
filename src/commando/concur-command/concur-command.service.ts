@@ -11,8 +11,8 @@ import { ReceiveRepository } from 'src/classes/receive-repository.abstract'
 import { WrappedCommand } from '../wrapped-command.class'
 
 const COMMAND_INFO: CommandInfo = {
-  name: 'concur',
-  aliases: ['amen'],
+  name: 'amen',
+  aliases: ['concur', 'solid'],
   description: 'Agree to a receive.',
   memberName: 'concur',
   group: 'commands',
@@ -56,7 +56,7 @@ export class ConcurCommandService extends WrappedCommand {
         ConcurCommandService.name,
       )
 
-      message.reply('you have already concurred this quote.')
+      message.reply('you have already upvoted this quote.')
       return
     }
 
@@ -73,6 +73,6 @@ export class ConcurCommandService extends WrappedCommand {
       ConcurCommandService.name,
     )
 
-    await channel.send(`${author} has concurred.`)
+    await message.react('👌')
   }
 }
