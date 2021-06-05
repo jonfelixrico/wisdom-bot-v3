@@ -4,7 +4,7 @@ import {
   IConcur,
   INewConcur,
 } from 'src/classes/concur-repository.abstract'
-import { Concur } from 'src/typeorm/entities/concur.typeorm-entity'
+import { ConcurDbEntity } from 'src/typeorm/entities/concur.typeorm-entity'
 import { Repository } from 'typeorm'
 
 function concurEntToObj({
@@ -14,7 +14,7 @@ function concurEntToObj({
   userId,
   concurDt,
   id: concurId,
-}: Concur): IConcur {
+}: ConcurDbEntity): IConcur {
   return {
     channelId,
     guildId,
@@ -29,7 +29,7 @@ function concurEntToObj({
 export class ConcurRepoImplService extends ConcurRepository {
   constructor(
     @Inject('CONCUR_ENTITY')
-    private concurRepo: Repository<Concur>,
+    private concurRepo: Repository<ConcurDbEntity>,
   ) {
     super()
   }

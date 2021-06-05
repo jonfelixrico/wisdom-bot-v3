@@ -3,19 +3,19 @@ import {
   IQuoteStats,
   StatsRepository,
 } from 'src/classes/stats-repository.abstract'
-import { Concur } from 'src/typeorm/entities/concur.typeorm-entity'
-import { Quote } from 'src/typeorm/entities/quote.typeorm-entity'
-import { Receive } from 'src/typeorm/entities/receive.typeorm-entity'
+import { ConcurDbEntity } from 'src/typeorm/entities/concur.typeorm-entity'
+import { QuoteDbEntity } from 'src/typeorm/entities/quote.typeorm-entity'
+import { ReceiveDbEntity } from 'src/typeorm/entities/receive.typeorm-entity'
 import { Repository } from 'typeorm'
 
 @Injectable()
 export class StatsRepoImplService extends StatsRepository {
   constructor(
     @Inject('QUOTE_ENTITY')
-    private quoteTr: Repository<Quote>,
+    private quoteTr: Repository<QuoteDbEntity>,
     @Inject('CONCUR_ENTITY')
-    private concurTr: Repository<Concur>,
-    @Inject('RECEIVE_ENTITY') private receiveTr: Repository<Receive>,
+    private concurTr: Repository<ConcurDbEntity>,
+    @Inject('RECEIVE_ENTITY') private receiveTr: Repository<ReceiveDbEntity>,
   ) {
     super()
   }

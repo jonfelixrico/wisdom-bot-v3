@@ -1,8 +1,10 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
-import { Receive } from './receive.typeorm-entity'
+import { ReceiveDbEntity } from './receive.typeorm-entity'
 
-@Entity()
-export class Quote {
+@Entity({
+  name: 'quote',
+})
+export class QuoteDbEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -33,8 +35,8 @@ export class Quote {
   @Column({ nullable: true })
   approveDt: Date
 
-  @OneToMany(() => Receive, (receive) => receive.quote)
-  receives: Promise<Receive[]>
+  @OneToMany(() => ReceiveDbEntity, (receive) => receive.quote)
+  receives: Promise<ReceiveDbEntity[]>
 
   @Column({ nullable: true })
   approvalEmoji: string

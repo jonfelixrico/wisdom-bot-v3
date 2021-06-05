@@ -1,8 +1,10 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { Receive } from './receive.typeorm-entity'
+import { ReceiveDbEntity } from './receive.typeorm-entity'
 
-@Entity()
-export class Concur {
+@Entity({
+  name: 'concur',
+})
+export class ConcurDbEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -18,8 +20,8 @@ export class Concur {
   @Column({ nullable: true })
   receiveId: string
 
-  @ManyToOne(() => Receive, (receive) => receive.concurs)
-  receive: Promise<Receive>
+  @ManyToOne(() => ReceiveDbEntity, (receive) => receive.concurs)
+  receive: Promise<ReceiveDbEntity>
 
   @Column()
   concurDt: Date

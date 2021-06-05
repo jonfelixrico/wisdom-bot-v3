@@ -4,7 +4,7 @@ import {
   IReceive,
   ReceiveRepository,
 } from 'src/classes/receive-repository.abstract'
-import { Receive } from 'src/typeorm/entities/receive.typeorm-entity'
+import { ReceiveDbEntity } from 'src/typeorm/entities/receive.typeorm-entity'
 import { Repository } from 'typeorm'
 
 function convertReceiveEntToObject({
@@ -15,7 +15,7 @@ function convertReceiveEntToObject({
   receiveDt,
   messageId,
   quoteId,
-}: Receive) {
+}: ReceiveDbEntity) {
   return {
     quoteId,
     channelId,
@@ -29,7 +29,9 @@ function convertReceiveEntToObject({
 
 @Injectable()
 export class ReceiveRepoImplService extends ReceiveRepository {
-  constructor(@Inject('RECEIVE_ENTITY') private recvRepo: Repository<Receive>) {
+  constructor(
+    @Inject('RECEIVE_ENTITY') private recvRepo: Repository<ReceiveDbEntity>,
+  ) {
     super()
   }
 

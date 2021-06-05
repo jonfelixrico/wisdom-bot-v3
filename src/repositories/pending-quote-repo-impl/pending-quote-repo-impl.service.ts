@@ -5,7 +5,7 @@ import {
   ISubmittedQuote,
   PendingQuoteRepository,
 } from 'src/classes/pending-quote-repository.abstract'
-import { Quote } from 'src/typeorm/entities/quote.typeorm-entity'
+import { QuoteDbEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 import { Repository } from 'typeorm'
 
 function submittedQuoteObjToEnt({
@@ -20,7 +20,7 @@ function submittedQuoteObjToEnt({
   submitDt,
   submitterId,
 }: ISubmittedQuote) {
-  const ent = new Quote()
+  const ent = new QuoteDbEntity()
   ent.approvalCount = approvalCount
   ent.approvalEmoji = approvalEmoji
   ent.authorId = authorId
@@ -47,7 +47,7 @@ function pendingQuoteEntToObj({
   approvalEmoji,
   approvalCount,
   expireDt,
-}: Quote): IPendingQuote {
+}: QuoteDbEntity): IPendingQuote {
   return {
     content,
     authorId,
@@ -67,7 +67,7 @@ function pendingQuoteEntToObj({
 export class PendingQuoteRepoImplService extends PendingQuoteRepository {
   constructor(
     @Inject('QUOTE_ENTITY')
-    private quoteTr: Repository<Quote>,
+    private quoteTr: Repository<QuoteDbEntity>,
   ) {
     super()
   }

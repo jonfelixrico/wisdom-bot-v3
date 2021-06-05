@@ -5,11 +5,13 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm'
-import { Quote } from './quote.typeorm-entity'
-import { Concur } from './concur.typeorm-entity'
+import { QuoteDbEntity } from './quote.typeorm-entity'
+import { ConcurDbEntity } from './concur.typeorm-entity'
 
-@Entity()
-export class Receive {
+@Entity({
+  name: 'receive',
+})
+export class ReceiveDbEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -28,11 +30,11 @@ export class Receive {
   @Column({ nullable: true })
   quoteId: string
 
-  @ManyToOne(() => Quote, (quote) => quote.receives)
-  quote: Promise<Quote>
+  @ManyToOne(() => QuoteDbEntity, (quote) => quote.receives)
+  quote: Promise<QuoteDbEntity>
 
-  @OneToMany(() => Concur, (concur) => concur.receive)
-  concurs: Promise<Concur[]>
+  @OneToMany(() => ConcurDbEntity, (concur) => concur.receive)
+  concurs: Promise<ConcurDbEntity[]>
 
   @Column()
   messageId: string

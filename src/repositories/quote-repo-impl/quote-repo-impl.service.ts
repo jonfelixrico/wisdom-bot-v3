@@ -4,10 +4,10 @@ const random = require('random')
 
 import { Inject, Injectable } from '@nestjs/common'
 import { IQuote, QuoteRepository } from 'src/classes/quote-repository.abstract'
-import { Quote } from 'src/typeorm/entities/quote.typeorm-entity'
+import { QuoteDbEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 import { Repository } from 'typeorm'
 
-function quoteEntToObject(quote: Quote): IQuote {
+function quoteEntToObject(quote: QuoteDbEntity): IQuote {
   const {
     id: quoteId,
     content,
@@ -35,7 +35,7 @@ function quoteEntToObject(quote: Quote): IQuote {
 export class QuoteRepoImplService extends QuoteRepository {
   constructor(
     @Inject('QUOTE_ENTITY')
-    private quoteTr: Repository<Quote>,
+    private quoteTr: Repository<QuoteDbEntity>,
   ) {
     super()
   }
