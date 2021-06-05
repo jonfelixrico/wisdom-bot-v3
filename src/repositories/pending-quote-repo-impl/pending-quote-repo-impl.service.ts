@@ -5,7 +5,7 @@ import {
   ISubmittedQuote,
   PendingQuoteRepository,
 } from 'src/classes/pending-quote-repository.abstract'
-import { Quote } from 'src/typeorm/entities/quote.entity'
+import { Quote } from 'src/typeorm/entities/quote.typeorm-entity'
 import { Repository } from 'typeorm'
 
 function submittedQuoteObjToEnt({

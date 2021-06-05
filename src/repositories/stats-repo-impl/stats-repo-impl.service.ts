@@ -3,9 +3,9 @@ import {
   IQuoteStats,
   StatsRepository,
 } from 'src/classes/stats-repository.abstract'
-import { Concur } from 'src/typeorm/entities/concur.entity'
-import { Quote } from 'src/typeorm/entities/quote.entity'
-import { Receive } from 'src/typeorm/entities/receive.entity'
+import { Concur } from 'src/typeorm/entities/concur.typeorm-entity'
+import { Quote } from 'src/typeorm/entities/quote.typeorm-entity'
+import { Receive } from 'src/typeorm/entities/receive.typeorm-entity'
 import { Repository } from 'typeorm'
 
 @Injectable()

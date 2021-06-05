@@ -1,9 +1,9 @@
 import { Provider } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Connection, createConnection, EntityTarget } from 'typeorm'
-import { Concur } from './entities/concur.entity'
-import { Quote } from './entities/quote.entity'
-import { Receive } from './entities/receive.entity'
+import { Concur } from './entities/concur.typeorm-entity'
+import { Quote } from './entities/quote.typeorm-entity'
+import { Receive } from './entities/receive.typeorm-entity'
 
 function generateEntityProvider(
   providerName: string,
@@ -28,7 +28,7 @@ export const typeormProviders = [
         username: cfg.get('DB_USERNAME'),
         password: cfg.get('DB_PASSWORD'),
         synchronize: !!cfg.get('DB_SYNC'),
-        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+        entities: [__dirname + '/../**/*.typeorm-entity{.ts,.js}'],
       }),
     inject: [ConfigService],
   },

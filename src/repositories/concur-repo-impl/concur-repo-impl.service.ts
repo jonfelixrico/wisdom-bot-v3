@@ -4,7 +4,7 @@ import {
   IConcur,
   INewConcur,
 } from 'src/classes/concur-repository.abstract'
-import { Concur } from 'src/typeorm/entities/concur.entity'
+import { Concur } from 'src/typeorm/entities/concur.typeorm-entity'
 import { Repository } from 'typeorm'
 
 function concurEntToObj({

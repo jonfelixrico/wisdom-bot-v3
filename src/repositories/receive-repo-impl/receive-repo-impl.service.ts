@@ -4,7 +4,7 @@ import {
   IReceive,
   ReceiveRepository,
 } from 'src/classes/receive-repository.abstract'
-import { Receive } from 'src/typeorm/entities/receive.entity'
+import { Receive } from 'src/typeorm/entities/receive.typeorm-entity'
 import { Repository } from 'typeorm'
 
 function convertReceiveEntToObject({

@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
-import { Receive } from './receive.entity'
+import { Receive } from './receive.typeorm-entity'
 
 @Entity()
 export class Quote {

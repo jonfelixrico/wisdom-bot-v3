@@ -5,8 +5,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm'
-import { Quote } from './quote.entity'
-import { Concur } from './concur.entity'
+import { Quote } from './quote.typeorm-entity'
+import { Concur } from './concur.typeorm-entity'
 
 @Entity()
 export class Receive {

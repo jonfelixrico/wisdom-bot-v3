@@ -4,7 +4,7 @@ const random = require('random')
 
 import { Inject, Injectable } from '@nestjs/common'
 import { IQuote, QuoteRepository } from 'src/classes/quote-repository.abstract'
-import { Quote } from 'src/typeorm/entities/quote.entity'
+import { Quote } from 'src/typeorm/entities/quote.typeorm-entity'
 import { Repository } from 'typeorm'
 
 function quoteEntToObject(quote: Quote): IQuote {
