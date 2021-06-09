@@ -1,23 +1,9 @@
 import { AggregateRoot } from '@nestjs/cqrs'
+import { v4 } from 'uuid'
 import { PendingQuoteAccepted } from './pending-quote-accepted.event'
 import { PendingQuoteCancelled } from './pending-quote-cancelled.event'
-
-interface IQuoteToSubmit {
-  content: string
-  authorId: string
-  submitterId: string
-  submitDt: string
-  guildId: string
-
-  // for tracking
-  channelId: string
-  messageId: string
-
-  // for approval/expiration
-  expireDt: Date
-  upvoteCount: number
-  upvoteEmoji: string
-}
+import { QuoteSubmitted } from './quote-submitted.event'
+import { IQuoteToSubmit } from './quote-to-submit.interface'
 
 interface IPendingQuote extends IQuoteToSubmit {
   quoteId: string
@@ -40,6 +26,40 @@ export class PendingQuote extends AggregateRoot implements IPendingQuote {
   expireDt: Date
   upvoteCount: number
   upvoteEmoji: string
+
+  // TODO create private flag for created
+
+  constructor({
+    quoteId,
+    acceptDt,
+    cancelDt,
+    content,
+    authorId,
+    submitterId,
+    submitDt,
+    guildId,
+    channelId,
+    messageId,
+    expireDt,
+    upvoteCount,
+    upvoteEmoji,
+  }: IPendingQuote) {
+    super()
+
+    this.quoteId = quoteId
+    this.acceptDt = acceptDt
+    this.cancelDt = cancelDt
+    this.content = content
+    this.authorId = authorId
+    this.submitterId = submitterId
+    this.submitDt = submitDt
+    this.guildId = guildId
+    this.channelId = channelId
+    this.messageId = messageId
+    this.expireDt = expireDt
+    this.upvoteCount = upvoteCount
+    this.upvoteEmoji = upvoteEmoji
+  }
 
   get isExpired() {
     return new Date() > this.expireDt
@@ -67,5 +87,19 @@ export class PendingQuote extends AggregateRoot implements IPendingQuote {
     this.checkIfPending()
     this.cancelDt = new Date()
     this.apply(new PendingQuoteCancelled(this.quoteId))
+  }
+
+  static submit(quote: IQuoteToSubmit): PendingQuote {
+    const newQuote = new PendingQuote({
+      ...quote,
+      acceptDt: null,
+      cancelDt: null,
+      quoteId: v4(),
+    })
+
+    // TODO mutate created flag here maybe?
+    newQuote.apply(new QuoteSubmitted(quote))
+
+    return newQuote
   }
 }
