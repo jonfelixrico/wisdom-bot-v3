@@ -1,3 +1,7 @@
+import { AggregateRoot } from '@nestjs/cqrs'
+import { PendingQuoteAccepted } from './pending-quote-accepted.event'
+import { PendingQuoteCancelled } from './pending-quote-cancelled.event'
+
 interface IQuoteToSubmit {
   content: string
   authorId: string
@@ -18,13 +22,13 @@ interface IQuoteToSubmit {
 interface IPendingQuote extends IQuoteToSubmit {
   quoteId: string
 
-  approveDt: Date
+  acceptDt: Date
   cancelDt: Date
 }
 
-export class PendingQuote implements IPendingQuote {
+export class PendingQuote extends AggregateRoot implements IPendingQuote {
   quoteId: string
-  approveDt: Date
+  acceptDt: Date
   cancelDt: Date
   content: string
   authorId: string
@@ -42,7 +46,7 @@ export class PendingQuote implements IPendingQuote {
   }
 
   private checkIfPending(): void {
-    const { approveDt, cancelDt, isExpired } = this
+    const { acceptDt: approveDt, cancelDt, isExpired } = this
 
     if (!!approveDt) {
       throw new Error('Already approved.')
@@ -53,13 +57,15 @@ export class PendingQuote implements IPendingQuote {
     }
   }
 
-  approve() {
+  accept() {
     this.checkIfPending()
-    this.approveDt = new Date()
+    this.acceptDt = new Date()
+    this.apply(new PendingQuoteAccepted(this.quoteId))
   }
 
   cancel() {
     this.checkIfPending()
     this.cancelDt = new Date()
+    this.apply(new PendingQuoteCancelled(this.quoteId))
   }
 }
