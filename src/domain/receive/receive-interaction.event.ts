@@ -4,6 +4,7 @@ interface IInteraction {
   readonly receiveId: string
   readonly userId: string
   readonly karma: number
+  readonly quoteId: string
 }
 
 export class ReceiveInteraction {

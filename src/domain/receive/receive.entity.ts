@@ -44,11 +44,12 @@ export class Receive extends AggregateRoot implements IReceive {
 
     this.interactions.push(newInteraction)
 
-    const { receiveId } = this
+    const { receiveId, quoteId } = this
     this.apply(
       new ReceiveInteraction({
         ...newInteraction,
         receiveId,
+        quoteId,
       }),
     )
   }
