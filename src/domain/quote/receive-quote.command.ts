@@ -1,3 +1,5 @@
+import { ICommand } from '../command.interface'
+
 interface IReceiveInfo {
   readonly quoteId: string
   readonly messageId: string
@@ -5,6 +7,6 @@ interface IReceiveInfo {
   readonly userId: string
 }
 
-export class ReceiveQuote {
-  constructor(readonly receive: IReceiveInfo) {}
+export class ReceiveQuote implements ICommand<IReceiveInfo> {
+  constructor(readonly payload: IReceiveInfo) {}
 }

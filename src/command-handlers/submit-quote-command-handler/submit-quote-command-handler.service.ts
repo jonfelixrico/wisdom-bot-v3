@@ -8,7 +8,7 @@ export class SubmitQuoteCommandHandlerService
 {
   constructor(private publisher: EventPublisher) {}
 
-  async execute({ submittedQuote }: SubmitQuote): Promise<any> {
+  async execute({ payload: submittedQuote }: SubmitQuote): Promise<any> {
     const entity = PendingQuote.submit(submittedQuote)
     const pendingQuote = this.publisher.mergeObjectContext(entity)
     pendingQuote.commit()

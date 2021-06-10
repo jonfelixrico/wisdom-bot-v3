@@ -1,3 +1,5 @@
+import { ICommand } from '../command.interface'
+
 interface IInteraction {
   readonly quoteId: string
   readonly receiveId: string
@@ -5,6 +7,6 @@ interface IInteraction {
   readonly karma: number
 }
 
-export class InteractRecieve {
-  constructor(readonly interaction: IInteraction) {}
+export class InteractRecieve implements ICommand<IInteraction> {
+  constructor(readonly payload: IInteraction) {}
 }
