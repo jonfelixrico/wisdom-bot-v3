@@ -1,5 +1,16 @@
-import { IQuoteToSubmit } from './quote-to-submit.interface'
+import { IEvent } from 'src/domain/event.interface'
+import { IPendingQuote } from './pending-quote.interface'
 
-export class QuoteSubmitted {
-  constructor(readonly created: IQuoteToSubmit) {}
+export class QuoteSubmitted implements IEvent<IPendingQuote> {
+  constructor(private created: IPendingQuote) {}
+
+  readonly eventName = 'QUOTE_SUBMITTED'
+
+  get aggregateId() {
+    return this.created.quoteId
+  }
+
+  get payload() {
+    return this.created
+  }
 }
