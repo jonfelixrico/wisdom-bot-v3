@@ -1,16 +1,7 @@
 import { AggregateRoot } from '@nestjs/cqrs'
-import { v4 } from 'uuid'
 import { PendingQuoteAccepted } from './pending-quote-accepted.event'
 import { PendingQuoteCancelled } from './pending-quote-cancelled.event'
-import { QuoteSubmitted } from './quote-submitted.event'
-import { IQuoteToSubmit } from './quote-to-submit.interface'
-
-interface IPendingQuote extends IQuoteToSubmit {
-  quoteId: string
-
-  acceptDt: Date
-  cancelDt: Date
-}
+import { IPendingQuote } from './pending-quote.interface'
 
 export class PendingQuote extends AggregateRoot implements IPendingQuote {
   quoteId: string
@@ -87,19 +78,5 @@ export class PendingQuote extends AggregateRoot implements IPendingQuote {
     this.checkIfPending()
     this.cancelDt = new Date()
     this.apply(new PendingQuoteCancelled(this.quoteId))
-  }
-
-  static submit(quote: IQuoteToSubmit): PendingQuote {
-    const newQuote = new PendingQuote({
-      ...quote,
-      acceptDt: null,
-      cancelDt: null,
-      quoteId: v4(),
-    })
-
-    // TODO mutate created flag here maybe?
-    newQuote.apply(new QuoteSubmitted(quote))
-
-    return newQuote
   }
 }
