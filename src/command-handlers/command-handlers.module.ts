@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
-import { SubmitQuoteHandler } from './submit-quote/submit-quote.cmd-handler'
+import { SubmitQuoteCommandHandlerService } from './submit-quote-command-handler/submit-quote-command-handler.service'
 
 @Module({
-  providers: [SubmitQuoteHandler],
+  providers: [SubmitQuoteCommandHandlerService],
 })
 export class CommandHandlersModule {}
