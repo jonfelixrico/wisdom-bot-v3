@@ -1,4 +1,15 @@
-import { Injectable } from '@nestjs/common'
+import { EventsHandler, IEventHandler } from '@nestjs/cqrs'
+import { Event } from 'src/domain/event.abstract'
 
-@Injectable()
-export class GenericDomainEventHandlerService {}
+@EventsHandler()
+export class GenericDomainEventHandlerService
+  implements IEventHandler<Event<unknown>>
+{
+  handle(event: Event<unknown>) {
+    if (!(event instanceof Event)) {
+      return
+    }
+
+    // TODO convert to event source here
+  }
+}
