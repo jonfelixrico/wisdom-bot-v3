@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common'
+import { Module, Logger } from '@nestjs/common'
 import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
+  WINSTON_MODULE_NEST_PROVIDER,
 } from 'nest-winston'
 import * as winston from 'winston'
 import { DiscordModule } from './discord/discord.module'
@@ -39,6 +40,13 @@ import { EventSourcingModule } from './event-sourcing/event-sourcing.module'
     CommandHandlersModule,
     EventHandlersModule,
     EventSourcingModule,
+  ],
+
+  providers: [
+    {
+      provide: Logger,
+      useExisting: [WINSTON_MODULE_NEST_PROVIDER],
+    },
   ],
 })
 export class AppModule {}
