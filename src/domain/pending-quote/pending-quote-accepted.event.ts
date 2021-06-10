@@ -1,15 +1,7 @@
-import { IEvent } from 'src/domain/event.interface'
+import { Event } from 'src/domain/event.abstract'
 
-export class PendingQuoteAccepted implements IEvent {
-  constructor(private quoteId: string) {}
-
-  readonly eventName = 'QUOTE_ACCEPTED'
-
-  get aggregateId() {
-    return this.quoteId
-  }
-
-  get payload() {
-    return {}
+export class PendingQuoteAccepted extends Event {
+  constructor(quoteId: string) {
+    super('QUOTE_ACCEPTED', quoteId, {})
   }
 }

@@ -1,16 +1,8 @@
-import { IEvent } from 'src/domain/event.interface'
+import { Event } from 'src/domain/event.abstract'
 import { IPendingQuote } from './pending-quote.interface'
 
-export class QuoteSubmitted implements IEvent<IPendingQuote> {
-  constructor(private created: IPendingQuote) {}
-
-  readonly eventName = 'QUOTE_SUBMITTED'
-
-  get aggregateId() {
-    return this.created.quoteId
-  }
-
-  get payload() {
-    return this.created
+export class QuoteSubmitted extends Event<IPendingQuote> {
+  constructor(created: IPendingQuote) {
+    super('QUOTE_SUBMITTED', created.quoteId, created)
   }
 }

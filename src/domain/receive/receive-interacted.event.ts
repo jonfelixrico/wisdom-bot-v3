@@ -1,4 +1,4 @@
-import { IEvent } from 'src/domain/event.interface'
+import { Event } from 'src/domain/event.abstract'
 
 interface IInteraction {
   readonly interactionId: string
@@ -9,16 +9,8 @@ interface IInteraction {
   readonly quoteId: string
 }
 
-export class ReceiveInteracted implements IEvent<IInteraction> {
-  constructor(private interaction: IInteraction) {}
-
-  readonly eventName = 'RECEIVE_INTERACTED'
-
-  get aggregateId() {
-    return this.interaction.quoteId
-  }
-
-  get payload() {
-    return this.interaction
+export class ReceiveInteracted extends Event<IInteraction> {
+  constructor(interaction: IInteraction) {
+    super('RECEIVE_INTERACTED', interaction.quoteId, interaction)
   }
 }
