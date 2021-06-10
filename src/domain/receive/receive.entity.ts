@@ -1,6 +1,6 @@
 import { AggregateRoot } from '@nestjs/cqrs'
 import { v4 } from 'uuid'
-import { ReceiveInteraction } from './receive-interaction.event'
+import { ReceiveInteracted } from './receive-interacted.event'
 
 interface IInteraction {
   readonly interactionId: string
@@ -46,7 +46,7 @@ export class Receive extends AggregateRoot implements IReceive {
 
     const { receiveId, quoteId } = this
     this.apply(
-      new ReceiveInteraction({
+      new ReceiveInteracted({
         ...newInteraction,
         receiveId,
         quoteId,
