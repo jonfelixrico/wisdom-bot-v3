@@ -34,7 +34,28 @@ export class Quote extends AggregateRoot implements IQuote {
   submitDt: string
   guildId: string
   acceptDt: Date
-  receives
+  receives: IQuoteReceive[]
+
+  constructor({
+    acceptDt,
+    authorId,
+    content,
+    guildId,
+    quoteId,
+    receives,
+    submitDt,
+    submitterId,
+  }: IQuote) {
+    super()
+    this.acceptDt = acceptDt
+    this.authorId = authorId
+    this.content = content
+    this.guildId = guildId
+    this.receives = receives || []
+    this.quoteId = quoteId
+    this.submitDt = submitDt
+    this.submitterId = submitterId
+  }
 
   receive(newReceive: INewReceive) {
     const { quoteId } = this
