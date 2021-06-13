@@ -25,4 +25,7 @@ export class ConcurDbEntity {
 
   @Column()
   concurDt: Date
+
+  @Column()
+  karma: number
 }
