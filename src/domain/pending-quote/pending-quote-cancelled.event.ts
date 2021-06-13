@@ -1,6 +1,6 @@
-import { Event } from 'src/domain/event.abstract'
+import { DomainEvent } from 'src/domain/domain-event.abstract'
 
-export class PendingQuoteCancelled extends Event {
+export class PendingQuoteCancelled extends DomainEvent {
   constructor(quoteId: string) {
     super('QUOTE_CANCELLED', quoteId, {})
   }

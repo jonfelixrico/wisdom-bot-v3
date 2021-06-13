@@ -1,4 +1,4 @@
-import { Event } from 'src/domain/event.abstract'
+import { DomainEvent } from 'src/domain/domain-event.abstract'
 
 interface IInteraction {
   readonly interactionId: string
@@ -9,7 +9,7 @@ interface IInteraction {
   readonly quoteId: string
 }
 
-export class ReceiveInteracted extends Event<IInteraction> {
+export class ReceiveInteracted extends DomainEvent<IInteraction> {
   constructor(interaction: IInteraction) {
     super('RECEIVE_INTERACTED', interaction.quoteId, interaction)
   }

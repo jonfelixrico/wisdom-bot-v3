@@ -1,4 +1,4 @@
-import { Event } from 'src/domain/event.abstract'
+import { DomainEvent } from 'src/domain/domain-event.abstract'
 
 interface IReceive {
   readonly userId: string
@@ -8,7 +8,7 @@ interface IReceive {
   readonly quoteId: string
 }
 
-export class QuoteReceived extends Event<IReceive> {
+export class QuoteReceived extends DomainEvent<IReceive> {
   constructor(receive: IReceive) {
     super('QUOTE_RECEIVED', receive.quoteId, receive)
   }
