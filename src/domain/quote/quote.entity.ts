@@ -2,7 +2,7 @@ import { AggregateRoot } from '@nestjs/cqrs'
 import { v4 } from 'uuid'
 import { QuoteReceived } from './quote-received.event'
 
-interface IReceive {
+export interface IQuoteReceive {
   readonly receiveId: string
   readonly receiveDt: Date
   readonly userId: string
@@ -23,7 +23,7 @@ interface IQuote {
   guildId: string
   acceptDt: Date
 
-  receives: IReceive[]
+  receives: IQuoteReceive[]
 }
 
 export class Quote extends AggregateRoot implements IQuote {
@@ -38,7 +38,7 @@ export class Quote extends AggregateRoot implements IQuote {
 
   receive(newReceive: INewReceive) {
     const { quoteId } = this
-    const receive: IReceive = {
+    const receive: IQuoteReceive = {
       receiveDt: new Date(),
       userId: newReceive.userId,
       receiveId: v4(),
