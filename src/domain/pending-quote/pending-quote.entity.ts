@@ -10,7 +10,7 @@ export class PendingQuote extends AggregateRoot implements IPendingQuote {
   content: string
   authorId: string
   submitterId: string
-  submitDt: string
+  submitDt: Date
   guildId: string
   channelId: string
   messageId: string
