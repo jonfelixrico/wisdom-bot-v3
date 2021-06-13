@@ -2,7 +2,7 @@ import { AggregateRoot } from '@nestjs/cqrs'
 import { v4 } from 'uuid'
 import { ReceiveInteracted } from './receive-interacted.event'
 
-interface IInteraction {
+export interface IInteraction {
   readonly interactionId: string
   readonly userId: string
   readonly interactDt: Date
