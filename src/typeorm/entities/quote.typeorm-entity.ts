@@ -35,6 +35,9 @@ export class QuoteDbEntity {
   @Column({ nullable: true })
   approveDt: Date
 
+  @Column({ nullable: true })
+  cancelDt: Date
+
   @OneToMany(() => ReceiveDbEntity, (receive) => receive.quote)
   receives: Promise<ReceiveDbEntity[]>
 
