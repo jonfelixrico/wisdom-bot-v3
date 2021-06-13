@@ -12,6 +12,9 @@ import { PendingQuoteRepoImplService } from './deprecated/pending-quote-repo-imp
 import { PendingQuoteRepository } from 'src/classes/pending-quote-repository.abstract'
 import { StatsRepoImplService } from './deprecated/stats-repo-impl/stats-repo-impl.service'
 import { StatsRepository } from 'src/classes/stats-repository.abstract'
+import { PendingQuoteRepositoryService } from './pending-quote-repository/pending-quote-repository.service'
+import { QuoteRepositoryService } from './quote-repository/quote-repository.service'
+import { ReceiveRepositoryService } from './receive-repository/receive-repository.service'
 
 const providers = [
   {
@@ -38,6 +41,9 @@ const providers = [
     useClass: StatsRepoImplService,
     provide: StatsRepository,
   },
+  PendingQuoteRepositoryService,
+  QuoteRepositoryService,
+  ReceiveRepositoryService,
 ]
 
 @Module({
