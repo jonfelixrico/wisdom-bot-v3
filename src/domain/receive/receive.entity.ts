@@ -30,6 +30,21 @@ export class Receive extends AggregateRoot implements IReceive {
   messageId: string
   interactions: IInteraction[]
 
+  constructor({
+    channelId,
+    interactions,
+    messageId,
+    quoteId,
+    receiveId,
+  }: IReceive) {
+    super()
+    this.channelId = channelId
+    this.interactions = interactions || []
+    this.messageId = messageId
+    this.quoteId = quoteId
+    this.receiveId = receiveId
+  }
+
   interact({ karma = 1, userId }: INewInteraction) {
     if (karma === 0) {
       throw new Error('Karma cannot be 0.')
