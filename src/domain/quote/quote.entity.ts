@@ -19,7 +19,7 @@ interface IQuote {
   content: string
   authorId: string
   submitterId: string
-  submitDt: string
+  submitDt: Date
   guildId: string
   acceptDt: Date
 
@@ -31,7 +31,7 @@ export class Quote extends AggregateRoot implements IQuote {
   content: string
   authorId: string
   submitterId: string
-  submitDt: string
+  submitDt: Date
   guildId: string
   acceptDt: Date
   receives: IQuoteReceive[]
