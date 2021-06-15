@@ -13,7 +13,9 @@ export class PendingQuoteRepositoryService extends PendingQuoteRepository {
   async findById(quoteId: string): Promise<PendingQuote> {
     const quoteEnt = await this.repo
       .createQueryBuilder()
-      .where('id = :quoteId AND expireDt IS NULL AND acceptDt IS NULL')
+      .where('id = :quoteId AND expireDt IS NULL AND acceptDt IS NULL', {
+        quoteId,
+      })
       .getOne()
 
     if (!quoteEnt) {
