@@ -1,18 +1,19 @@
 import { EventStoreDBClient, jsonEvent } from '@eventstore/db-client'
-import { EventsHandler, IEventHandler } from '@nestjs/cqrs'
+import { EventBus, IEventHandler } from '@nestjs/cqrs'
 import { DomainEvent } from 'src/domain/domain-event.abstract'
-import { Inject, Logger } from '@nestjs/common'
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
+import { Injectable, Logger } from '@nestjs/common'
 
-@EventsHandler()
+@Injectable()
 export class GenericDomainEventHandlerService
   implements IEventHandler<DomainEvent<unknown>>
 {
   constructor(
     private esdbClient: EventStoreDBClient,
-    @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private logger: Logger,
-  ) {}
+    private eventBus: EventBus,
+  ) {
+    this.eventBus.subscribe(this.handle.bind(this))
+  }
 
   async handle(event: DomainEvent<unknown>) {
     if (!(event instanceof DomainEvent)) {
