@@ -11,9 +11,10 @@ import { QuoteApproverService } from './quote-approver/quote-approver.service'
 import { QuoteRegeneratorService } from './quote-regenerator/quote-regenerator.service'
 import { DeleteListenerService } from './delete-listener/delete-listener.service'
 import { StatsCommandService } from './stats-command/stats-command.service'
+import { CqrsModule } from '@nestjs/cqrs'
 
 @Module({
-  imports: [DiscordModule, RepositoriesModule],
+  imports: [DiscordModule, RepositoriesModule, CqrsModule],
   providers: [
     SetupService,
     SubmitCommandService,

@@ -4,8 +4,11 @@ import { AcceptPendingQuoteCommandHandlerService } from './pending-quote/accept-
 import { CancelPendingQuoteCommandHandlerService } from './pending-quote/cancel-pending-quote-command-handler/cancel-pending-quote-command-handler.service'
 import { ReceiveQuoteCommandHandlerService } from './quote/receive-quote-command-handler/receive-quote-command-handler.service'
 import { InteractReceiveService } from './receive/interact-receive/interact-receive.service'
+import { CqrsModule } from '@nestjs/cqrs'
+import { RepositoriesModule } from 'src/repositories/repositories.module'
 
 @Module({
+  imports: [CqrsModule, RepositoriesModule],
   providers: [
     SubmitQuoteCommandHandlerService,
     AcceptPendingQuoteCommandHandlerService,
