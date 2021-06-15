@@ -45,7 +45,8 @@ import { EventSourcingModule } from './event-sourcing/event-sourcing.module'
   providers: [
     {
       provide: Logger,
-      useExisting: [WINSTON_MODULE_NEST_PROVIDER],
+      useFactory: (logger: Logger) => logger,
+      inject: [WINSTON_MODULE_NEST_PROVIDER],
     },
   ],
 })
