@@ -1,4 +1,4 @@
-import { Logger, Module, Provider } from '@nestjs/common'
+import { Global, Logger, Module, Provider } from '@nestjs/common'
 import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
@@ -26,6 +26,7 @@ const loggerProvider: Provider = {
   inject: [WINSTON_MODULE_NEST_PROVIDER],
 }
 
+@Global()
 @Module({
   imports: [dynamicWinstonModule],
   providers: [loggerProvider],
