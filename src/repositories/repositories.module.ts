@@ -1,49 +1,25 @@
 import { Module } from '@nestjs/common'
-import { ReceiveRepoImplService } from './deprecated/receive-repo-impl/receive-repo-impl.service'
-import { QuoteRepoImplService } from './deprecated/quote-repo-impl/quote-repo-impl.service'
-import { ConcurRepoImplService } from './deprecated/concur-repo-impl/concur-repo-impl.service'
+import { PendingQuoteRepository } from 'src/domain/pending-quote/pending-quote.repository'
+import { QuoteRepository } from 'src/domain/quote/quote.repository'
+import { ReceiveRepository } from 'src/domain/receive/receive.repository'
 import { TypeormModule } from 'src/typeorm/typeorm.module'
-import { QuoteRepository } from 'src/classes/quote-repository.abstract'
-import { ReceiveRepository } from 'src/classes/receive-repository.abstract'
-import { ConcurRepository } from 'src/classes/concur-repository.abstract'
-import { GuildRepoImplService } from './deprecated/guild-repo-impl/guild-repo-impl.service'
-import { GuildRepository } from 'src/classes/guild-repository.abstract'
-import { PendingQuoteRepoImplService } from './deprecated/pending-quote-repo-impl/pending-quote-repo-impl.service'
-import { PendingQuoteRepository } from 'src/classes/pending-quote-repository.abstract'
-import { StatsRepoImplService } from './deprecated/stats-repo-impl/stats-repo-impl.service'
-import { StatsRepository } from 'src/classes/stats-repository.abstract'
 import { PendingQuoteRepositoryService } from './pending-quote-repository/pending-quote-repository.service'
 import { QuoteRepositoryService } from './quote-repository/quote-repository.service'
 import { ReceiveRepositoryService } from './receive-repository/receive-repository.service'
 
 const providers = [
   {
-    useClass: ReceiveRepoImplService,
-    provide: ReceiveRepository,
-  },
-  {
-    useClass: QuoteRepoImplService,
-    provide: QuoteRepository,
-  },
-  {
-    useClass: ConcurRepoImplService,
-    provide: ConcurRepository,
-  },
-  {
-    useClass: GuildRepoImplService,
-    provide: GuildRepository,
-  },
-  {
-    useClass: PendingQuoteRepoImplService,
+    useClass: PendingQuoteRepositoryService,
     provide: PendingQuoteRepository,
   },
   {
-    useClass: StatsRepoImplService,
-    provide: StatsRepository,
+    useClass: QuoteRepositoryService,
+    provide: QuoteRepository,
   },
-  PendingQuoteRepositoryService,
-  QuoteRepositoryService,
-  ReceiveRepositoryService,
+  {
+    useClass: ReceiveRepositoryService,
+    provide: ReceiveRepository,
+  },
 ]
 
 @Module({
