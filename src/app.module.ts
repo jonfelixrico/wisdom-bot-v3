@@ -1,10 +1,4 @@
-import { Module, Logger } from '@nestjs/common'
-import {
-  utilities as nestWinstonModuleUtilities,
-  WinstonModule,
-  WINSTON_MODULE_NEST_PROVIDER,
-} from 'nest-winston'
-import * as winston from 'winston'
+import { Module } from '@nestjs/common'
 import { DiscordModule } from './discord/discord.module'
 import { ConfigModule } from '@nestjs/config'
 import { RepositoriesModule } from './repositories/repositories.module'
@@ -13,22 +7,11 @@ import { CommandoModule } from './commando/commando.module'
 import { CommandHandlersModule } from './command-handlers/command-handlers.module'
 import { EventHandlersModule } from './event-handlers/event-handlers.module'
 import { EventSourcingModule } from './event-sourcing/event-sourcing.module'
+import { LoggerModule } from './logger/logger.module'
 
 @Module({
   imports: [
-    WinstonModule.forRoot({
-      transports: [
-        new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.ms(),
-            nestWinstonModuleUtilities.format.nestLike(),
-          ),
-        }),
-        // other transports...
-      ],
-      // other options
-    }),
+    LoggerModule,
     ConfigModule.forRoot({
       envFilePath: ['.env', '.dev.env'],
       isGlobal: true,
@@ -40,14 +23,6 @@ import { EventSourcingModule } from './event-sourcing/event-sourcing.module'
     CommandHandlersModule,
     EventHandlersModule,
     EventSourcingModule,
-  ],
-
-  providers: [
-    {
-      provide: Logger,
-      useFactory: (logger: Logger) => logger,
-      inject: [WINSTON_MODULE_NEST_PROVIDER],
-    },
   ],
 })
 export class AppModule {}
