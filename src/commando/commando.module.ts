@@ -17,14 +17,14 @@ import { StatsCommandService } from './stats-command/stats-command.service'
   providers: [
     SetupService,
     SubmitCommandService,
-    ReceiveCommandService,
-    ConcurCommandService,
-    ReactionListenerService,
-    PendingQuoteMessageRecacherService,
-    QuoteApproverService,
-    QuoteRegeneratorService,
-    DeleteListenerService,
-    StatsCommandService,
+    // ReceiveCommandService,
+    // ConcurCommandService,
+    // ReactionListenerService,
+    // PendingQuoteMessageRecacherService,
+    // QuoteApproverService,
+    // QuoteRegeneratorService,
+    // DeleteListenerService,
+    // StatsCommandService,
   ],
 })
 export class CommandoModule {}
