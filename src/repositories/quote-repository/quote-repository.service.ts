@@ -3,10 +3,13 @@ import { Quote, IQuoteReceive } from 'src/domain/quote/quote.entity'
 import { QuoteRepository } from 'src/domain/quote/quote.repository'
 import { Repository } from 'typeorm'
 import { QuoteDbEntity } from 'src/typeorm/entities/quote.typeorm-entity'
+import { Inject } from '@nestjs/common'
 
 @Injectable()
 export class QuoteRepositoryService extends QuoteRepository {
-  constructor(private quoteTr: Repository<QuoteDbEntity>) {
+  constructor(
+    @Inject('QUOTE_ENTITY') private quoteTr: Repository<QuoteDbEntity>,
+  ) {
     super()
   }
 
