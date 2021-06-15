@@ -1,4 +1,5 @@
 import { Global, Logger, Module, Provider } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
@@ -6,18 +7,22 @@ import {
 } from 'nest-winston'
 import * as winston from 'winston'
 
-const dynamicWinstonModule = WinstonModule.forRoot({
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.ms(),
-        nestWinstonModuleUtilities.format.nestLike(),
-      ),
-    }),
-    // other transports...
-  ],
-  // other options
+const dynamicWinstonModule = WinstonModule.forRootAsync({
+  useFactory: (cfg: ConfigService) => ({
+    transports: [
+      new winston.transports.Console({
+        format: winston.format.combine(
+          winston.format.timestamp(),
+          winston.format.ms(),
+          nestWinstonModuleUtilities.format.nestLike(),
+        ),
+        level: cfg.get('LOGGING_LEVEL') || null,
+      }),
+      // other transports...
+    ],
+    // other options
+  }),
+  inject: [ConfigService],
 })
 
 const loggerProvider: Provider = {
