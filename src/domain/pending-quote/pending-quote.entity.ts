@@ -70,13 +70,15 @@ export class PendingQuote extends AggregateRoot implements IPendingQuote {
 
   accept() {
     this.checkIfPending()
-    this.acceptDt = new Date()
-    this.apply(new PendingQuoteAccepted(this.quoteId))
+    const acceptDt = (this.acceptDt = new Date())
+    const { quoteId } = this
+    this.apply(new PendingQuoteAccepted({ quoteId, acceptDt }))
   }
 
   cancel() {
     this.checkIfPending()
-    this.cancelDt = new Date()
-    this.apply(new PendingQuoteCancelled(this.quoteId))
+    const cancelDt = (this.cancelDt = new Date())
+    const { quoteId } = this
+    this.apply(new PendingQuoteCancelled({ quoteId, cancelDt }))
   }
 }
