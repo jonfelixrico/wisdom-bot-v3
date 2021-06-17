@@ -5,10 +5,12 @@ import {
 } from '@eventstore/db-client'
 import { Injectable } from '@nestjs/common'
 
+export type PrematureReturnFn<T> = (prematureValue?: T) => void
+
 export type ReadStreamReducerFn<T> = (
   state: T,
   event: ResolvedEvent,
-  prematureReturn?: (prematureValue?: T) => void,
+  prematureReturn?: PrematureReturnFn<T>,
 ) => T
 
 interface IReadStreamOptions {
