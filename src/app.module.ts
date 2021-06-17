@@ -8,6 +8,7 @@ import { CommandHandlersModule } from './command-handlers/command-handlers.modul
 import { EventHandlersModule } from './event-handlers/event-handlers.module'
 import { LoggerModule } from './logger/logger.module'
 import { EventStoreModule } from './event-store/event-store.module'
+import { WriteRepositoriesModule } from './write-repositories/write-repositories.module'
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { EventStoreModule } from './event-store/event-store.module'
     CommandHandlersModule,
     EventHandlersModule,
     EventStoreModule,
+    WriteRepositoriesModule,
   ],
 })
 export class AppModule {}
