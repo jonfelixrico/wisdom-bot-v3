@@ -1,5 +1,7 @@
+import { DomainEventNames } from './domain-event-names.enum'
+
 interface IEvent<PayloadType> {
-  readonly eventName: string
+  readonly eventName: DomainEventNames
   readonly aggregateId: string
   readonly payload: PayloadType
 }
@@ -8,8 +10,8 @@ export abstract class DomainEvent<PayloadType = Record<string, unknown>>
   implements IEvent<PayloadType>
 {
   constructor(
-    readonly eventName: string,
+    readonly eventName: DomainEventNames,
     readonly aggregateId: string,
-    readonly payload,
+    readonly payload: PayloadType,
   ) {}
 }

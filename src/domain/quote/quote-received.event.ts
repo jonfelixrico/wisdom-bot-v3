@@ -1,4 +1,5 @@
 import { DomainEvent } from 'src/domain/domain-event.abstract'
+import { DomainEventNames } from '../domain-event-names.enum'
 
 interface IReceive {
   readonly userId: string
@@ -10,6 +11,6 @@ interface IReceive {
 
 export class QuoteReceived extends DomainEvent<IReceive> {
   constructor(receive: IReceive) {
-    super('QUOTE_RECEIVED', receive.quoteId, receive)
+    super(DomainEventNames.QUOTE_RECEIVED, receive.quoteId, receive)
   }
 }

@@ -1,4 +1,5 @@
 import { DomainEvent } from 'src/domain/domain-event.abstract'
+import { DomainEventNames } from '../domain-event-names.enum'
 
 interface IInteraction {
   readonly interactionId: string
@@ -11,6 +12,6 @@ interface IInteraction {
 
 export class ReceiveInteracted extends DomainEvent<IInteraction> {
   constructor(interaction: IInteraction) {
-    super('RECEIVE_INTERACTED', interaction.quoteId, interaction)
+    super(DomainEventNames.RECEIVE_INTERACTED, interaction.quoteId, interaction)
   }
 }
