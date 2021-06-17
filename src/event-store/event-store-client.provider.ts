@@ -2,7 +2,7 @@ import { Provider } from '@nestjs/common'
 import { EventStoreDBClient } from '@eventstore/db-client'
 import { ConfigService } from '@nestjs/config'
 
-export const eventStoreProvider: Provider = {
+export const eventStoreClientProvider: Provider = {
   provide: EventStoreDBClient,
   inject: [ConfigService],
   useFactory: (cfg: ConfigService) =>

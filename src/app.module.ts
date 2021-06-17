@@ -6,8 +6,8 @@ import { TypeormModule } from './typeorm/typeorm.module'
 import { CommandoModule } from './commando/commando.module'
 import { CommandHandlersModule } from './command-handlers/command-handlers.module'
 import { EventHandlersModule } from './event-handlers/event-handlers.module'
-import { EventSourcingModule } from './event-sourcing/event-sourcing.module'
 import { LoggerModule } from './logger/logger.module'
+import { EventStoreModule } from './event-store/event-store.module'
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { LoggerModule } from './logger/logger.module'
     CommandoModule,
     CommandHandlersModule,
     EventHandlersModule,
-    EventSourcingModule,
+    EventStoreModule,
   ],
 })
 export class AppModule {}
