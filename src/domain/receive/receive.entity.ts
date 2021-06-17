@@ -9,7 +9,7 @@ export interface IInteraction {
   readonly karma: number
 }
 
-interface IReceive {
+export interface IReceiveAggregate {
   receiveId: string
   quoteId: string
   channelId: string
@@ -23,7 +23,7 @@ interface INewInteraction {
   readonly karma: number
 }
 
-export class Receive extends AggregateRoot implements IReceive {
+export class Receive extends AggregateRoot implements IReceiveAggregate {
   receiveId: string
   quoteId: string
   channelId: string
@@ -36,7 +36,7 @@ export class Receive extends AggregateRoot implements IReceive {
     messageId,
     quoteId,
     receiveId,
-  }: IReceive) {
+  }: IReceiveAggregate) {
     super()
     this.channelId = channelId
     this.interactions = interactions || []
