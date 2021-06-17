@@ -5,11 +5,19 @@ import {
 } from '@eventstore/db-client'
 import { Injectable } from '@nestjs/common'
 
-export type ReadStreamReducerFn<T> = (state: T, event: ResolvedEvent) => T
+export type ReadStreamReducerFn<T> = (
+  state: T,
+  event: ResolvedEvent,
+  prematureReturn?: (prematureValue?: T) => void,
+) => T
 
 interface IReadStreamOptions {
   batchSize?: number
   fromRevision?: number
+}
+
+interface IPrematureReturn<T> {
+  value: T
 }
 
 const DEFAULT_BATCH_SIZE = 15
@@ -28,6 +36,12 @@ export class ReadStreamService {
     let currentState: T
     let revisionCtr = fromRevision
 
+    let prematureReturn: IPrematureReturn<T>
+
+    function prematureReturnTrigger(value: T): void {
+      prematureReturn = { value }
+    }
+
     while (true) {
       try {
         const streamEvents = await this.client.readStream(streamName, {
@@ -36,9 +50,13 @@ export class ReadStreamService {
         })
 
         revisionCtr += batchSize
-        currentState = streamEvents.reduce(reducer, currentState)
+        currentState = streamEvents.reduce((acc, val) => {
+          return reducer(acc, val, prematureReturnTrigger)
+        }, currentState)
 
-        if (streamEvents.length !== batchSize) {
+        if (prematureReturn) {
+          return prematureReturn.value
+        } else if (streamEvents.length !== batchSize) {
           return currentState
         }
       } catch (error) {
