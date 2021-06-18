@@ -3,77 +3,127 @@ import {
   EventStoreDBClient,
   ResolvedEvent,
 } from '@eventstore/db-client'
-import { Logger } from '@nestjs/common'
 import { Injectable } from '@nestjs/common'
 
-export type PrematureReturnFn<T> = (prematureValue?: T) => void
-
-export type ReadStreamReducerFn<T> = (
+export type ReducerNext<T> = (newState: T) => void
+export type ReducerStop<T> = (breakState?: T) => void
+export type ReducerSkip = () => void
+export type Reducer<T> = (
   state: T,
   event: ResolvedEvent,
-  prematureReturn?: PrematureReturnFn<T>,
-) => T
+  next: ReducerNext<T>,
+  otherOperations?: {
+    skip?: ReducerSkip
+    stop?: ReducerStop<T>
+  },
+) => void
 
-interface IReadStreamOptions {
-  batchSize?: number
-  fromRevision?: number
+export interface IDerivedState<T> {
+  state: T
+  revision: bigint
 }
 
-interface IPrematureReturn<T> {
-  value: T
+interface IReducerOutput<T> {
+  state: IDerivedState<T>
+  stop?: boolean
 }
 
-const DEFAULT_BATCH_SIZE = 15
+const BATCH_SIZE = BigInt(100)
+
+function reduce<T>(
+  { state: currentState }: IDerivedState<T>,
+  resolvedEvent: ResolvedEvent,
+  reducer: Reducer<T>,
+): Promise<IReducerOutput<T>> {
+  const { revision } = resolvedEvent.event
+
+  return new Promise(async (rawResolve, reject) => {
+    let hasResolved = false
+    /**
+     * This SHOULD be called instead of the native resolve (`rawResolve`).
+     * This makes sure that we're only calling resolve once, and also acts
+     * as a helper and automatically provides the version of the event.
+     * @param resultingStateFromReducer
+     * @returns
+     */
+    const resolve = (resultingStateFromReducer: T, stop?: boolean) => {
+      if (hasResolved) {
+        // TODO emit a warning here
+        return
+      }
+
+      hasResolved = true
+      rawResolve({
+        state: {
+          revision,
+          state: resultingStateFromReducer,
+        },
+        stop,
+      })
+    }
+
+    try {
+      reducer(
+        currentState,
+        resolvedEvent,
+        (updatedState) => resolve(updatedState),
+        {
+          stop: (endState) => resolve(endState),
+          skip: () => {
+            resolve(currentState, true)
+          },
+        },
+      )
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
 
 @Injectable()
 export class ReadStreamService {
-  constructor(private client: EventStoreDBClient, private logger: Logger) {}
+  constructor(private client: EventStoreDBClient) {}
 
-  async readStream<T>(
+  async readStreamFromBeginning<T>(
     streamName: string,
-    reducer: ReadStreamReducerFn<T>,
-    options?: IReadStreamOptions,
-  ): Promise<T | null> {
-    const { logger } = this
-    const { batchSize = DEFAULT_BATCH_SIZE, fromRevision = 0 } = options ?? {}
+    reducer: Reducer<T>,
+  ): Promise<IDerivedState<T>> {
+    try {
+      let currentDerivation: IDerivedState<T> = {
+        state: null,
+        revision: BigInt(-1),
+      }
 
-    let currentState: T
-    let revisionCtr = fromRevision
-
-    let prematureReturn: IPrematureReturn<T>
-
-    function prematureReturnTrigger(value: T): void {
-      logger.debug(
-        `Cancelled reading stream ${streamName}.`,
-        ReadStreamService.name,
-      )
-      prematureReturn = { value }
-    }
-
-    while (true) {
-      try {
+      while (true) {
         const streamEvents = await this.client.readStream(streamName, {
-          maxCount: batchSize,
-          fromRevision: BigInt(revisionCtr),
+          maxCount: BATCH_SIZE,
+          fromRevision: currentDerivation.revision + BigInt(1),
         })
 
-        revisionCtr += batchSize
-        currentState = streamEvents.reduce((acc, val) => {
-          return reducer(acc, val, prematureReturnTrigger)
-        }, currentState)
+        for (const resolved of streamEvents) {
+          const { state, stop } = await reduce(
+            currentDerivation,
+            resolved,
+            reducer,
+          )
 
-        if (prematureReturn) {
-          return prematureReturn.value
-        } else if (streamEvents.length !== batchSize) {
-          return currentState
-        }
-      } catch (error) {
-        if (error.type === ErrorType.STREAM_NOT_FOUND) {
-          return null
+          currentDerivation = state
+
+          if (stop) {
+            return currentDerivation
+          }
         }
 
-        throw error
+        if (streamEvents.length < BATCH_SIZE) {
+          return currentDerivation
+        }
       }
+    } catch (error) {
+      if (error.type === ErrorType.STREAM_NOT_FOUND) {
+        return null
+      }
+
+      throw error
     }
   }
 }
