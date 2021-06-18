@@ -88,12 +88,12 @@ export class ReadStreamService {
     streamName: string,
     reducer: Reducer<T>,
   ): Promise<IDerivedState<T>> {
-    try {
-      let currentDerivation: IDerivedState<T> = {
-        state: null,
-        revision: BigInt(-1),
-      }
+    let currentDerivation: IDerivedState<T> = {
+      state: null,
+      revision: BigInt(-1),
+    }
 
+    try {
       while (true) {
         const streamEvents = await this.client.readStream(streamName, {
           maxCount: BATCH_SIZE,
@@ -119,8 +119,9 @@ export class ReadStreamService {
         }
       }
     } catch (error) {
+      // This is expected to be triggered during the first call.
       if (error.type === ErrorType.STREAM_NOT_FOUND) {
-        return null
+        return currentDerivation
       }
 
       throw error
