@@ -11,6 +11,11 @@ export class PendingQuoteWriteRepositoryService extends PendingQuoteRepository {
   }
 
   async findById(id: string): Promise<PendingQuote> {
-    return this.readStream.readStream(`quote-${id}`, pendingQuoteReducer)
+    const { state } = await this.readStream.readStreamFromBeginning(
+      `quote-${id}`,
+      pendingQuoteReducer,
+    )
+
+    return new PendingQuote(state)
   }
 }
