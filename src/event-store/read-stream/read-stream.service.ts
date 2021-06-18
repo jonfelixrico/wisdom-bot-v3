@@ -7,7 +7,6 @@ import {
 } from '@eventstore/db-client'
 import { Injectable } from '@nestjs/common'
 import { DomainEvent } from 'src/domain/domain-event.abstract'
-import { v4 } from 'uuid'
 
 export type ReducerNext<T> = (newState: T) => void
 export type ReducerStop<T> = (breakState?: T) => void
