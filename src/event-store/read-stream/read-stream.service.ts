@@ -92,6 +92,7 @@ function convertDomainEventToJsonEvent({ eventName, payload }: DomainEvent) {
 }
 
 @Injectable()
+// TODO edit this name to a more appropriate one; this service just not streaming anymore
 export class ReadStreamService {
   constructor(private client: EventStoreDBClient) {}
 
