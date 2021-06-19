@@ -1,12 +1,9 @@
 import {
   ErrorType,
   EventStoreDBClient,
-  ExpectedRevision,
-  jsonEvent,
   ResolvedEvent,
 } from '@eventstore/db-client'
 import { Injectable } from '@nestjs/common'
-import { DomainEvent } from 'src/domain/domain-event.abstract'
 
 export type ReducerNext<T> = (newState: T) => void
 export type ReducerStop<T> = (breakState?: T) => void
@@ -83,30 +80,10 @@ function reduce<T>(
   })
 }
 
-function convertDomainEventToJsonEvent({ eventName, payload }: DomainEvent) {
-  return jsonEvent({
-    type: eventName,
-    data: payload,
-  })
-}
-
 @Injectable()
 // TODO edit this name to a more appropriate one; this service just not streaming anymore
 export class ReadStreamService {
   constructor(private client: EventStoreDBClient) {}
-
-  async sendDomainEventAsEsdbEvent(
-    domainEvent: DomainEvent,
-    expectedRevision: ExpectedRevision,
-  ): Promise<void> {
-    this.client.appendToStream(
-      domainEvent.aggregateId,
-      convertDomainEventToJsonEvent(domainEvent),
-      {
-        expectedRevision,
-      },
-    )
-  }
 
   async readStreamFromBeginning<T>(
     streamName: string,
