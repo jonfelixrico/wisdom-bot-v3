@@ -20,19 +20,20 @@ export class EsdbEventPublisherService {
       .on('data', ({ event }) => {
         const { isJson, type, id, streamId } = event
 
-        if (!isJson) {
+        if (type.startsWith('$')) {
           logger.debug(
-            `Event ${id} is not JSON, skipped.`,
+            `Skipped event ${id} from stream ${streamId}; Reason: system event (${type})`,
             EsdbEventPublisherService.name,
           )
-        } else if (type.startsWith('$')) {
+        } else if (!isJson) {
           logger.debug(
-            `Event ${id} is a system event (${type}), skipped.`,
+            `Skipped event ${id} from stream ${streamId}; Reason: not JSON`,
             EsdbEventPublisherService.name,
           )
         } else {
           logger.debug(
-            `Received event ${id} from stream ${streamId} of type ${type}.`,
+            `Relayed event ${id} from stream ${streamId} of type ${type}`,
+            EsdbEventPublisherService.name,
           )
           this.bus.publish(new EsdbLiveSubscriptionEvent(event))
         }
