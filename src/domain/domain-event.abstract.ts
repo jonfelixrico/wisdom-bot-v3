@@ -6,8 +6,9 @@ interface IEvent<PayloadType> {
   readonly payload: PayloadType
 }
 
-export abstract class DomainEvent<PayloadType = Record<string, unknown>>
-  implements IEvent<PayloadType>
+export abstract class DomainEvent<
+  PayloadType extends { [key: string]: any } = { [key: string]: any },
+> implements IEvent<PayloadType>
 {
   constructor(
     readonly eventName: DomainEventNames,
