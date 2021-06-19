@@ -1,8 +1,4 @@
-import { DomainEvent } from './domain-event.abstract'
-
-export abstract class DomainEntity<
-  EventType extends DomainEvent = DomainEvent,
-> {
+export abstract class DomainEntity<EventType> {
   private _events: EventType[]
 
   apply(event: EventType) {
