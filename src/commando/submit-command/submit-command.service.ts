@@ -45,8 +45,6 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
   constructor(
     client: CommandoClient,
     private guildRepo: GuildRepository,
-    @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: Logger,
     private commandBus: CommandBus,
     private reactionListener: ReactionListenerService,
     private deleteListener: DeleteListenerService,
