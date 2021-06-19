@@ -1,14 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { PendingQuote } from 'src/domain/pending-quote/pending-quote.entity'
-import { PendingQuoteRepository } from 'src/domain/pending-quote/pending-quote.repository'
 import { QuoteDbEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 import { Repository } from 'typeorm'
 
 @Injectable()
-export class PendingQuoteRepositoryService extends PendingQuoteRepository {
-  constructor(@Inject('QUOTE_ENTITY') private repo: Repository<QuoteDbEntity>) {
-    super()
-  }
+export class PendingQuoteRepositoryService {
+  constructor(
+    @Inject('QUOTE_ENTITY') private repo: Repository<QuoteDbEntity>,
+  ) {}
 
   async findById(quoteId: string): Promise<PendingQuote> {
     const quoteEnt = await this.repo

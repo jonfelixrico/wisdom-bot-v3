@@ -78,8 +78,7 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
       upvoteEmoji: approveEmoji,
     })
 
-    const res = await this.commandBus.execute(command)
-    console.log(res)
+    await this.commandBus.execute(command)
 
     this.logger.log(
       `User ${submitterId} submitted a quote in channel ${channelId} at guild ${guildId}.`,

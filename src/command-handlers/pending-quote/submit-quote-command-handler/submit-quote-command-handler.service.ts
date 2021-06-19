@@ -1,25 +1,30 @@
 import { Logger } from '@nestjs/common'
-import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs'
-import { QuoteSubmitted } from 'src/domain/pending-quote/quote-submitted.event'
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
+import { QuoteSubmittedEvent } from 'src/domain/pending-quote/events/quote-submitted.event'
 import { SubmitQuoteCommand } from 'src/domain/pending-quote/submit-quote.command'
+import { PendingQuoteEsdbRepository } from 'src/write-repositories/abstract/pending-quote-esdb-repository.abstract'
 import { v4 } from 'uuid'
 
 @CommandHandler(SubmitQuoteCommand)
 export class SubmitQuoteCommandHandlerService
   implements ICommandHandler<SubmitQuoteCommand>
 {
-  constructor(private bus: EventBus, private logger: Logger) {}
+  constructor(
+    private logger: Logger,
+    private repo: PendingQuoteEsdbRepository,
+  ) {}
 
   async execute({ payload }: SubmitQuoteCommand): Promise<any> {
     const quoteId = v4()
-    const event = new QuoteSubmitted({
+
+    const event = new QuoteSubmittedEvent({
       ...payload,
       quoteId,
       acceptDt: null,
       cancelDt: null,
     })
 
-    this.bus.publish(event)
+    await this.repo.publishEvent(event)
 
     this.logger.debug(
       `Created quote ${quoteId}.`,

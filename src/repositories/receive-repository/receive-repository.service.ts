@@ -1,17 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { Receive } from 'src/domain/receive/receive.entity'
-import { ReceiveRepository } from 'src/domain/receive/receive.repository'
 import { ReceiveDbEntity } from 'src/typeorm/entities/receive.typeorm-entity'
 import { Repository } from 'typeorm'
 import { IInteraction } from 'src/domain/receive/receive.entity'
 
 @Injectable()
-export class ReceiveRepositoryService extends ReceiveRepository {
+export class ReceiveRepositoryService {
   constructor(
     @Inject('RECEIVE_ENTITY') private repo: Repository<ReceiveDbEntity>,
-  ) {
-    super()
-  }
+  ) {}
 
   async findById(receiveId: string): Promise<Receive> {
     const receiveEnt = await this.repo.findOne(

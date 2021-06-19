@@ -1,4 +1,4 @@
-import { DomainEvent } from 'src/domain/domain-event.abstract'
+import { DomainEvent } from '../abstracts/domain-event.abstract'
 import { DomainEventNames } from '../domain-event-names.enum'
 
 interface IReceive {

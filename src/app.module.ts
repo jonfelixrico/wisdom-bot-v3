@@ -5,7 +5,6 @@ import { RepositoriesModule } from './repositories/repositories.module'
 import { TypeormModule } from './typeorm/typeorm.module'
 import { CommandoModule } from './commando/commando.module'
 import { CommandHandlersModule } from './command-handlers/command-handlers.module'
-import { EventHandlersModule } from './event-handlers/event-handlers.module'
 import { LoggerModule } from './logger/logger.module'
 import { EventStoreModule } from './event-store/event-store.module'
 import { WriteRepositoriesModule } from './write-repositories/write-repositories.module'
@@ -22,7 +21,6 @@ import { WriteRepositoriesModule } from './write-repositories/write-repositories
     RepositoriesModule,
     CommandoModule,
     CommandHandlersModule,
-    EventHandlersModule,
     EventStoreModule,
     WriteRepositoriesModule,
   ],
