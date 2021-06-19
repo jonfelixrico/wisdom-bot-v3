@@ -1,9 +1,9 @@
-import { AggregateRoot } from '@nestjs/cqrs'
-import { PendingQuoteAccepted } from './pending-quote-accepted.event'
-import { PendingQuoteCancelled } from './pending-quote-cancelled.event'
+import { DomainEntity } from '../abstracts/domain-entity.abstract'
+import { PendingQuoteAccepted } from './events/pending-quote-accepted.event'
+import { PendingQuoteCancelled } from './events/pending-quote-cancelled.event'
 import { IPendingQuote } from './pending-quote.interface'
 
-export class PendingQuote extends AggregateRoot implements IPendingQuote {
+export class PendingQuote extends DomainEntity implements IPendingQuote {
   quoteId: string
   acceptDt: Date
   cancelDt: Date
