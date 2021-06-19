@@ -10,6 +10,8 @@ import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
 import { CommandBus } from '@nestjs/cqrs'
 import { SubmitQuoteCommand } from 'src/domain/pending-quote/submit-quote.command'
+import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
+import { DeleteListenerService } from '../delete-listener/delete-listener.service'
 
 const COMMAND_INFO: CommandInfo = {
   name: 'submit',
@@ -46,6 +48,8 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: Logger,
     private commandBus: CommandBus,
+    private reactionListener: ReactionListenerService,
+    private deleteListener: DeleteListenerService,
   ) {
     super(client, COMMAND_INFO)
   }
@@ -63,28 +67,39 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
 
     const expireDt = new Date(Date.now() + expireMillis)
 
-    const response = await message.channel.send('Loading...')
+    const quoteLine = `**"${quote}"** - ${author}, ${new Date().getFullYear()}`
+    const instructionsLine = `_This submission needs ${
+      approveCount + 1
+    } ${approveEmoji} reacts to get reactions on or before *${expireDt}*._`
 
-    const command = new SubmitQuoteCommand({
-      authorId: author.id,
-      channelId,
-      content: quote,
-      expireDt,
-      guildId,
-      messageId: response.id,
-      submitDt: new Date(),
-      submitterId,
-      upvoteCount: approveCount,
-      upvoteEmoji: approveEmoji,
-    })
+    const response = await message.channel.send('🤔')
+    const messageId = response.id
+    await response.edit([quoteLine, instructionsLine].join('\n'))
 
-    await this.commandBus.execute(command)
-
-    this.logger.log(
-      `User ${submitterId} submitted a quote in channel ${channelId} at guild ${guildId}.`,
-      SubmitCommandService.name,
+    await this.commandBus.execute(
+      new SubmitQuoteCommand({
+        authorId: author.id,
+        submitterId,
+        channelId,
+        content: quote,
+        messageId,
+        guildId,
+        expireDt,
+        upvoteCount: approveCount,
+        upvoteEmoji: approveEmoji,
+        submitDt: new Date(),
+      }),
     )
 
+    this.reactionListener.watch(
+      response.id,
+      approveEmoji,
+      approveCount,
+      expireDt,
+    )
+    this.deleteListener.watch(response.id)
+
+    await response.react(approveEmoji)
     return response
   }
 }

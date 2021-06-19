@@ -20,11 +20,11 @@ import { CqrsModule } from '@nestjs/cqrs'
     SubmitCommandService,
     // ReceiveCommandService,
     // ConcurCommandService,
-    // ReactionListenerService,
+    ReactionListenerService,
     // PendingQuoteMessageRecacherService,
     // QuoteApproverService,
     // QuoteRegeneratorService,
-    // DeleteListenerService,
+    DeleteListenerService,
     // StatsCommandService,
   ],
 })
