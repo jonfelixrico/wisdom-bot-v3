@@ -8,7 +8,7 @@ export interface IEsdbRepositoryEntity<Entity> {
 }
 
 export abstract class EsdbRepository<
-  Entity extends DomainEntity,
+  Entity extends DomainEntity<Event>,
   Event extends DomainEvent,
 > {
   abstract findById(id: string): Promise<IEsdbRepositoryEntity<Entity>>
@@ -17,6 +17,13 @@ export abstract class EsdbRepository<
     events: Event[],
     expectedRevision?: ExpectedRevision,
   ): Promise<void>
+
+  publishEntityEvents(
+    entity: Entity,
+    expectedRevision?: ExpectedRevision,
+  ): Promise<void> {
+    return this.publishEvents(entity.events, expectedRevision)
+  }
 
   publishEvent(
     event: Event,
