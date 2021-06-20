@@ -4,7 +4,7 @@ import { PendingQuote } from 'src/domain/entities/pending-quote.entity'
 import {
   ReadStreamService,
   Reducer,
-} from 'src/event-store/read-stream/read-stream.service'
+} from 'src/write-repositories/read-stream/read-stream.service'
 import { PendingQuoteEsdbRepository } from '../abstract/pending-quote-esdb-repository.abstract'
 import { ExpectedRevision, ResolvedEvent } from '@eventstore/db-client'
 import { ObjectType } from 'src/domain/abstracts/domain-event.abstract'

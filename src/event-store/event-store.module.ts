@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common'
 import { eventStoreClientProvider } from './event-store-client.provider'
-import { ReadStreamService } from './read-stream/read-stream.service'
 import { EsdbLiveEventRelayService } from './esdb-event-publisher/esdb-live-event-relay.service'
 import { CqrsModule } from '@nestjs/cqrs'
 
-const exportedProviders = [eventStoreClientProvider, ReadStreamService]
+const exportedProviders = [eventStoreClientProvider]
 
 @Module({
   exports: [...exportedProviders],

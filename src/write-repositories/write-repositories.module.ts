@@ -3,12 +3,14 @@ import { PendingQuoteWriteRepositoryService } from './pending-quote-write-reposi
 import { PendingQuoteEsdbRepository } from './abstract/pending-quote-esdb-repository.abstract'
 import { DomainEventPublisherService } from './domain-event-publisher/domain-event-publisher.service'
 import { EventStoreModule } from 'src/event-store/event-store.module'
+import { ReadStreamService } from './read-stream/read-stream.service'
 
 const providersToExport = [
   {
     useClass: PendingQuoteWriteRepositoryService,
     provide: PendingQuoteEsdbRepository,
   },
+  ReadStreamService,
 ]
 
 @Module({
