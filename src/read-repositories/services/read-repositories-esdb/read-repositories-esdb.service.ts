@@ -1,4 +1,5 @@
 import { EventStoreDBClient, JSONType } from '@eventstore/db-client'
+import { Logger } from '@nestjs/common'
 import {
   EventBus,
   EventsHandler,
@@ -23,7 +24,11 @@ import { ReadRepositoryEsdbEvent } from 'src/read-repositories/read-repository-e
 export class ReadRepositoriesEsdbService
   implements IEventHandler<EsdbLiveEvent>, IQueryHandler<EsdbCatchUpQuery>
 {
-  constructor(private eventBus: EventBus, private client: EventStoreDBClient) {}
+  constructor(
+    private eventBus: EventBus,
+    private client: EventStoreDBClient,
+    private logger: Logger,
+  ) {}
 
   /**
    * This is for relaying EsdbLiveEvent instances as ReadRepositoryEsdbEvents.
@@ -32,6 +37,11 @@ export class ReadRepositoriesEsdbService
   handle({ streamId, data, revision, type }: EsdbLiveEvent<JSONType>) {
     this.eventBus.publish(
       new ReadRepositoryEsdbEvent(streamId, [{ data, revision, type }], 'LIVE'),
+    )
+
+    this.logger.debug(
+      `Relayed live event ${type} with revision ${revision} from stream ${streamId}.`,
+      ReadRepositoriesEsdbService.name,
     )
   }
 
@@ -53,6 +63,10 @@ export class ReadRepositoriesEsdbService
     })
 
     if (!resolvedEvents.length) {
+      this.logger.debug(
+        `No events found in stream ${streamName} after revision ${fromRevision}.`,
+        ReadRepositoriesEsdbService.name,
+      )
       return false
     }
 
@@ -70,6 +84,11 @@ export class ReadRepositoriesEsdbService
     )
 
     this.eventBus.publish(eventToPublish)
+
+    this.logger.debug(
+      `Emitted ${resolvedEvents.length} events from stream ${streamName} starting from revision ${fromRevision}.`,
+      ReadRepositoriesEsdbService.name,
+    )
 
     return true
   }
