@@ -24,21 +24,21 @@ export class EsdbLiveEventRelayService {
     this.client
       .subscribeToAll({ fromPosition: END })
       .on('data', ({ event }) => {
-        const { isJson, type, id, streamId } = event
+        const { isJson, type, id, streamId, revision } = event
 
         if (type.startsWith('$')) {
           logger.debug(
-            `Skipped event ${id} from stream ${streamId}; Reason: system event (${type})`,
+            `Skipped event ${id} from stream ${streamId}; Reason: system event (${type}).`,
             EsdbLiveEventRelayService.name,
           )
         } else if (!isJson) {
           logger.debug(
-            `Skipped event ${id} from stream ${streamId}; Reason: not JSON`,
+            `Skipped event ${id} from stream ${streamId}; Reason: not JSON.`,
             EsdbLiveEventRelayService.name,
           )
         } else {
           logger.debug(
-            `Relayed event ${id} from stream ${streamId} of type ${type}`,
+            `Relayed event no. ${revision} of stream ${streamId} with type ${type}.`,
             EsdbLiveEventRelayService.name,
           )
           this.bus.publish(new EsdbLiveEvent(event))
