@@ -1,20 +1,5 @@
-import { Provider } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { Connection, createConnection, EntityTarget } from 'typeorm'
-import { ConcurDbEntity } from './entities/concur.typeorm-entity'
-import { QuoteDbEntity } from './entities/quote.typeorm-entity'
-import { ReceiveDbEntity } from './entities/receive.typeorm-entity'
-
-function generateEntityProvider(
-  providerName: string,
-  entityClass: EntityTarget<unknown>,
-): Provider {
-  return {
-    provide: providerName,
-    useFactory: (conn: Connection) => conn.getRepository(entityClass),
-    inject: ['CONNECTION'],
-  }
-}
+import { createConnection } from 'typeorm'
 
 export const typeormProviders = [
   {
@@ -32,8 +17,4 @@ export const typeormProviders = [
       }),
     inject: [ConfigService],
   },
-
-  generateEntityProvider('QUOTE_ENTITY', QuoteDbEntity),
-  generateEntityProvider('RECEIVE_ENTITY', ReceiveDbEntity),
-  generateEntityProvider('CONCUR_ENTITY', ConcurDbEntity),
 ]
