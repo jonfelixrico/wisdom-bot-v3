@@ -7,21 +7,21 @@ import {
   QueryHandler,
 } from '@nestjs/cqrs'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
-import { EsdbLiveSubscriptionEvent } from 'src/event-store/esdb-event-publisher/esdb-live-subscription.event'
+import { EsdbLiveEvent } from 'src/event-store/esdb-event-publisher/esdb-live.event'
 import { GetPendingQuoteByMessageIdQuery } from 'src/read-repositories/queries/get-pending-quote-by-message-id.query'
 
-@EventsHandler(EsdbLiveSubscriptionEvent)
+@EventsHandler(EsdbLiveEvent)
 @QueryHandler(GetPendingQuoteByMessageIdQuery)
 export class GetPendingQuoteByMessageIdQueryHandlerService
   implements
     IQueryHandler<GetPendingQuoteByMessageIdQuery>,
-    IEventHandler<EsdbLiveSubscriptionEvent>
+    IEventHandler<EsdbLiveEvent>
 {
   private messageIdToQuoteIdMapping: { [messageId: string]: JSONType } = {}
 
   constructor(private logger: Logger) {}
 
-  handle({ data, type }: EsdbLiveSubscriptionEvent) {
+  handle({ data, type }: EsdbLiveEvent) {
     if (type !== DomainEventNames.QUOTE_SUBMITTED) {
     }
 

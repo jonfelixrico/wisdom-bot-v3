@@ -1,7 +1,7 @@
 import { AllStreamRecordedEvent, JSONType } from '@eventstore/db-client'
 import { IEvent } from '@nestjs/cqrs'
 
-export class EsdbLiveSubscriptionEvent<DataType = JSONType> implements IEvent {
+export class EsdbLiveEvent<DataType = JSONType> implements IEvent {
   readonly streamId: string
   readonly data: DataType
   readonly revision: bigint

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { END, EventStoreDBClient } from '@eventstore/db-client'
 import { EventBus } from '@nestjs/cqrs'
-import { EsdbLiveSubscriptionEvent } from './esdb-live-subscription.event'
+import { EsdbLiveEvent } from './esdb-live.event'
 
 @Injectable()
 export class EsdbEventPublisherService {
@@ -35,7 +35,7 @@ export class EsdbEventPublisherService {
             `Relayed event ${id} from stream ${streamId} of type ${type}`,
             EsdbEventPublisherService.name,
           )
-          this.bus.publish(new EsdbLiveSubscriptionEvent(event))
+          this.bus.publish(new EsdbLiveEvent(event))
         }
       })
   }
