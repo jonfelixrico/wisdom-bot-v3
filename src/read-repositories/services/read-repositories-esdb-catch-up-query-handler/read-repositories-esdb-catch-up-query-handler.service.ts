@@ -1,49 +1,19 @@
-import { EventStoreDBClient, JSONType } from '@eventstore/db-client'
-import { Logger } from '@nestjs/common'
-import {
-  EventBus,
-  EventsHandler,
-  IEventHandler,
-  IQueryHandler,
-  QueryHandler,
-} from '@nestjs/cqrs'
-import { EsdbLiveEvent } from 'src/event-store/esdb-event-publisher/esdb-live.event'
+import { Injectable } from '@nestjs/common'
+import { EventBus, IQueryHandler } from '@nestjs/cqrs'
 import { EsdbCatchUpQuery } from 'src/read-repositories/esdb-catch-up.query'
+import { EventStoreDBClient } from '@eventstore/db-client'
+import { Logger } from '@nestjs/common'
 import { ReadRepositoryEsdbEvent } from 'src/read-repositories/read-repository-esdb.event'
 
-/**
- * This class is responsible for emitting one thing and one thing only: ReadRepositoryEsdbEvent
- * instances. Each instance represents an event (or events) belonging to a stream. It emits both
- * live and past events.
- *
- * It gets its live events from EsdbLiveEvent instances from the event bus. Past events triggered
- * to be emitted by listening to queries.
- */
-@EventsHandler(EsdbLiveEvent)
-@QueryHandler(EsdbCatchUpQuery)
-export class ReadRepositoriesEsdbService
-  implements IEventHandler<EsdbLiveEvent>, IQueryHandler<EsdbCatchUpQuery>
+@Injectable()
+export class ReadRepositoriesEsdbCatchUpQueryHandlerService
+  implements IQueryHandler<EsdbCatchUpQuery>
 {
   constructor(
     private eventBus: EventBus,
     private client: EventStoreDBClient,
     private logger: Logger,
   ) {}
-
-  /**
-   * This is for relaying EsdbLiveEvent instances as ReadRepositoryEsdbEvents.
-   * @param param0
-   */
-  handle({ streamId, data, revision, type }: EsdbLiveEvent<JSONType>) {
-    this.eventBus.publish(
-      new ReadRepositoryEsdbEvent(streamId, [{ data, revision, type }], 'LIVE'),
-    )
-
-    this.logger.debug(
-      `Relayed live event ${type} with revision ${revision} from stream ${streamId}.`,
-      ReadRepositoriesEsdbService.name,
-    )
-  }
 
   /**
    * This is for listening to EsdbCatchUpQuery instances emitted by what we assume are read models.
@@ -65,7 +35,7 @@ export class ReadRepositoriesEsdbService
     if (!resolvedEvents.length) {
       this.logger.debug(
         `No events found in stream ${streamName} after revision ${fromRevision}.`,
-        ReadRepositoriesEsdbService.name,
+        ReadRepositoriesEsdbCatchUpQueryHandlerService.name,
       )
       return false
     }
@@ -87,7 +57,7 @@ export class ReadRepositoriesEsdbService
 
     this.logger.debug(
       `Emitted ${resolvedEvents.length} events from stream ${streamName} starting from revision ${fromRevision}.`,
-      ReadRepositoriesEsdbService.name,
+      ReadRepositoriesEsdbCatchUpQueryHandlerService.name,
     )
 
     return true
