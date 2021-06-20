@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { AcceptPendingQuoteCommand } from 'src/domain/pending-quote/accept-pending-quote.command'
+import { AcceptPendingQuoteCommand } from 'src/domain/commands/accept-pending-quote.command'
 import { PendingQuoteEsdbRepository } from 'src/write-repositories/abstract/pending-quote-esdb-repository.abstract'
 
 @CommandHandler(AcceptPendingQuoteCommand)

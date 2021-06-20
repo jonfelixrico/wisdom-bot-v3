@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { PendingQuote } from 'src/domain/pending-quote/pending-quote.entity'
+import { PendingQuote } from 'src/domain/entities/pending-quote.entity'
 import { QuoteDbEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 import { Repository } from 'typeorm'
 

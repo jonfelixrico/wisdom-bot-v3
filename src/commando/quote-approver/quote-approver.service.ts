@@ -5,7 +5,7 @@ import { DeleteListenerService } from '../delete-listener/delete-listener.servic
 import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
 import { CommandBus, QueryBus } from '@nestjs/cqrs'
 import { GetPendingQuoteByMessageIdQuery } from 'src/read-repositories/queries/get-pending-quote-by-message-id.query'
-import { AcceptPendingQuoteCommand } from 'src/domain/pending-quote/accept-pending-quote.command'
+import { AcceptPendingQuoteCommand } from 'src/domain/commands/accept-pending-quote.command'
 
 interface IPendingQuote {
   messageId: string

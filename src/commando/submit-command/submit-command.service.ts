@@ -4,10 +4,10 @@ import { CommandoClient, CommandoMessage } from 'discord.js-commando'
 import { GuildRepository } from 'src/classes/guild-repository.abstract'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 import { CommandBus } from '@nestjs/cqrs'
-import { SubmitQuoteCommand } from 'src/domain/pending-quote/submit-quote.command'
 import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
 import { DeleteListenerService } from '../delete-listener/delete-listener.service'
 import { SUBMIT_COMMAND_INFO } from './submit-command-info'
+import { SubmitQuoteCommand } from 'src/domain/commands/submit-quote.command'
 
 interface ISubmitCommandArgs extends IArgumentMap {
   author: User

@@ -1,8 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { Receive } from 'src/domain/receive/receive.entity'
 import { ReceiveDbEntity } from 'src/typeorm/entities/receive.typeorm-entity'
 import { Repository } from 'typeorm'
-import { IInteraction } from 'src/domain/receive/receive.entity'
+import { IInteraction, Receive } from 'src/domain/entities/receive.entity'
 
 @Injectable()
 export class ReceiveRepositoryService {

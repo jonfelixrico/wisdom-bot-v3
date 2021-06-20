@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Quote, IQuoteReceive } from 'src/domain/quote/quote.entity'
+import { Quote, IQuoteReceive } from 'src/domain/entities/quote.entity'
 import { Repository } from 'typeorm'
 import { QuoteDbEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 import { Inject } from '@nestjs/common'

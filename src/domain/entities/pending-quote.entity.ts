@@ -1,7 +1,7 @@
 import { DomainEntity } from '../abstracts/domain-entity.abstract'
-import { BasePendingQuoteEvent } from './events/base-pending-quote-event.abstract'
-import { PendingQuoteAccepted } from './events/pending-quote-accepted.event'
-import { PendingQuoteCancelled } from './events/pending-quote-cancelled.event'
+import { BasePendingQuoteEvent } from '../events/base-pending-quote-event.abstract'
+import { PendingQuoteAccepted } from '../events/pending-quote-accepted.event'
+import { PendingQuoteCancelled } from '../events/pending-quote-cancelled.event'
 import { IPendingQuote } from './pending-quote.interface'
 
 export class PendingQuote
