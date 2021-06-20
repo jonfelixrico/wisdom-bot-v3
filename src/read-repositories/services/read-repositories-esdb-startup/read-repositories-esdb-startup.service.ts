@@ -47,13 +47,9 @@ export class ReadRepositoriesEsdbStartupService {
           this.eventBus.publish(
             new ReadRepositoryEsdbEvent(
               streamId,
-              [
-                {
-                  data,
-                  revision,
-                  type,
-                },
-              ],
+              revision,
+              type,
+              data,
               'CATCH_UP',
             ),
           )

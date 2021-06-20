@@ -5,6 +5,5 @@ export class EsdbCatchUpQuery implements IQuery {
   constructor(
     readonly streamName: string,
     readonly fromRevision: ReadRevision,
-    readonly maxCount?: number | bigint,
   ) {}
 }

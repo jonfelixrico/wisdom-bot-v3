@@ -17,7 +17,7 @@ export class ReadRepositoriesEsdbLiveEventRelayService
    */
   handle({ streamId, data, revision, type }: EsdbLiveEvent<JSONType>) {
     this.eventBus.publish(
-      new ReadRepositoryEsdbEvent(streamId, [{ data, revision, type }], 'LIVE'),
+      new ReadRepositoryEsdbEvent(streamId, revision, type, data, 'LIVE'),
     )
 
     this.logger.debug(

@@ -15,24 +15,16 @@ export class ReadRepositoriesEsdbCatchUpQueryHandlerService
     private logger: Logger,
   ) {}
 
-  /**
-   * This is for listening to EsdbCatchUpQuery instances emitted by what we assume are read models.
-   * Like what we do with EsdbLiveEvents that we catch from the event bus, we emit the resuls
-   * of the queries as ReadRepositoryEsdbEvent instances.
-   * @param param0
-   * @returns True if events are found, false if otherwise.
-   */
   async execute({
     fromRevision,
     streamName,
-    maxCount,
   }: EsdbCatchUpQuery): Promise<boolean> {
-    const resolvedEvents = await this.client.readStream(streamName, {
-      fromRevision,
-      maxCount,
+    const [resolvedEvent] = await this.client.readStream(streamName, {
+      fromRevision: fromRevision,
+      maxCount: 1,
     })
 
-    if (!resolvedEvents.length) {
+    if (!resolvedEvent) {
       this.logger.debug(
         `No events found in stream ${streamName} after revision ${fromRevision}.`,
         ReadRepositoriesEsdbCatchUpQueryHandlerService.name,
@@ -40,23 +32,20 @@ export class ReadRepositoriesEsdbCatchUpQueryHandlerService
       return false
     }
 
+    const { revision, type, data } = resolvedEvent.event
+
     const eventToPublish = new ReadRepositoryEsdbEvent(
       streamName,
-      resolvedEvents.map(({ event }) => {
-        const { data, type, revision } = event
-        return {
-          data,
-          type,
-          revision,
-        }
-      }),
+      revision,
+      type,
+      data,
       'CATCH_UP',
     )
 
     this.eventBus.publish(eventToPublish)
 
     this.logger.debug(
-      `Emitted ${resolvedEvents.length} events from stream ${streamName} starting from revision ${fromRevision}.`,
+      `Emitted revision ${revision} of stream ${streamName} with type ${type}.`,
       ReadRepositoriesEsdbCatchUpQueryHandlerService.name,
     )
 

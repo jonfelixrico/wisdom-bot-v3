@@ -1,17 +1,11 @@
 import { JSONType } from '@eventstore/db-client'
 
-interface IStreamEvent<DataType = JSONType> {
-  readonly data: DataType
-  readonly revision: bigint
-  readonly type: string
-}
-
 /**
  * This class represents a series of events from a specific stream.
  * This is meant to be the only events read models should listen to when building
  * their data.
  */
-export class ReadRepositoryEsdbEvent {
+export class ReadRepositoryEsdbEvent<DataType = JSONType> {
   /**
    * @param streamId The id of the stream the `events` are from.
    * @param events Contains event data, revision, and type. They are expected to be in-sequence.
@@ -20,7 +14,9 @@ export class ReadRepositoryEsdbEvent {
    */
   constructor(
     readonly streamId: string,
-    readonly events: IStreamEvent<unknown>[],
+    readonly revision: bigint,
+    readonly type: string,
+    readonly data: DataType,
     readonly source: 'LIVE' | 'CATCH_UP',
   ) {}
 }
