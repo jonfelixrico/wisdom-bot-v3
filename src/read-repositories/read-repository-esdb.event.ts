@@ -10,5 +10,6 @@ export class ReadRepositoryEsdbEvent {
   constructor(
     readonly streamId: string,
     readonly events: IStreamEvent<unknown>[],
+    readonly source: 'LIVE' | 'CATCH_UP',
   ) {}
 }
