@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common'
 import { DiscordModule } from './discord/discord.module'
 import { ConfigModule } from '@nestjs/config'
-import { RepositoriesModule } from './repositories/repositories.module'
 import { TypeormModule } from './typeorm/typeorm.module'
 import { CommandoModule } from './commando/commando.module'
 import { CommandHandlersModule } from './command-handlers/command-handlers.module'
@@ -19,7 +18,6 @@ import { ReadRepositoriesModule } from './read-repositories/read-repositories.mo
     }),
     TypeormModule,
     DiscordModule,
-    RepositoriesModule,
     CommandoModule,
     CommandHandlersModule,
     EventStoreModule,

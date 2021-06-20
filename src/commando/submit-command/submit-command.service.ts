@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { Message, User } from 'discord.js'
 import { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import { GuildRepository } from 'src/classes/guild-repository.abstract'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 import { CommandBus } from '@nestjs/cqrs'
 import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
@@ -18,7 +17,6 @@ interface ISubmitCommandArgs extends IArgumentMap {
 export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
   constructor(
     client: CommandoClient,
-    private guildRepo: GuildRepository,
     private commandBus: CommandBus,
     private reactionListener: ReactionListenerService,
     private deleteListener: DeleteListenerService,
@@ -34,8 +32,9 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     const channelId = message.channel.id
     const submitterId = message.author.id
 
-    const { expireMillis, approveEmoji, approveCount } =
-      await this.guildRepo.getQuoteSettings(guildId)
+    const expireMillis = 60 * 1000 * 2
+    const approveEmoji = '🤔'
+    const approveCount = 1
 
     const expireDt = new Date(Date.now() + expireMillis)
 
