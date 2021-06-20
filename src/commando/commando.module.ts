@@ -22,7 +22,7 @@ import { CqrsModule } from '@nestjs/cqrs'
     // ConcurCommandService,
     ReactionListenerService,
     // PendingQuoteMessageRecacherService,
-    // QuoteApproverService,
+    QuoteApproverService,
     // QuoteRegeneratorService,
     DeleteListenerService,
     // StatsCommandService,

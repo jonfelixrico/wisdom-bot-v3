@@ -1,3 +1,4 @@
+import { JSONType } from '@eventstore/db-client'
 import { Logger } from '@nestjs/common'
 import {
   EventsHandler,
@@ -9,31 +10,25 @@ import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { EsdbLiveSubscriptionEvent } from 'src/event-store/esdb-event-publisher/esdb-live-subscription.event'
 import { GetPendingQuoteByMessageIdQuery } from 'src/read-repositories/queries/get-pending-quote-by-message-id.query'
 
-interface IEventPayload {
-  messageId: string
-  quoteId: string
-}
-
 @EventsHandler(EsdbLiveSubscriptionEvent)
 @QueryHandler(GetPendingQuoteByMessageIdQuery)
 export class GetPendingQuoteByMessageIdQueryHandlerService
   implements
     IQueryHandler<GetPendingQuoteByMessageIdQuery>,
-    IEventHandler<EsdbLiveSubscriptionEvent<IEventPayload>>
+    IEventHandler<EsdbLiveSubscriptionEvent>
 {
-  private messageIdToQuoteIdMapping: { [messageId: string]: string } = {}
+  private messageIdToQuoteIdMapping: { [messageId: string]: JSONType } = {}
 
   constructor(private logger: Logger) {}
 
-  handle({ data, type }: EsdbLiveSubscriptionEvent<IEventPayload>) {
+  handle({ data, type }: EsdbLiveSubscriptionEvent) {
     if (type !== DomainEventNames.QUOTE_SUBMITTED) {
     }
 
-    const { messageId, quoteId } = data
-    this.messageIdToQuoteIdMapping[messageId] = quoteId
+    this.messageIdToQuoteIdMapping[data['messageId']] = data
 
     this.logger.debug(
-      `Mapped messageId ${messageId} to quote ${quoteId}.`,
+      `Mapped messageId ${data['messageId']} to quote ${data['quoteId']}.`,
       GetPendingQuoteByMessageIdQueryHandlerService.name,
     )
   }

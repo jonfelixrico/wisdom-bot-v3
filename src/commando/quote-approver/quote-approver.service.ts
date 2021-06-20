@@ -1,13 +1,22 @@
-import { Inject, Injectable, Logger } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { filter, map } from 'rxjs/operators'
 import { GuildRepoService } from 'src/discord/guild-repo/guild-repo.service'
 import { DeleteListenerService } from '../delete-listener/delete-listener.service'
 import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
-import {
-  IPendingQuote,
-  PendingQuoteRepository,
-} from 'src/classes/pending-quote-repository.abstract'
+import { CommandBus, QueryBus } from '@nestjs/cqrs'
+import { GetPendingQuoteByMessageIdQuery } from 'src/read-repositories/queries/get-pending-quote-by-message-id.query'
+import { AcceptPendingQuoteCommand } from 'src/domain/pending-quote/accept-pending-quote.command'
+
+interface IPendingQuote {
+  messageId: string
+  quoteId: string
+  guildId: string
+  channelId: string
+  content: string
+  submitterId: string
+  authorId: string
+  submitDt: Date
+}
 
 function generateResponseString({
   content,
@@ -15,7 +24,9 @@ function generateResponseString({
   authorId,
   submitDt,
 }: IPendingQuote) {
-  const quoteLine = `**"${content}"** - <@${authorId}>, ${submitDt.getFullYear()}`
+  const quoteLine = `**"${content}"** - <@${authorId}>, ${new Date(
+    submitDt,
+  ).getFullYear()}`
   const acceptLine = `<@${submitterId}>, your submission has been accepted.`
 
   return [quoteLine, acceptLine].join('\n')
@@ -25,11 +36,10 @@ function generateResponseString({
 export class QuoteApproverService {
   constructor(
     private guildRepo: GuildRepoService,
-    private pendingRepo: PendingQuoteRepository,
     private reactListener: ReactionListenerService,
     private deleteListener: DeleteListenerService,
-    @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: Logger,
+    private queryBus: QueryBus,
+    private commandBus: CommandBus,
   ) {
     this.setUp()
   }
@@ -44,8 +54,16 @@ export class QuoteApproverService {
       .subscribe(this.approveQuoteByMessageId.bind(this))
   }
 
-  private async approveQuoteByMessageId(messageId: string) {
-    const quote = await this.pendingRepo.getPendingQuoteByMessageId(messageId)
+  private async getQuoteIdByMessageId(
+    messageId: string,
+  ): Promise<IPendingQuote> {
+    return await this.queryBus.execute(
+      new GetPendingQuoteByMessageIdQuery(messageId),
+    )
+  }
+
+  private async approveQuoteByMessageId(messageId: string): Promise<void> {
+    const quote = await this.getQuoteIdByMessageId(messageId)
     if (!quote) {
       // TODO add logging here
       return
@@ -82,12 +100,9 @@ export class QuoteApproverService {
   }
 
   private async processQuote(quote: IPendingQuote) {
-    const { quoteId, messageId, guildId } = quote
-    await this.pendingRepo.approvePendingQuote(quoteId)
-    this.logger.log(
-      `Approved quote ${quoteId} of guild ${guildId}`,
-      QuoteApproverService.name,
-    )
+    const { messageId } = quote
+
+    this.commandBus.execute(new AcceptPendingQuoteCommand(quote.quoteId))
 
     this.deleteListener.unwatch(messageId)
     this.reactListener.unwatch(messageId)
@@ -96,15 +111,5 @@ export class QuoteApproverService {
     // TODO unsubscribe regenerator
     // TODO unsubscribe watcher
     await this.announceApproval(quote)
-  }
-
-  async approveQuote(quoteId: string): Promise<IPendingQuote> {
-    const quote = await this.pendingRepo.getPendingQuote(quoteId)
-    if (!quote) {
-      // TODO log warnings
-      return
-    }
-
-    await this.processQuote(quote)
   }
 }
