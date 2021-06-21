@@ -1,27 +1,36 @@
-import { Logger } from '@nestjs/common'
-import { EventsHandler, IEventHandler } from '@nestjs/cqrs'
+import { Injectable, Logger } from '@nestjs/common'
+import { EventBus } from '@nestjs/cqrs'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import { ReadRepositoryEsdbEvent } from 'src/read-repositories/read-repository-esdb.event'
 import { QuoteTypeormRepository } from 'src/typeorm/providers/quote.typeorm-repository'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
+import { BaseConcurrencyLimitedEventHandler } from '../base-reducer-service.abstract'
 
-@EventsHandler(ReadRepositoryEsdbEvent)
-export class QuoteSubmittedReducerService
-  implements
-    IEventHandler<ReadRepositoryEsdbEvent<IQuoteSubmittedEventPayload>>
-{
-  constructor(private logger: Logger, private repo: QuoteTypeormRepository) {}
+@Injectable()
+export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHandler {
+  CONCURRENCY_LIMIT = 25
+  CLASS_NAME = QuoteSubmittedReducerService.name
+
+  filter(e): boolean {
+    return (
+      e instanceof ReadRepositoryEsdbEvent &&
+      e.type === DomainEventNames.QUOTE_SUBMITTED
+    )
+  }
+
+  constructor(
+    logger: Logger,
+    private repo: QuoteTypeormRepository,
+    eventBus: EventBus,
+  ) {
+    super(eventBus, logger)
+  }
 
   async handle({
     type,
     data,
     revision,
   }: ReadRepositoryEsdbEvent<IQuoteSubmittedEventPayload>) {
-    if (type !== DomainEventNames.QUOTE_SUBMITTED) {
-      // TODO add logging here
-      return
-    }
-
     const { quoteId } = data
 
     const quote = await this.repo.findOne({
