@@ -1,11 +1,12 @@
 import { JSONType } from '@eventstore/db-client'
+import { IEvent } from '@nestjs/cqrs'
 
 /**
  * This class represents a series of events from a specific stream.
  * This is meant to be the only events read models should listen to when building
  * their data.
  */
-export class ReadRepositoryEsdbEvent<DataType = JSONType> {
+export class ReadRepositoryEsdbEvent<DataType = JSONType> implements IEvent {
   /**
    * @param streamId The id of the stream the `events` are from.
    * @param events Contains event data, revision, and type. They are expected to be in-sequence.
