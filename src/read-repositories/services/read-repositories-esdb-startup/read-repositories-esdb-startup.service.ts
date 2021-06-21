@@ -7,6 +7,7 @@ import {
 } from '@eventstore/db-client'
 import { EventBus } from '@nestjs/cqrs'
 import { ReadRepositoryEsdbEvent } from 'src/read-repositories/read-repository-esdb.event'
+import { OnModuleInit } from '@nestjs/common'
 
 const BATCH_SIZE = 100
 const STREAMS_PROJECTION = '$streams'
@@ -17,16 +18,14 @@ const STREAMS_PROJECTION = '$streams'
  * We're doing this so that the read models can be aware of the aggregates/streams that they have not
  * saved.
  */
-export class ReadRepositoriesEsdbStartupService {
+export class ReadRepositoriesEsdbStartupService implements OnModuleInit {
   constructor(
     private client: EventStoreDBClient,
     private logger: Logger,
     private eventBus: EventBus,
-  ) {
-    this.onInit()
-  }
+  ) {}
 
-  private async onInit() {
+  async onModuleInit() {
     let fromRevision: ReadRevision = START
 
     try {
