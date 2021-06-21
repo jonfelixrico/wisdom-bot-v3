@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { END, EventStoreDBClient } from '@eventstore/db-client'
 import { EventBus } from '@nestjs/cqrs'
 import { EsdbLiveEvent } from './esdb-live.event'
@@ -10,17 +10,19 @@ import { EsdbLiveEvent } from './esdb-live.event'
  *
  * Non-JSON events or system events are not relayed.
  */
-export class EsdbLiveEventRelayService {
+export class EsdbLiveEventRelayService implements OnModuleInit {
   constructor(
     private client: EventStoreDBClient,
     private bus: EventBus,
     private logger: Logger,
-  ) {
-    this.initiateSubscription()
-  }
+  ) {}
 
-  private initiateSubscription() {
+  onModuleInit() {
     const { logger } = this
+    logger.verbose(
+      'Started the listener for all ESDB events.',
+      EsdbLiveEventRelayService.name,
+    )
     this.client
       .subscribeToAll({ fromPosition: END })
       .on('data', ({ event }) => {
