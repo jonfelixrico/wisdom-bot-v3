@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common'
-import { EventBus, IQueryHandler } from '@nestjs/cqrs'
+import { EventBus, IQueryHandler, QueryHandler } from '@nestjs/cqrs'
 import { EsdbCatchUpQuery } from 'src/read-repositories/esdb-catch-up.query'
 import { EventStoreDBClient } from '@eventstore/db-client'
 import { Logger } from '@nestjs/common'
 import { ReadRepositoryEsdbEvent } from 'src/read-repositories/read-repository-esdb.event'
 
-@Injectable()
+@QueryHandler(EsdbCatchUpQuery)
 export class ReadRepositoriesEsdbCatchUpQueryHandlerService
   implements IQueryHandler<EsdbCatchUpQuery>
 {
