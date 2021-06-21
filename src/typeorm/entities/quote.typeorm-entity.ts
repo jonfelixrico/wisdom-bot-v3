@@ -46,7 +46,7 @@ export class QuoteTypeormEntity {
   @Column({
     nullable: true,
   })
-  expireDt: string
+  expireDt: Date
 
   @Column(() => EsdbEntity)
   esdb: EsdbEntity
