@@ -2,8 +2,9 @@ import { Logger, OnModuleInit } from '@nestjs/common'
 import { EventBus } from '@nestjs/cqrs'
 import { from } from 'rxjs'
 import { catchError, filter, mergeMap } from 'rxjs/operators'
+import { ReadRepositoryEsdbEvent } from '../read-repository-esdb.event'
 
-export abstract class BaseConcurrencyLimitedEventHandler
+export abstract class BaseConcurrencyLimitedEventHandler<PayloadType>
   implements OnModuleInit
 {
   abstract readonly CONCURRENCY_LIMIT: number
@@ -11,9 +12,9 @@ export abstract class BaseConcurrencyLimitedEventHandler
 
   constructor(protected eventBus: EventBus, protected logger: Logger) {}
 
-  abstract handle(e: any): Promise<void>
+  abstract handle(e: ReadRepositoryEsdbEvent<PayloadType>): Promise<void>
 
-  abstract filter(e: any): boolean
+  abstract filter(e: ReadRepositoryEsdbEvent<PayloadType>): boolean
 
   onModuleInit() {
     const filterFn = this.filter.bind(this)
@@ -23,6 +24,7 @@ export abstract class BaseConcurrencyLimitedEventHandler
     logger.verbose('Started listening for events.', this.CLASS_NAME)
     this.eventBus
       .pipe(
+        filter((e) => e instanceof ReadRepositoryEsdbEvent),
         filter(filterFn),
         mergeMap((event) => {
           return from(handleFn(event)).pipe(

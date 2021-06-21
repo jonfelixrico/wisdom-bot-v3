@@ -7,11 +7,11 @@ import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { BaseConcurrencyLimitedEventHandler } from '../base-reducer-service.abstract'
 
 @Injectable()
-export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHandler {
+export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHandler<IQuoteSubmittedEventPayload> {
   CONCURRENCY_LIMIT = 25
   CLASS_NAME = QuoteSubmittedReducerService.name
 
-  filter(e): boolean {
+  filter(e: ReadRepositoryEsdbEvent<IQuoteSubmittedEventPayload>): boolean {
     return (
       e instanceof ReadRepositoryEsdbEvent &&
       e.type === DomainEventNames.QUOTE_SUBMITTED
@@ -30,6 +30,7 @@ export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHan
     type,
     data,
     revision,
+    streamId,
   }: ReadRepositoryEsdbEvent<IQuoteSubmittedEventPayload>) {
     const { quoteId } = data
 
@@ -38,6 +39,10 @@ export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHan
     })
 
     if (quote) {
+      this.logger.debug(
+        `Skipped event ${revision} (${type}) of stream ${streamId}; reason: already saved`,
+        QuoteSubmittedReducerService.name,
+      )
       // TODO add logging here
       return
     }
@@ -69,6 +74,9 @@ export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHan
     })
 
     // TODO make this message better, more descriptive
-    this.logger.verbose(`Processed ${type}`, QuoteSubmittedReducerService.name)
+    this.logger.verbose(
+      `Processed event ${revision} (${type}) of stream ${streamId}`,
+      QuoteSubmittedReducerService.name,
+    )
   }
 }
