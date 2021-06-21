@@ -11,22 +11,42 @@ export class QuoteTypeormEntity {
   @Column()
   guildId: string
 
-  @Column({
-    type: 'int',
-  })
-  upvoteCount: number
-
-  @Column()
-  upvoteEmoji: string
-
-  @Column()
-  expireDt: string
-
   @Column()
   submitterId: string
 
   @Column()
   authorId: string
+
+  @Column()
+  content: string
+
+  // mostly for pending quotes
+
+  @Column({
+    nullable: true,
+  })
+  messageId: string
+
+  @Column({
+    nullable: true,
+  })
+  channelId: string
+
+  @Column({
+    type: 'int',
+    nullable: true,
+  })
+  upvoteCount: number
+
+  @Column({
+    nullable: true,
+  })
+  upvoteEmoji: string
+
+  @Column({
+    nullable: true,
+  })
+  expireDt: string
 
   @Column(() => EsdbEntity)
   esdb: EsdbEntity
