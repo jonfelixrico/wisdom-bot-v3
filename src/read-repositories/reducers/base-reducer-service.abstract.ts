@@ -19,9 +19,9 @@ export abstract class BaseConcurrencyLimitedEventHandler<PayloadType>
   onModuleInit() {
     const filterFn = this.filter.bind(this)
     const handleFn = this.handle.bind(this)
-    const { logger } = this
+    const { logger, CLASS_NAME, CONCURRENCY_LIMIT } = this
 
-    logger.verbose('Started listening for events.', this.CLASS_NAME)
+    logger.verbose('Started listening for events.', CLASS_NAME)
     this.eventBus
       .pipe(
         filter((e) => e instanceof ReadRepositoryEsdbEvent),
@@ -32,12 +32,12 @@ export abstract class BaseConcurrencyLimitedEventHandler<PayloadType>
               logger.error(
                 `Uncaught error: ${error.message}`,
                 error.stack,
-                this.CLASS_NAME,
+                CLASS_NAME,
               )
               return null
             }),
           )
-        }, this.CONCURRENCY_LIMIT),
+        }, CONCURRENCY_LIMIT),
       )
       .subscribe()
   }
