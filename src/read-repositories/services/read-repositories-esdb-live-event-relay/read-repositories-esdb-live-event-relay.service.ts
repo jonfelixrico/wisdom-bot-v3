@@ -1,10 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Logger } from '@nestjs/common'
 import { EsdbLiveEvent } from 'src/event-store/esdb-event-publisher/esdb-live.event'
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs'
 import { ReadRepositoryEsdbEvent } from 'src/read-repositories/read-repository-esdb.event'
 import { JSONType } from '@eventstore/db-client'
 
-@Injectable()
 @EventsHandler(EsdbLiveEvent)
 export class ReadRepositoriesEsdbLiveEventRelayService
   implements IEventHandler<EsdbLiveEvent>
