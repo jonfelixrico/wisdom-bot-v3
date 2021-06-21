@@ -6,14 +6,16 @@ import { GetPendingQuoteByMessageIdQueryHandlerService } from './handlers/get-pe
 import { ReadRepositoriesEsdbLiveEventRelayService } from './services/read-repositories-esdb-live-event-relay/read-repositories-esdb-live-event-relay.service'
 import { ReadRepositoriesEsdbCatchUpQueryHandlerService } from './services/read-repositories-esdb-catch-up-query-handler/read-repositories-esdb-catch-up-query-handler.service'
 import { ReadRepositoriesEsdbStartupService } from './services/read-repositories-esdb-startup/read-repositories-esdb-startup.service'
+import { QuoteSubmittedReducerService } from './reducers/quote-submitted-reducer/quote-submitted-reducer.service'
 
 @Module({
-  imports: [EventStoreModule, TypeormModule, CqrsModule],
+  imports: [CqrsModule, EventStoreModule, TypeormModule],
   providers: [
     GetPendingQuoteByMessageIdQueryHandlerService,
     ReadRepositoriesEsdbLiveEventRelayService,
     ReadRepositoriesEsdbCatchUpQueryHandlerService,
     ReadRepositoriesEsdbStartupService,
+    QuoteSubmittedReducerService,
   ],
 })
 export class ReadRepositoriesModule {}
