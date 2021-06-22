@@ -56,4 +56,7 @@ export class QuoteTypeormEntity {
 
   @Column({ nullable: true })
   cancelDt: Date
+
+  @Column()
+  submitDt: Date
 }
