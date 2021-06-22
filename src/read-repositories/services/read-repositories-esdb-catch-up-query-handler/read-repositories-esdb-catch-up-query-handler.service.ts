@@ -38,7 +38,6 @@ export class ReadRepositoriesEsdbCatchUpQueryHandlerService
       revision,
       type,
       data,
-      'CATCH_UP',
     )
 
     this.eventBus.publish(eventToPublish)

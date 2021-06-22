@@ -1,10 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { EventBus } from '@nestjs/cqrs'
+import { EventBus, QueryBus } from '@nestjs/cqrs'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import { ReadRepositoryEsdbEvent } from 'src/read-repositories/read-repository-esdb.event'
 import { QuoteTypeormRepository } from 'src/typeorm/providers/quote.typeorm-repository'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
-import { BaseConcurrencyLimitedEventHandler } from '../base-reducer-service.abstract'
+import {
+  BaseConcurrencyLimitedEventHandler,
+  ReduceStatus,
+} from '../base-reducer-service.abstract'
 
 @Injectable()
 export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHandler<IQuoteSubmittedEventPayload> {
@@ -19,11 +22,12 @@ export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHan
   }
 
   constructor(
-    logger: Logger,
+    protected logger: Logger,
     private repo: QuoteTypeormRepository,
-    eventBus: EventBus,
+    protected queryBus: QueryBus,
+    protected eventBus: EventBus,
   ) {
-    super(eventBus, logger)
+    super(eventBus, queryBus, logger)
   }
 
   async handle({
@@ -44,7 +48,7 @@ export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHan
         QuoteSubmittedReducerService.name,
       )
       // TODO add logging here
-      return
+      return ReduceStatus.SKIPPED
     }
 
     const {
@@ -73,10 +77,6 @@ export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHan
       upvoteEmoji,
     })
 
-    // TODO make this message better, more descriptive
-    this.logger.verbose(
-      `Processed event ${revision} (${type}) of stream ${streamId}`,
-      QuoteSubmittedReducerService.name,
-    )
+    return ReduceStatus.CONSUMED
   }
 }

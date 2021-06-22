@@ -7,6 +7,8 @@ import { IEvent } from '@nestjs/cqrs'
  * their data.
  */
 export class ReadRepositoryEsdbEvent<DataType = JSONType> implements IEvent {
+  readonly isLive: boolean
+
   /**
    * @param streamId The id of the stream the `events` are from.
    * @param events Contains event data, revision, and type. They are expected to be in-sequence.
@@ -18,6 +20,8 @@ export class ReadRepositoryEsdbEvent<DataType = JSONType> implements IEvent {
     readonly revision: bigint,
     readonly type: string,
     readonly data: DataType,
-    readonly source: 'LIVE' | 'CATCH_UP',
-  ) {}
+    isLive?: boolean,
+  ) {
+    this.isLive = !!isLive
+  }
 }
