@@ -50,4 +50,10 @@ export class QuoteTypeormEntity {
 
   @Column(() => EsdbEntity)
   esdb: EsdbEntity
+
+  @Column()
+  acceptDt: Date
+
+  @Column()
+  cancelDt: Date
 }
