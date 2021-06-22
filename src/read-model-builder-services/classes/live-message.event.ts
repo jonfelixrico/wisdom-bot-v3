@@ -1,4 +1,4 @@
-import { ReadRepositoryMessage as LiveMessage } from './read-repository-message.event'
+import { ReadModelBuildMessage as LiveMessage } from './read-model-build-message.event'
 
 export class QueriedMessage<
   PayloadType = any,

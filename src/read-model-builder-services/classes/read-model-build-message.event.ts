@@ -1,6 +1,6 @@
 import { IEvent } from '@nestjs/cqrs'
 
-export abstract class ReadRepositoryMessage<
+export abstract class ReadModelBuildMessage<
   PayloadType = any,
   EventType = string,
 > implements IEvent

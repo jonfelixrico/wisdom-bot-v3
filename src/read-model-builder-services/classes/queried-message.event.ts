@@ -1,9 +1,9 @@
-import { ReadRepositoryMessage } from './read-repository-message.event'
+import { ReadModelBuildMessage } from './read-model-build-message.event'
 
 export class QueriedMessage<
   PayloadType = any,
   EventType = string,
-> extends ReadRepositoryMessage<PayloadType, EventType> {
+> extends ReadModelBuildMessage<PayloadType, EventType> {
   constructor(
     readonly streamId: string,
     readonly revision: bigint,
