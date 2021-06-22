@@ -8,6 +8,7 @@ import { LoggerModule } from './logger/logger.module'
 import { EventStoreModule } from './event-store/event-store.module'
 import { WriteRepositoriesModule } from './write-repositories/write-repositories.module'
 import { ReadRepositoriesModule } from './read-repositories/read-repositories.module'
+import { ReadModelBuilderServicesModule } from './read-model-builder-services/read-model-builder-services.module'
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ReadRepositoriesModule } from './read-repositories/read-repositories.mo
     EventStoreModule,
     WriteRepositoriesModule,
     ReadRepositoriesModule,
+    ReadModelBuilderServicesModule,
   ],
 })
 export class AppModule {}
