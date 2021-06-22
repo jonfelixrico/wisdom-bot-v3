@@ -16,6 +16,7 @@ import { ReadEventConsumedHandlerService } from './services/read-event-consumed-
     ReadRepositoriesEsdbStartupService,
     QuoteSubmittedReducerService,
     ReadEventConsumedHandlerService,
+    QuoteAcceptedReducerService,
   ],
 })
 export class ReadRepositoriesModule {}
