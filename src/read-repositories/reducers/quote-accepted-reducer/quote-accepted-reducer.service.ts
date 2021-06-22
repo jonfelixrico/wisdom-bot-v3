@@ -33,13 +33,14 @@ export class QuoteAcceptedReducerService extends BaseConcurrencyLimitedEventHand
     const { acceptDt, quoteId } = data
     const quoteEntity = await this.repo.findOne({ id: quoteId })
 
-    if (quoteEntity.esdb.revision - revision !== BigInt(1)) {
+    if (BigInt(revision) !== BigInt(quoteEntity.esdb.revision) + 1n) {
       return ReduceStatus.SKIPPED
     }
 
-    quoteEntity.esdb.revision = revision
+    quoteEntity.esdb.revision = BigInt(revision)
     quoteEntity.acceptDt = acceptDt
 
     await this.repo.save(quoteEntity)
+    return ReduceStatus.CONSUMED
   }
 }

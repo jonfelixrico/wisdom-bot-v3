@@ -54,6 +54,7 @@ export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHan
       submitterId,
       upvoteCount,
       upvoteEmoji,
+      submitDt,
     } = data
 
     await this.repo.save({
@@ -68,6 +69,7 @@ export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHan
       submitterId,
       upvoteCount,
       upvoteEmoji,
+      submitDt,
     })
 
     return ReduceStatus.CONSUMED
