@@ -1,9 +1,9 @@
-import { ReadModelBuildMessage as LiveMessage } from './read-model-build-message.event'
+import { ReadModelBuildMessage } from './read-model-build-message.event'
 
-export class QueriedMessage<
+export class LiveMessage<
   PayloadType = any,
   EventType = string,
-> extends LiveMessage<PayloadType, EventType> {
+> extends ReadModelBuildMessage<PayloadType, EventType> {
   constructor(
     readonly streamId: string,
     readonly revision: bigint,
