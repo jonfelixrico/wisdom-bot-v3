@@ -9,7 +9,7 @@ import { GetEventQuery } from '../classes/get-event.query'
 import { of, Subject, throwError } from 'rxjs'
 import { v4 } from 'uuid'
 import { filter, mergeMap, take } from 'rxjs/operators'
-import { QueriedMessage } from '../classes/live-message.event'
+import { QueriedMessage } from '../classes/queried-message.event'
 
 interface IQueuedQuery {
   query: GetEventQuery
