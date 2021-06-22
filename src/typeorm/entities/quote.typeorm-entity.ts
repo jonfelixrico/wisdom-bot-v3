@@ -51,9 +51,9 @@ export class QuoteTypeormEntity {
   @Column(() => EsdbEntity)
   esdb: EsdbEntity
 
-  @Column()
+  @Column({ nullable: true })
   acceptDt: Date
 
-  @Column()
+  @Column({ nullable: true })
   cancelDt: Date
 }
