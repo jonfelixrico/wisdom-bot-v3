@@ -8,6 +8,7 @@ import { QuoteSubmittedReducerService } from './reducers/quote-submitted-reducer
 import { ReadEventConsumedHandlerService } from './services/read-event-consumed-handler/read-event-consumed-handler.service'
 import { QuoteAcceptedReducerService } from './reducers/quote-accepted-reducer/quote-accepted-reducer.service'
 import { QuoteCancelledReducerService } from './reducers/quote-cancelled-reducer/quote-cancelled-reducer.service'
+import { QuoteRevisionTriggerService } from './revision-triggers/quote-revision-trigger/quote-revision-trigger.service'
 
 @Module({
   imports: [CqrsModule, EventStoreModule, TypeormModule],
@@ -18,6 +19,7 @@ import { QuoteCancelledReducerService } from './reducers/quote-cancelled-reducer
     ReadEventConsumedHandlerService,
     QuoteAcceptedReducerService,
     QuoteCancelledReducerService,
+    QuoteRevisionTriggerService,
   ],
 })
 export class ReadRepositoriesModule {}
