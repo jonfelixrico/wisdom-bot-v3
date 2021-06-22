@@ -2,7 +2,7 @@ import { Logger, OnModuleInit } from '@nestjs/common'
 import { Injectable } from '@nestjs/common'
 import { EventBus } from '@nestjs/cqrs'
 import { ReadEventConsumedEvent } from 'src/read-repositories/read-event-consumed.event'
-import { EventStoreDBClient } from '@eventstore/db-client'
+import { ErrorType, EventStoreDBClient } from '@eventstore/db-client'
 import { ReadRepositoryEsdbEvent } from 'src/read-repositories/read-repository-esdb.event'
 import { filter, mergeMap } from 'rxjs/operators'
 import { from } from 'rxjs'
@@ -21,26 +21,43 @@ export class ReadEventConsumedHandlerService implements OnModuleInit {
     fromRevision,
     streamName,
   }: ReadEventConsumedEvent): Promise<void> {
-    const [resolvedEvent] = await this.client.readStream(streamName, {
-      fromRevision: fromRevision,
-      maxCount: 1,
-    })
+    try {
+      const [resolvedEvent] = await this.client.readStream(streamName, {
+        fromRevision: BigInt(fromRevision) + BigInt(1),
+        maxCount: 1,
+      })
 
-    if (!resolvedEvent) {
+      if (!resolvedEvent) {
+        this.logger.debug(
+          `No events found in ${streamName} after revision ${fromRevision}.`,
+          ReadEventConsumedHandlerService.name,
+        )
+        return null
+      }
+
+      const { revision, type, data } = resolvedEvent.event
+      const event = new ReadRepositoryEsdbEvent(
+        streamName,
+        revision,
+        type,
+        data,
+      )
+      this.eventBus.publish(event)
       this.logger.debug(
-        `No events found in ${streamName} after revision ${fromRevision}.`,
+        `Emitted event #${revision} from stream ${streamName}.`,
         ReadEventConsumedHandlerService.name,
       )
-      return null
-    }
+    } catch (e) {
+      if (e.type === ErrorType.STREAM_NOT_FOUND) {
+        this.logger.warn(
+          `Stream ${streamName} not found.`,
+          ReadEventConsumedHandlerService.name,
+        )
+        return null
+      }
 
-    const { revision, type, data } = resolvedEvent.event
-    const event = new ReadRepositoryEsdbEvent(streamName, revision, type, data)
-    this.eventBus.publish(event)
-    this.logger.debug(
-      `Emitted event #${revision} from stream ${streamName}.`,
-      ReadEventConsumedHandlerService.name,
-    )
+      throw e
+    }
   }
 
   onModuleInit() {
