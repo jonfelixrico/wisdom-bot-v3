@@ -31,10 +31,8 @@ export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHan
   }
 
   async handle({
-    type,
     data,
     revision,
-    streamId,
   }: ReadRepositoryEsdbEvent<IQuoteSubmittedEventPayload>) {
     const { quoteId } = data
 
@@ -43,10 +41,6 @@ export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHan
     })
 
     if (quote) {
-      this.logger.debug(
-        `Skipped event ${revision} (${type}) of stream ${streamId}; reason: already saved`,
-        QuoteSubmittedReducerService.name,
-      )
       // TODO add logging here
       return ReduceStatus.SKIPPED
     }
