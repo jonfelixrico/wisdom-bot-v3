@@ -1,4 +1,3 @@
-import { JSONType } from '@eventstore/db-client'
 import { IEvent } from '@nestjs/cqrs'
 
 /**
@@ -6,7 +5,7 @@ import { IEvent } from '@nestjs/cqrs'
  * This is meant to be the only events read models should listen to when building
  * their data.
  */
-export class ReadRepositoryEsdbEvent<DataType = JSONType> implements IEvent {
+export class ReadRepositoryEsdbEvent<DataType = any> implements IEvent {
   readonly isLive: boolean
 
   /**
