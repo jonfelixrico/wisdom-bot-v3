@@ -6,9 +6,10 @@ import { ReactionListenerService } from './reaction-listener/reaction-listener.s
 import { QuoteApproverService } from './quote-approver/quote-approver.service'
 import { DeleteListenerService } from './delete-listener/delete-listener.service'
 import { CqrsModule } from '@nestjs/cqrs'
+import { TypeormModule } from 'src/typeorm/typeorm.module'
 
 @Module({
-  imports: [DiscordModule, CqrsModule],
+  imports: [DiscordModule, CqrsModule, TypeormModule],
   providers: [
     SetupService,
     SubmitCommandService,
