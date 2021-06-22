@@ -5,4 +5,5 @@ export interface IPendingQuote extends IQuoteToSubmit {
 
   acceptDt: Date
   cancelDt: Date
+  submitDt: Date
 }
