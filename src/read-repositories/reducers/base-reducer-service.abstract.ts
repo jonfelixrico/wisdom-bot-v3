@@ -2,7 +2,7 @@ import { Logger, OnModuleInit } from '@nestjs/common'
 import { EventBus, QueryBus } from '@nestjs/cqrs'
 import { from } from 'rxjs'
 import { catchError, filter, mergeMap } from 'rxjs/operators'
-import { ReadRepositoryEsdbEventConsumedEvent } from '../read-repository-esdb-event-consumed.event'
+import { ReadEventConsumedEvent } from '../read-event-consumed.event'
 import { ReadRepositoryEsdbEvent } from '../read-repository-esdb.event'
 
 export enum ReduceStatus {
@@ -38,7 +38,7 @@ export abstract class BaseConcurrencyLimitedEventHandler<PayloadType>
     if (status === ReduceStatus.CONSUMED) {
       if (isLive) {
         await this.queryBus.execute(
-          new ReadRepositoryEsdbEventConsumedEvent(streamId, revision),
+          new ReadEventConsumedEvent(streamId, revision),
         )
       }
 
