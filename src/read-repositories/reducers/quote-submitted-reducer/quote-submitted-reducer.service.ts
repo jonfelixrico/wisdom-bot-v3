@@ -7,7 +7,7 @@ import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import {
   BaseConcurrencyLimitedEventHandler,
   ReduceStatus,
-} from '../base-reducer-service.abstract'
+} from '../base-concurrency-limited-event-handler.abstract'
 
 @Injectable()
 export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHandler<IQuoteSubmittedEventPayload> {
