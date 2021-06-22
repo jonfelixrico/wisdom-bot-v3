@@ -45,13 +45,7 @@ export class ReadRepositoriesEsdbStartupService
           fromRevision = revision
 
           this.eventBus.publish(
-            new ReadRepositoryEsdbEvent(
-              streamId,
-              revision,
-              type,
-              data,
-              'CATCH_UP',
-            ),
+            new ReadRepositoryEsdbEvent(streamId, revision, type, data),
           )
           this.logger.debug(
             `${STREAMS_PROJECTION}: Emitted event ${type} from stream ${streamId}.`,
