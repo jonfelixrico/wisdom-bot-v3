@@ -1,5 +1,5 @@
 import { Logger, OnModuleInit } from '@nestjs/common'
-import { EventBus, QueryBus } from '@nestjs/cqrs'
+import { EventBus } from '@nestjs/cqrs'
 import { from } from 'rxjs'
 import { catchError, filter, mergeMap } from 'rxjs/operators'
 import { ReadEventConsumedEvent } from '../read-event-consumed.event'
@@ -16,11 +16,7 @@ export abstract class BaseConcurrencyLimitedEventHandler<PayloadType>
   abstract readonly CONCURRENCY_LIMIT: number
   abstract readonly CLASS_NAME: string
 
-  constructor(
-    protected eventBus: EventBus,
-    protected queryBus: QueryBus,
-    protected logger: Logger,
-  ) {}
+  constructor(protected eventBus: EventBus, protected logger: Logger) {}
 
   abstract handle(
     e: ReadRepositoryEsdbEvent<PayloadType>,
@@ -37,7 +33,7 @@ export abstract class BaseConcurrencyLimitedEventHandler<PayloadType>
 
     if (status === ReduceStatus.CONSUMED) {
       if (isLive) {
-        await this.queryBus.execute(
+        await this.eventBus.publish(
           new ReadEventConsumedEvent(streamId, revision),
         )
       }
