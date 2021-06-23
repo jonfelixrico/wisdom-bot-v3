@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { EventBus } from '@nestjs/cqrs'
+import { EventBus, QueryBus } from '@nestjs/cqrs'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import { ReadRepositoryEsdbEvent } from 'src/read-repositories/read-repository-esdb.event'
 import { QuoteTypeormRepository } from 'src/typeorm/providers/quote.typeorm-repository'
@@ -25,8 +25,9 @@ export class QuoteSubmittedReducerService extends BaseConcurrencyLimitedEventHan
     protected logger: Logger,
     private repo: QuoteTypeormRepository,
     protected eventBus: EventBus,
+    protected queryBus: QueryBus,
   ) {
-    super(eventBus, logger)
+    super(eventBus, queryBus, logger)
   }
 
   async handle({

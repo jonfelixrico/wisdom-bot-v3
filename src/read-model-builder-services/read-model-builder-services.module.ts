@@ -12,5 +12,10 @@ import { StreamsProjectionService } from './streams-projection/streams-projectio
     EsdbLiveEventRelayService,
     StreamsProjectionService,
   ],
+  exports: [
+    GetEventQueryHandlerService,
+    EsdbLiveEventRelayService,
+    StreamsProjectionService,
+  ],
 })
 export class ReadModelBuilderServicesModule {}

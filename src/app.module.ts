@@ -23,8 +23,8 @@ import { ReadModelBuilderServicesModule } from './read-model-builder-services/re
     CommandHandlersModule,
     EventStoreModule,
     WriteRepositoriesModule,
-    ReadRepositoriesModule,
     ReadModelBuilderServicesModule,
+    ReadRepositoriesModule,
   ],
 })
 export class AppModule {}

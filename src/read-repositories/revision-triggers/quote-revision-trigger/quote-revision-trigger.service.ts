@@ -1,19 +1,20 @@
-import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common'
-import { EventBus } from '@nestjs/cqrs'
-import { ReadEventConsumedEvent } from 'src/read-repositories/read-event-consumed.event'
+import { Injectable, Logger } from '@nestjs/common'
+import { QueryBus } from '@nestjs/cqrs'
 import { QuoteTypeormRepository } from 'src/typeorm/providers/quote.typeorm-repository'
+import { GetEventQuery } from 'src/read-model-builder-services/classes/get-event.query'
+import { OnModuleInit } from '@nestjs/common'
 
 const BATCH_SIZE = 100
 
 @Injectable()
-export class QuoteRevisionTriggerService implements OnApplicationBootstrap {
+export class QuoteRevisionTriggerService implements OnModuleInit {
   constructor(
     private repo: QuoteTypeormRepository,
-    private eventBus: EventBus,
+    private queryBus: QueryBus,
     private logger: Logger,
   ) {}
 
-  async emitBatch(offset: number, limit: number): Promise<number> {
+  private async emitBatch(offset: number, limit: number): Promise<number> {
     const [rows, count] = await this.repo
       .createQueryBuilder()
       .offset(offset)
@@ -21,15 +22,15 @@ export class QuoteRevisionTriggerService implements OnApplicationBootstrap {
       .getManyAndCount()
 
     for (const { id, esdb } of rows) {
-      this.eventBus.publish(
-        new ReadEventConsumedEvent(`quote-${id}`, BigInt(esdb.revision)),
+      this.queryBus.execute(
+        new GetEventQuery(`quote-${id}`, BigInt(esdb.revision) + 1n),
       )
     }
 
     return count
   }
 
-  async onApplicationBootstrap() {
+  async onModuleInit() {
     let offset = 0
     this.logger.verbose(
       'Started emitting revision no. of entities under the quote table.',

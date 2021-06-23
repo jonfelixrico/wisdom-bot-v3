@@ -1,9 +1,8 @@
 import { Logger, OnModuleInit } from '@nestjs/common'
-import { EventBus } from '@nestjs/cqrs'
-import { from } from 'rxjs'
-import { catchError, filter, mergeMap } from 'rxjs/operators'
-import { ReadEventConsumedEvent } from '../read-event-consumed.event'
+import { EventBus, QueryBus } from '@nestjs/cqrs'
+import { filter, mergeMap } from 'rxjs/operators'
 import { ReadRepositoryEsdbEvent } from '../read-repository-esdb.event'
+import { GetEventQuery } from 'src/read-model-builder-services/classes/get-event.query'
 
 export enum ReduceStatus {
   CONSUMED,
@@ -16,7 +15,11 @@ export abstract class BaseConcurrencyLimitedEventHandler<PayloadType>
   abstract readonly CONCURRENCY_LIMIT: number
   abstract readonly CLASS_NAME: string
 
-  constructor(protected eventBus: EventBus, protected logger: Logger) {}
+  constructor(
+    protected eventBus: EventBus,
+    protected queryBus: QueryBus,
+    protected logger: Logger,
+  ) {}
 
   abstract handle(
     e: ReadRepositoryEsdbEvent<PayloadType>,
@@ -32,9 +35,9 @@ export abstract class BaseConcurrencyLimitedEventHandler<PayloadType>
     const { CLASS_NAME } = this
 
     if (status === ReduceStatus.CONSUMED) {
-      if (isLive) {
-        await this.eventBus.publish(
-          new ReadEventConsumedEvent(streamId, revision),
+      if (!isLive) {
+        this.queryBus.execute(
+          new GetEventQuery(streamId, BigInt(revision) + 1n),
         )
       }
 
@@ -52,7 +55,6 @@ export abstract class BaseConcurrencyLimitedEventHandler<PayloadType>
 
   onModuleInit() {
     const filterFn = this.filter.bind(this)
-    const doHandling = this.doHandling.bind(this)
     const { logger, CLASS_NAME, CONCURRENCY_LIMIT } = this
 
     logger.verbose('Started listening for events.', CLASS_NAME)
@@ -60,17 +62,17 @@ export abstract class BaseConcurrencyLimitedEventHandler<PayloadType>
       .pipe(
         filter((e) => e instanceof ReadRepositoryEsdbEvent),
         filter(filterFn),
-        mergeMap((event) => {
-          return from(doHandling(event)).pipe(
-            catchError((error: Error) => {
-              logger.error(
-                `Uncaught error: ${error.message}`,
-                error.stack,
-                CLASS_NAME,
-              )
-              return null
-            }),
-          )
+        mergeMap(async (event: ReadRepositoryEsdbEvent) => {
+          try {
+            return await this.doHandling(event)
+          } catch (error) {
+            logger.error(
+              `Uncaught error: ${error.message}`,
+              error.stack,
+              CLASS_NAME,
+            )
+            return null
+          }
         }, CONCURRENCY_LIMIT),
       )
       .subscribe()

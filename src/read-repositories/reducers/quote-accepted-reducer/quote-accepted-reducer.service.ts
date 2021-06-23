@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { EventBus } from '@nestjs/cqrs'
+import { EventBus, QueryBus } from '@nestjs/cqrs'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { IPendingQuoteAcceptedPayload } from 'src/domain/events/pending-quote-accepted.event'
 import { ReadRepositoryEsdbEvent } from 'src/read-repositories/read-repository-esdb.event'
@@ -16,10 +16,11 @@ export class QuoteAcceptedReducerService extends BaseConcurrencyLimitedEventHand
 
   constructor(
     private repo: QuoteTypeormRepository,
-    eventBus: EventBus,
+    protected eventBus: EventBus,
+    protected queryBus: QueryBus,
     protected logger: Logger,
   ) {
-    super(eventBus, logger)
+    super(eventBus, queryBus, logger)
   }
 
   filter(e: ReadRepositoryEsdbEvent<IPendingQuoteAcceptedPayload>): boolean {
