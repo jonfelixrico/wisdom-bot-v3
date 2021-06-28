@@ -1,5 +1,4 @@
 import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm'
-import { EsdbEntity } from './esdb-entity.embedded-entity'
 import { QuoteTypeormEntity } from './quote.typeorm-entity'
 
 @Entity({
@@ -28,12 +27,14 @@ export class ReceiveTypeormEntity {
   @Column()
   channelId: string
 
-  @Column(() => EsdbEntity)
-  esdb: EsdbEntity
-
   @Column()
   receiveDt: Date
 
   @Column()
   userId: string
+
+  @Column({
+    type: 'bigint',
+  })
+  revision: bigint
 }
