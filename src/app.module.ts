@@ -7,9 +7,6 @@ import { CommandHandlersModule } from './command-handlers/command-handlers.modul
 import { LoggerModule } from './logger/logger.module'
 import { EventStoreModule } from './event-store/event-store.module'
 import { WriteRepositoriesModule } from './write-repositories/write-repositories.module'
-import { ReadRepositoriesModule } from './read-repositories/read-repositories.module'
-import { ReadModelBuilderServicesModule } from './read-model-builder-services/read-model-builder-services.module'
-
 @Module({
   imports: [
     LoggerModule,
@@ -23,8 +20,6 @@ import { ReadModelBuilderServicesModule } from './read-model-builder-services/re
     CommandHandlersModule,
     EventStoreModule,
     WriteRepositoriesModule,
-    ReadModelBuilderServicesModule,
-    ReadRepositoriesModule,
   ],
 })
 export class AppModule {}
