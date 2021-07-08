@@ -1,15 +1,13 @@
-import { AggregateRoot } from '@nestjs/cqrs'
 import { v4 } from 'uuid'
+import { DomainEntity } from '../abstracts/domain-entity.abstract'
 import { ReceiveInteractedEvent } from '../events/receive-interacted.event'
 
-export interface IInteraction {
+interface IInteraction {
   readonly interactionId: string
   readonly userId: string
-  readonly interactDt: Date
-  readonly karma: number
 }
 
-export interface IReceiveAggregate {
+interface IReceiveEntity {
   receiveId: string
   quoteId: string
   channelId: string
@@ -18,12 +16,12 @@ export interface IReceiveAggregate {
   interactions: IInteraction[]
 }
 
-interface INewInteraction {
+interface IReceiveInteractInput {
   readonly userId: string
   readonly karma: number
 }
 
-export class Receive extends AggregateRoot implements IReceiveAggregate {
+export class Receive extends DomainEntity implements IReceiveEntity {
   receiveId: string
   quoteId: string
   channelId: string
@@ -36,7 +34,7 @@ export class Receive extends AggregateRoot implements IReceiveAggregate {
     messageId,
     quoteId,
     receiveId,
-  }: IReceiveAggregate) {
+  }: IReceiveEntity) {
     super()
     this.channelId = channelId
     this.interactions = interactions || []
@@ -45,26 +43,28 @@ export class Receive extends AggregateRoot implements IReceiveAggregate {
     this.receiveId = receiveId
   }
 
-  interact({ karma = 1, userId }: INewInteraction) {
+  interact({ karma = 1, userId }: IReceiveInteractInput) {
     if (karma === 0) {
       throw new Error('Karma cannot be 0.')
     }
 
-    const newInteraction: IInteraction = {
-      interactionId: v4(),
-      interactDt: new Date(),
-      karma,
-      userId,
-    }
+    const interactDt = new Date()
+    const interactionId = v4()
 
-    this.interactions.push(newInteraction)
+    this.interactions.push({
+      interactionId,
+      userId,
+    })
 
     const { receiveId, quoteId } = this
     this.apply(
       new ReceiveInteractedEvent({
-        ...newInteraction,
+        interactDt,
+        interactionId,
         receiveId,
         quoteId,
+        karma,
+        userId,
       }),
     )
   }
