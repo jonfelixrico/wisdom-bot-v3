@@ -6,7 +6,7 @@ import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 import { EsdbEventReducer } from '../types/esdb-event-reducer.type'
 
 export const quoteSubmitted: EsdbEventReducer<IQuoteSubmittedEventPayload> =
-  async ({ revision, data }, transaction) => {
+  async ({ revision, data }, manager) => {
     const {
       authorId,
       channelId,
@@ -21,7 +21,7 @@ export const quoteSubmitted: EsdbEventReducer<IQuoteSubmittedEventPayload> =
       upvoteEmoji,
     } = data
 
-    transaction.insert(QuoteTypeormEntity, {
+    manager.insert(QuoteTypeormEntity, {
       authorId,
       channelId,
       content,
