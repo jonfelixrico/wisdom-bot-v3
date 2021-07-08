@@ -60,7 +60,7 @@ export class PendingQuoteWriteRepositoryService extends PendingQuoteEsdbReposito
 
   async findById(id: string) {
     const { state, revision } = await this.readStream.readStreamFromBeginning(
-      `quote-${id}`,
+      id,
       pendingQuoteReducer,
     )
 
@@ -76,7 +76,6 @@ export class PendingQuoteWriteRepositoryService extends PendingQuoteEsdbReposito
   ): Promise<void> {
     return this.publisher.publishEvents(events, {
       expectedRevision,
-      aggregateIdFormatterFn: (id) => `quote-${id}`,
     })
   }
 }
