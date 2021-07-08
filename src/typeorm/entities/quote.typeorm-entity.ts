@@ -49,6 +49,7 @@ export class QuoteTypeormEntity {
 
   @Column({
     type: 'bigint',
+    // without this, we need to make sure to cast `revision` as BigInt every time we need to use it
     transformer: {
       to: (val) => val,
       from: (val) => BigInt(val),
