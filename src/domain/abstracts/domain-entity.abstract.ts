@@ -5,8 +5,8 @@ export abstract class DomainEntity<
 > {
   private _events: EventType[] = []
 
-  apply(event: EventType) {
-    this._events.push(event)
+  apply(...events: EventType[]) {
+    this._events.push(...events)
   }
 
   get events() {
