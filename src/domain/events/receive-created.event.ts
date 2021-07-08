@@ -12,6 +12,6 @@ export interface IReceiveCreatedPayload {
 
 export class ReceiveCreatedEvent extends DomainEvent<IReceiveCreatedPayload> {
   constructor(receive: IReceiveCreatedPayload) {
-    super(DomainEventNames.QUOTE_RECEIVED, receive.receiveId, receive)
+    super(DomainEventNames.RECEIVE_CREATED, receive.receiveId, receive)
   }
 }
