@@ -11,6 +11,7 @@ import {
   EventStoreDBClient,
   JSONEventType,
   JSONRecordedEvent,
+  START,
 } from '@eventstore/db-client'
 import { Connection } from 'typeorm'
 import {
@@ -20,6 +21,8 @@ import {
   quoteSubmitted,
 } from 'src/read-repositories/reducers/quote.reducers'
 import { ReadRepositoryReducer } from 'src/read-repositories/types/read-repository-reducer.type'
+import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
+import { Logger } from '@nestjs/common'
 
 interface DataType extends IQuoteSubmittedEventPayload, Record<string, any> {}
 type EventType = JSONEventType<DomainEventNames, DataType>
@@ -45,15 +48,55 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
     private orchestrator: CatchUpOrchestratorService,
     private conn: Connection,
     private client: EventStoreDBClient,
+    private logger: Logger,
   ) {}
 
-  private async processEvent({ streamId }: JSONRecordedEvent<EventType>) {
-    const events = await this.client.readStream<EventType>(streamId)
-    this.conn.transaction(async (manager) => {
-      for (const { event } of events) {
-        await REDUCER_MAPPING[event.type](event, manager)
-      }
-    })
+  private async processRootEvent({
+    streamId,
+    data,
+  }: JSONRecordedEvent<EventType>) {
+    const { quoteId } = data
+
+    try {
+      await this.conn.transaction(async (manager) => {
+        const quoteInDb = await manager.findOne(QuoteTypeormEntity, {
+          id: quoteId,
+        })
+
+        const fromRevision = quoteInDb?.revision ?? START
+
+        this.logger.debug(
+          `Building quote ${quoteId} from revision #${fromRevision}.`,
+          QuoteCatchUpService.name,
+        )
+
+        const events = await this.client.readStream<EventType>(streamId, {
+          fromRevision,
+        })
+
+        if (events.length) {
+          this.logger.debug(
+            `Quote ${quoteId} is up-to-date.`,
+            QuoteCatchUpService.name,
+          )
+          return
+        }
+
+        for (const { event } of events) {
+          await REDUCER_MAPPING[event.type](event, manager)
+        }
+
+        this.logger.debug(
+          `Consumed ${events.length} events to build quote ${quoteId}.`,
+        )
+      })
+    } catch (e) {
+      this.logger.error(
+        `An error was encountered while trying to build quote ${quoteId}: ${e.message}`,
+      )
+    }
+
+    // TODO emit latest revision here to trigger minor-catch ups
   }
 
   async catchUp() {
@@ -64,7 +107,7 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
        * entities.
        */
       `$et-${DomainEventNames.QUOTE_SUBMITTED}`,
-      ({ event }) => this.processEvent(event),
+      ({ event }) => this.processRootEvent(event),
       {
         // This is required when using projections so that it'll link the events of that projection to the actual event from other streams
         resolveLinkTos: true,
