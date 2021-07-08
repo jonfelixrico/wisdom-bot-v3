@@ -29,8 +29,8 @@ export class StreamReaderService {
 
   async readStream(
     streamName: string,
-    options: ReadStreamOptions = {},
     iterator: ReadStreamIterator,
+    options: ReadStreamOptions = {},
   ): Promise<void> {
     let fromRevision: ReadRevision = options.fromRevision ?? START
     const countQuota = options.maxCount ?? DEFAULT_MAX_COUNT
