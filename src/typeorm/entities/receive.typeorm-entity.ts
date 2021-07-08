@@ -35,6 +35,10 @@ export class ReceiveTypeormEntity {
 
   @Column({
     type: 'bigint',
+    transformer: {
+      to: (val) => val,
+      from: (val) => BigInt(val),
+    },
   })
   revision: bigint
 }
