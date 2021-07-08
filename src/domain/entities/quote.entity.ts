@@ -1,20 +1,15 @@
-import { AggregateRoot } from '@nestjs/cqrs'
 import { v4 } from 'uuid'
+import { DomainEntity } from '../abstracts/domain-entity.abstract'
 import { QuoteReceivedEvent } from '../events/quote-received.event'
+import { ReceiveCreatedEvent } from '../events/receive-created.event'
 
-export interface IQuoteReceive {
-  readonly receiveId: string
-  readonly receiveDt: Date
-  readonly userId: string
-}
-
-interface INewReceive {
+interface IQuoteReceiveInput {
   readonly userId: string
   readonly messageId: string
   readonly channelId: string
 }
 
-interface IQuote {
+interface IQuoteEntity {
   quoteId: string
   content: string
   authorId: string
@@ -26,7 +21,11 @@ interface IQuote {
   receives: IQuoteReceive[]
 }
 
-export class Quote extends AggregateRoot implements IQuote {
+interface IQuoteReceive {
+  readonly receiveId: string
+}
+
+export class Quote extends DomainEntity implements IQuoteEntity {
   quoteId: string
   content: string
   authorId: string
@@ -45,7 +44,7 @@ export class Quote extends AggregateRoot implements IQuote {
     receives,
     submitDt,
     submitterId,
-  }: IQuote) {
+  }: IQuoteEntity) {
     super()
     this.acceptDt = acceptDt
     this.authorId = authorId
@@ -57,20 +56,24 @@ export class Quote extends AggregateRoot implements IQuote {
     this.submitterId = submitterId
   }
 
-  receive(newReceive: INewReceive) {
+  receive(newReceive: IQuoteReceiveInput) {
     const { quoteId } = this
-    const receive: IQuoteReceive = {
-      receiveDt: new Date(),
-      userId: newReceive.userId,
-      receiveId: v4(),
-    }
+    const receiveDt = new Date()
+    const receiveId = v4()
 
-    this.receives.push(receive)
+    this.receives.push({ receiveId })
+
     this.apply(
       new QuoteReceivedEvent({
-        ...receive,
-        ...newReceive,
+        receiveId,
         quoteId,
+      }),
+
+      new ReceiveCreatedEvent({
+        ...newReceive,
+        receiveId,
+        quoteId,
+        receiveDt,
       }),
     )
   }
