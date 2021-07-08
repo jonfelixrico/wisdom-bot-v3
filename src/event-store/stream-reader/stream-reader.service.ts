@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import {
   EventStoreDBClient,
+  EventType,
+  JSONEventType,
   ReadRevision,
   ResolvedEvent,
   START,
@@ -9,7 +11,20 @@ import { ReadStreamOptions } from '@eventstore/db-client/dist/streams'
 
 const DEFAULT_MAX_COUNT = 50
 
-export type ReadStreamIterator = (resolvedEvent: ResolvedEvent) => Promise<any>
+/*
+ * Our interfaces seem to conflict with ESDB's Record<string | number, unknown> constraint
+ * on JSONEventType, so we made these two to compensate.
+ */
+
+export type ExtendedJSONEventType<
+  T extends { [key: string]: any } = { [key: string]: any },
+> = JSONEventType<string, T, unknown>
+
+export type ExtendedEventType = EventType | ExtendedJSONEventType
+
+export type ReadStreamIterator<
+  T extends ExtendedEventType = ExtendedEventType,
+> = (resolvedEvent: ResolvedEvent<T>) => Promise<any>
 
 /**
  * This is pretty much a paginated version of `EventStoreDBClient#readStream`.
@@ -27,16 +42,16 @@ export type ReadStreamIterator = (resolvedEvent: ResolvedEvent) => Promise<any>
 export class StreamReaderService {
   constructor(private client: EventStoreDBClient) {}
 
-  async readStream(
+  async readStream<E extends ExtendedEventType = ExtendedEventType>(
     streamName: string,
-    iterator: ReadStreamIterator,
+    iterator: ReadStreamIterator<E>,
     options: ReadStreamOptions = {},
   ): Promise<void> {
     let fromRevision: ReadRevision = options.fromRevision ?? START
     const countQuota = options.maxCount ?? DEFAULT_MAX_COUNT
 
     while (true) {
-      const resolvedEvents = await this.client.readStream(streamName, {
+      const resolvedEvents = await this.client.readStream<E>(streamName, {
         ...options,
         fromRevision,
       })
