@@ -1,7 +1,7 @@
 import { DomainEvent } from '../abstracts/domain-event.abstract'
 import { DomainEventNames } from '../domain-event-names.enum'
 
-interface IReceiveInteractedPayload {
+export interface IReceiveInteractedPayload {
   readonly interactionId: string
   readonly interactDt: Date
   readonly receiveId: string
