@@ -16,7 +16,7 @@ export class CatchUpOrchestratorService implements OnApplicationBootstrap {
 
   constructor(private logger: Logger) {}
 
-  registerCatchUpService(service: ICatchUpService, sequence: number) {
+  register(service: ICatchUpService, sequence: number) {
     this.services.push({
       service,
       sequence,
@@ -29,11 +29,20 @@ export class CatchUpOrchestratorService implements OnApplicationBootstrap {
 
     for (let idx = 0; idx < length; idx++) {
       const { service } = sortedServices[idx]
-      await service.catchUp()
-      this.logger.log(
-        `Finished catch-up ${idx + 1} out of ${length}.`,
-        CatchUpOrchestratorService.name,
-      )
+      try {
+        await service.catchUp()
+        this.logger.log(
+          `Finished catch-up ${idx + 1} out of ${length}.`,
+          CatchUpOrchestratorService.name,
+        )
+      } catch (e) {
+        this.logger.error(
+          `Uncaught exception while processing service ${
+            idx + 1
+          } out of ${length}: ${e.message}`,
+          CatchUpOrchestratorService.name,
+        )
+      }
     }
   }
 }
