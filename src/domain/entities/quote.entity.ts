@@ -57,7 +57,7 @@ export class Quote extends DomainEntity implements IQuoteEntity {
   }
 
   receive(newReceive: IQuoteReceiveInput) {
-    const { quoteId } = this
+    const { quoteId, guildId } = this
     const receiveDt = new Date()
     const receiveId = v4()
 
@@ -74,6 +74,7 @@ export class Quote extends DomainEntity implements IQuoteEntity {
         receiveId,
         quoteId,
         receiveDt,
+        guildId,
       }),
     )
   }

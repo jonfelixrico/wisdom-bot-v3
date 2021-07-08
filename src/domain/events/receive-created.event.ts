@@ -6,6 +6,7 @@ export interface IReceiveCreatedPayload {
   readonly quoteId: string
   readonly userId: string
   readonly messageId: string
+  readonly guildId: string
   readonly channelId: string
   readonly receiveDt: Date
 }
