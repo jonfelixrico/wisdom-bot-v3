@@ -1,6 +1,6 @@
 import { AggregateRoot } from '@nestjs/cqrs'
 import { v4 } from 'uuid'
-import { QuoteReceived } from '../events/quote-received.event'
+import { QuoteReceivedEvent } from '../events/quote-received.event'
 
 export interface IQuoteReceive {
   readonly receiveId: string
@@ -67,7 +67,7 @@ export class Quote extends AggregateRoot implements IQuote {
 
     this.receives.push(receive)
     this.apply(
-      new QuoteReceived({
+      new QuoteReceivedEvent({
         ...receive,
         ...newReceive,
         quoteId,

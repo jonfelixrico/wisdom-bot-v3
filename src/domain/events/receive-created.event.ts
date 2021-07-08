@@ -10,7 +10,7 @@ export interface IReceiveCreatedPayload {
   readonly receivedt: Date
 }
 
-export class ReceiveCreated extends DomainEvent<IReceiveCreatedPayload> {
+export class ReceiveCreatedEvent extends DomainEvent<IReceiveCreatedPayload> {
   constructor(receive: IReceiveCreatedPayload) {
     super(DomainEventNames.QUOTE_RECEIVED, receive.receiveId, receive)
   }

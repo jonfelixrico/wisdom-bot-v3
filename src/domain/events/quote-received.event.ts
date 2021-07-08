@@ -6,7 +6,7 @@ export interface IQuoteReceivedPayload {
   readonly quoteId: string
 }
 
-export class QuoteReceived extends DomainEvent<IQuoteReceivedPayload> {
+export class QuoteReceivedEvent extends DomainEvent<IQuoteReceivedPayload> {
   constructor(receive: IQuoteReceivedPayload) {
     super(DomainEventNames.QUOTE_RECEIVED, receive.quoteId, receive)
   }

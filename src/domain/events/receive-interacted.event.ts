@@ -10,7 +10,7 @@ interface IInteraction {
   readonly quoteId: string
 }
 
-export class ReceiveInteracted extends DomainEvent<IInteraction> {
+export class ReceiveInteractedEvent extends DomainEvent<IInteraction> {
   constructor(interaction: IInteraction) {
     super(DomainEventNames.RECEIVE_INTERACTED, interaction.quoteId, interaction)
   }

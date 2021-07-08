@@ -6,7 +6,7 @@ export interface IPendingQuoteAcceptedPayload {
   acceptDt: Date
 }
 
-export class PendingQuoteAccepted extends BasePendingQuoteEvent<IPendingQuoteAcceptedPayload> {
+export class PendingQuoteAcceptedEvent extends BasePendingQuoteEvent<IPendingQuoteAcceptedPayload> {
   constructor(payload: IPendingQuoteAcceptedPayload) {
     super(DomainEventNames.PENDING_QUOTE_ACCEPTED, payload.quoteId, payload)
   }

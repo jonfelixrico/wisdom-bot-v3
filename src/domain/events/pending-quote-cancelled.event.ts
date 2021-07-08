@@ -6,7 +6,7 @@ export interface IPendingQuoteCancelledPayload {
   cancelDt: Date
 }
 
-export class PendingQuoteCancelled extends BasePendingQuoteEvent<IPendingQuoteCancelledPayload> {
+export class PendingQuoteCancelledEvent extends BasePendingQuoteEvent<IPendingQuoteCancelledPayload> {
   constructor(payload: IPendingQuoteCancelledPayload) {
     super(DomainEventNames.PENDING_QUOTE_CANCELLED, payload.quoteId, payload)
   }

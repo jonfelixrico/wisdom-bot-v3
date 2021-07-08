@@ -1,7 +1,7 @@
 import { DomainEntity } from '../abstracts/domain-entity.abstract'
 import { BasePendingQuoteEvent } from '../events/base-pending-quote-event.abstract'
-import { PendingQuoteAccepted } from '../events/pending-quote-accepted.event'
-import { PendingQuoteCancelled } from '../events/pending-quote-cancelled.event'
+import { PendingQuoteAcceptedEvent } from '../events/pending-quote-accepted.event'
+import { PendingQuoteCancelledEvent } from '../events/pending-quote-cancelled.event'
 import { IPendingQuote } from './pending-quote.interface'
 
 export class PendingQuote
@@ -76,13 +76,13 @@ export class PendingQuote
     this.checkIfPending()
     const acceptDt = (this.acceptDt = new Date())
     const { quoteId } = this
-    this.apply(new PendingQuoteAccepted({ quoteId, acceptDt }))
+    this.apply(new PendingQuoteAcceptedEvent({ quoteId, acceptDt }))
   }
 
   cancel() {
     this.checkIfPending()
     const cancelDt = (this.cancelDt = new Date())
     const { quoteId } = this
-    this.apply(new PendingQuoteCancelled({ quoteId, cancelDt }))
+    this.apply(new PendingQuoteCancelledEvent({ quoteId, cancelDt }))
   }
 }
