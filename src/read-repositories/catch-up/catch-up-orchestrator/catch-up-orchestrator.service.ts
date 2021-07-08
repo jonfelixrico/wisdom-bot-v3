@@ -40,6 +40,7 @@ export class CatchUpOrchestratorService implements OnApplicationBootstrap {
           `Uncaught exception while processing service ${
             idx + 1
           } out of ${length}: ${e.message}`,
+          e.stack,
           CatchUpOrchestratorService.name,
         )
       }

@@ -93,6 +93,8 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
     } catch (e) {
       this.logger.error(
         `An error was encountered while trying to build quote ${quoteId}: ${e.message}`,
+        e.stack,
+        QuoteCatchUpService.name,
       )
     }
 
