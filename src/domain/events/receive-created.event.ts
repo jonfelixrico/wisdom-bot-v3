@@ -1,0 +1,17 @@
+import { DomainEvent } from '../abstracts/domain-event.abstract'
+import { DomainEventNames } from '../domain-event-names.enum'
+
+export interface IReceiveCreatedPayload {
+  readonly receiveId: string
+  readonly quoteId: string
+  readonly userId: string
+  readonly messageId: string
+  readonly channelId: string
+  readonly receivedt: Date
+}
+
+export class ReceiveCreated extends DomainEvent<IReceiveCreatedPayload> {
+  constructor(receive: IReceiveCreatedPayload) {
+    super(DomainEventNames.QUOTE_RECEIVED, receive.receiveId, receive)
+  }
+}
