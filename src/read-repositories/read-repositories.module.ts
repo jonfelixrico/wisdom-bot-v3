@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { QuoteCatchUpService } from './quote-catch-up/quote-catch-up.service'
+import { QuoteCatchUpService } from './catch-up/quote-catch-up/quote-catch-up.service'
 
 @Module({
   providers: [QuoteCatchUpService],
