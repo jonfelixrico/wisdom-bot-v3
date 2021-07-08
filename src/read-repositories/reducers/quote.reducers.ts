@@ -47,7 +47,10 @@ export const pendingQuoteAccepted: ReadRepositoryReducer<IPendingQuoteAcceptedPa
         acceptDt,
         revision,
       })
-      .where('id = :quoteId', { quoteId })
+      .where('id = :quoteId AND revision = :revision', {
+        quoteId,
+        revision: revision - 1n,
+      })
       .execute()
   }
 
@@ -61,7 +64,10 @@ export const pendingQuoteCancelled: ReadRepositoryReducer<IPendingQuoteCancelled
         cancelDt,
         revision,
       })
-      .where('id = :quoteId', { quoteId })
+      .where('id = :quoteId AND revision = :revision', {
+        quoteId,
+        revision: revision - 1n,
+      })
       .execute()
   }
 
@@ -74,6 +80,9 @@ export const quoteReceived: ReadRepositoryReducer<IQuoteReceivedPayload> =
       .set({
         revision,
       })
-      .where('id = :quoteId', { quoteId })
+      .where('id = :quoteId AND revision = :revision', {
+        quoteId,
+        revision: revision - 1n,
+      })
       .execute()
   }

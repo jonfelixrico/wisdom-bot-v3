@@ -35,7 +35,10 @@ export const receiveInteracted: ReadRepositoryReducer<IReceiveInteractedPayload>
     await manager
       .createQueryBuilder()
       .update(ReceiveTypeormEntity)
-      .where('id = :receiveId', { receiveId })
+      .where('id = :receiveId AND revision = :revision', {
+        receiveId,
+        revision: revision - 1n,
+      })
       .set({ revision })
       .execute()
 
