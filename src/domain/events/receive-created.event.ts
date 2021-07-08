@@ -7,7 +7,7 @@ export interface IReceiveCreatedPayload {
   readonly userId: string
   readonly messageId: string
   readonly channelId: string
-  readonly receivedt: Date
+  readonly receiveDt: Date
 }
 
 export class ReceiveCreatedEvent extends DomainEvent<IReceiveCreatedPayload> {
