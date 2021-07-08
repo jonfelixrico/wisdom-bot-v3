@@ -11,7 +11,6 @@ import {
   EventStoreDBClient,
   JSONEventType,
   JSONRecordedEvent,
-  START,
 } from '@eventstore/db-client'
 import { Connection } from 'typeorm'
 import {
@@ -63,10 +62,9 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
           id: quoteId,
         })
 
-        const fromRevision = quoteInDb?.revision ?? START
-
-        this.logger.debug(
-          `Building quote ${quoteId} from revision #${fromRevision}.`,
+        const fromRevision = quoteInDb ? quoteInDb.revision + 1n : 0n
+        this.logger.verbose(
+          `Building quote ${quoteId} from revision ${fromRevision}.`,
           QuoteCatchUpService.name,
         )
 
@@ -74,8 +72,8 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
           fromRevision,
         })
 
-        if (events.length) {
-          this.logger.debug(
+        if (!events.length) {
+          this.logger.verbose(
             `Quote ${quoteId} is up-to-date.`,
             QuoteCatchUpService.name,
           )
@@ -86,7 +84,7 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
           await REDUCER_MAPPING[event.type](event, manager)
         }
 
-        this.logger.debug(
+        this.logger.verbose(
           `Consumed ${events.length} events to build quote ${quoteId}.`,
         )
       })
