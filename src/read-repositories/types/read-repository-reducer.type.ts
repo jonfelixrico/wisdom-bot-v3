@@ -17,4 +17,4 @@ export type ReadRepositoryReducer<
   event: JSONRecordedEvent<JSONEventType<string, EventDataType, unknown>>,
   // This is what we'll use to do TypeORM operations
   manager: EntityManager,
-) => Promise<void>
+) => Promise<boolean> // true if processed, false if skipped

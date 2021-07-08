@@ -21,7 +21,7 @@ export const quoteSubmitted: ReadRepositoryReducer<IQuoteSubmittedEventPayload> 
       upvoteEmoji,
     } = data
 
-    manager.insert(QuoteTypeormEntity, {
+    await manager.insert(QuoteTypeormEntity, {
       authorId,
       channelId,
       content,
@@ -35,12 +35,14 @@ export const quoteSubmitted: ReadRepositoryReducer<IQuoteSubmittedEventPayload> 
       upvoteCount,
       upvoteEmoji,
     })
+
+    return true
   }
 
 export const pendingQuoteAccepted: ReadRepositoryReducer<IPendingQuoteAcceptedPayload> =
   async ({ revision, data }, manager) => {
     const { acceptDt, quoteId } = data
-    await manager
+    const { affected } = await manager
       .createQueryBuilder()
       .update(QuoteTypeormEntity)
       .set({
@@ -52,12 +54,14 @@ export const pendingQuoteAccepted: ReadRepositoryReducer<IPendingQuoteAcceptedPa
         revision: revision - 1n,
       })
       .execute()
+
+    return affected > 0
   }
 
 export const pendingQuoteCancelled: ReadRepositoryReducer<IPendingQuoteCancelledPayload> =
   async ({ revision, data }, manager) => {
     const { cancelDt, quoteId } = data
-    await manager
+    const { affected } = await manager
       .createQueryBuilder()
       .update(QuoteTypeormEntity)
       .set({
@@ -69,12 +73,14 @@ export const pendingQuoteCancelled: ReadRepositoryReducer<IPendingQuoteCancelled
         revision: revision - 1n,
       })
       .execute()
+
+    return affected > 0
   }
 
 export const quoteReceived: ReadRepositoryReducer<IQuoteReceivedPayload> =
   async ({ revision, data }, manager) => {
     const { quoteId } = data
-    await manager
+    const { affected } = await manager
       .createQueryBuilder()
       .update(QuoteTypeormEntity)
       .set({
@@ -85,4 +91,6 @@ export const quoteReceived: ReadRepositoryReducer<IQuoteReceivedPayload> =
         revision: revision - 1n,
       })
       .execute()
+
+    return affected > 0
   }

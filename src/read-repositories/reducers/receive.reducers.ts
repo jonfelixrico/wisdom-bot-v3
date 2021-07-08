@@ -26,13 +26,15 @@ export const receiveCreated: ReadRepositoryReducer<IReceiveCreatedPayload> =
       userId,
       revision,
     })
+
+    return true
   }
 
 export const receiveInteracted: ReadRepositoryReducer<IReceiveInteractedPayload> =
   async ({ revision, data }, manager) => {
     const { interactionDt, interactionId, karma, receiveId, userId } = data
 
-    await manager
+    const { affected } = await manager
       .createQueryBuilder()
       .update(ReceiveTypeormEntity)
       .where('id = :receiveId AND revision = :revision', {
@@ -42,6 +44,10 @@ export const receiveInteracted: ReadRepositoryReducer<IReceiveInteractedPayload>
       .set({ revision })
       .execute()
 
+    if (!affected) {
+      return false
+    }
+
     await manager.insert(InteractionTypeormEntity, {
       interactionDt,
       id: interactionId,
@@ -49,4 +55,6 @@ export const receiveInteracted: ReadRepositoryReducer<IReceiveInteractedPayload>
       userId,
       receiveId,
     })
+
+    return true
   }
