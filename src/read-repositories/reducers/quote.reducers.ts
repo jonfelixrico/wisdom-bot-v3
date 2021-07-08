@@ -3,9 +3,9 @@ import { IPendingQuoteCancelledPayload } from 'src/domain/events/pending-quote-c
 import { IQuoteReceivedPayload } from 'src/domain/events/quote-received.event'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
-import { EsdbEventReducer } from '../types/esdb-event-reducer.type'
+import { ReadRepositoryReducer } from '../types/read-repository-reducer.type'
 
-export const quoteSubmitted: EsdbEventReducer<IQuoteSubmittedEventPayload> =
+export const quoteSubmitted: ReadRepositoryReducer<IQuoteSubmittedEventPayload> =
   async ({ revision, data }, manager) => {
     const {
       authorId,
@@ -37,7 +37,7 @@ export const quoteSubmitted: EsdbEventReducer<IQuoteSubmittedEventPayload> =
     })
   }
 
-export const pendingQuoteAccepted: EsdbEventReducer<IPendingQuoteAcceptedPayload> =
+export const pendingQuoteAccepted: ReadRepositoryReducer<IPendingQuoteAcceptedPayload> =
   async ({ revision, data }, manager) => {
     const { acceptDt, quoteId } = data
     await manager
@@ -51,7 +51,7 @@ export const pendingQuoteAccepted: EsdbEventReducer<IPendingQuoteAcceptedPayload
       .execute()
   }
 
-export const pendingQuoteCancelled: EsdbEventReducer<IPendingQuoteCancelledPayload> =
+export const pendingQuoteCancelled: ReadRepositoryReducer<IPendingQuoteCancelledPayload> =
   async ({ revision, data }, manager) => {
     const { cancelDt, quoteId } = data
     await manager
@@ -65,17 +65,15 @@ export const pendingQuoteCancelled: EsdbEventReducer<IPendingQuoteCancelledPaylo
       .execute()
   }
 
-export const quoteReceived: EsdbEventReducer<IQuoteReceivedPayload> = async (
-  { revision, data },
-  manager,
-) => {
-  const { quoteId } = data
-  await manager
-    .createQueryBuilder()
-    .update(QuoteTypeormEntity)
-    .set({
-      revision,
-    })
-    .where('id = :quoteId', { quoteId })
-    .execute()
-}
+export const quoteReceived: ReadRepositoryReducer<IQuoteReceivedPayload> =
+  async ({ revision, data }, manager) => {
+    const { quoteId } = data
+    await manager
+      .createQueryBuilder()
+      .update(QuoteTypeormEntity)
+      .set({
+        revision,
+      })
+      .where('id = :quoteId', { quoteId })
+      .execute()
+  }
