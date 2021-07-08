@@ -56,13 +56,12 @@ export class Receive extends DomainEntity implements IReceiveEntity {
       userId,
     })
 
-    const { receiveId, quoteId } = this
+    const { receiveId } = this
     this.apply(
       new ReceiveInteractedEvent({
         interactionDt,
         interactionId,
         receiveId,
-        quoteId,
         karma,
         userId,
       }),
