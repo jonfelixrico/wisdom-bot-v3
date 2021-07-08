@@ -48,7 +48,7 @@ export class Receive extends DomainEntity implements IReceiveEntity {
       throw new Error('Karma cannot be 0.')
     }
 
-    const interactDt = new Date()
+    const interactionDt = new Date()
     const interactionId = v4()
 
     this.interactions.push({
@@ -59,7 +59,7 @@ export class Receive extends DomainEntity implements IReceiveEntity {
     const { receiveId, quoteId } = this
     this.apply(
       new ReceiveInteractedEvent({
-        interactDt,
+        interactionDt,
         interactionId,
         receiveId,
         quoteId,

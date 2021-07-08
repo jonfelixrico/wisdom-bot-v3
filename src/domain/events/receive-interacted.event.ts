@@ -3,7 +3,7 @@ import { DomainEventNames } from '../domain-event-names.enum'
 
 export interface IReceiveInteractedPayload {
   readonly interactionId: string
-  readonly interactDt: Date
+  readonly interactionDt: Date
   readonly receiveId: string
   readonly userId: string
   readonly karma: number
