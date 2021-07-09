@@ -5,13 +5,10 @@ import {
   ReadStreamService,
   Reducer,
 } from 'src/write-repositories/read-stream/read-stream.service'
-import { PendingQuoteEsdbRepository } from '../abstract/pending-quote-esdb-repository.abstract'
-import { ExpectedRevision, ResolvedEvent } from '@eventstore/db-client'
-import { ObjectType } from 'src/domain/abstracts/domain-event.abstract'
-import { BasePendingQuoteEvent } from 'src/domain/events/base-pending-quote-event.abstract'
-import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
+import { ResolvedEvent } from '@eventstore/db-client'
 import { IPendingQuoteCancelledPayload } from 'src/domain/events/pending-quote-cancelled.event'
 import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
+import { EsdbRepository } from '../abstract/esdb-repository.abstract'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function quoteSubmitted(state: IPendingQuote, data: IPendingQuote) {
@@ -50,11 +47,8 @@ export const pendingQuoteReducer: Reducer<IPendingQuote> = (
 }
 
 @Injectable()
-export class PendingQuoteWriteRepositoryService extends PendingQuoteEsdbRepository {
-  constructor(
-    private readStream: ReadStreamService,
-    private publisher: DomainEventPublisherService,
-  ) {
+export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQuote> {
+  constructor(private readStream: ReadStreamService) {
     super()
   }
 
@@ -68,14 +62,5 @@ export class PendingQuoteWriteRepositoryService extends PendingQuoteEsdbReposito
       entity: new PendingQuote(state),
       revision,
     }
-  }
-
-  publishEvents(
-    events: BasePendingQuoteEvent<ObjectType>[],
-    expectedRevision?: ExpectedRevision,
-  ): Promise<void> {
-    return this.publisher.publishEvents(events, {
-      expectedRevision,
-    })
   }
 }
