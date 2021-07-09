@@ -9,7 +9,7 @@ interface IQuoteReceiveInput {
   readonly channelId: string
 }
 
-interface IQuoteEntity {
+export interface IQuoteEntity {
   quoteId: string
   content: string
   authorId: string
