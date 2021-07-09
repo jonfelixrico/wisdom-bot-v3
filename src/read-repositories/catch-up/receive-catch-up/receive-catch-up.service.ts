@@ -19,13 +19,14 @@ import {
 } from '@eventstore/db-client'
 import { IReceiveCreatedPayload } from 'src/domain/events/receive-created.event'
 import { ReceiveTypeormEntity } from 'src/typeorm/entities/receive.typeorm-entity'
+import { ReducerMap } from 'src/read-repositories/types/reducer-map.type'
 
 interface DataType extends IReceiveCreatedPayload, Record<string, any> {}
 type EventType = JSONEventType<DomainEventNames, DataType>
 
 const { RECEIVE_CREATED, RECEIVE_INTERACTED } = DomainEventNames
 
-const REDUCER_MAPPING: { [key: string]: ReadRepositoryReducer } = {
+const REDUCER_MAPPING: ReducerMap = {
   [RECEIVE_CREATED]: receiveCreated,
   [RECEIVE_INTERACTED]: receiveInteracted,
 }

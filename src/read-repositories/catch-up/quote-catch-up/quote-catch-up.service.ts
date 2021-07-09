@@ -20,9 +20,9 @@ import {
   pendingQuoteCancelled,
   quoteSubmitted,
 } from 'src/read-repositories/reducers/quote.reducers'
-import { ReadRepositoryReducer } from 'src/read-repositories/types/read-repository-reducer.type'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 import { Logger } from '@nestjs/common'
+import { ReducerMap } from 'src/read-repositories/types/reducer-map.type'
 
 interface DataType extends IQuoteSubmittedEventPayload, Record<string, any> {}
 type EventType = JSONEventType<DomainEventNames, DataType>
@@ -34,7 +34,7 @@ const {
   PENDING_QUOTE_CANCELLED,
 } = DomainEventNames
 
-const REDUCER_MAPPING: { [key: string]: ReadRepositoryReducer } = {
+const REDUCER_MAPPING: ReducerMap = {
   [QUOTE_RECEIVED]: quoteReceived,
   [QUOTE_SUBMITTED]: quoteSubmitted,
   [PENDING_QUOTE_ACCEPTED]: pendingQuoteAccepted,
