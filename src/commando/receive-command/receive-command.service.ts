@@ -1,14 +1,14 @@
-import { Inject, Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { Message, User } from 'discord.js'
 import {
   CommandoClient,
   CommandInfo,
   CommandoMessage,
 } from 'discord.js-commando'
-import { IQuote, QuoteRepository } from 'src/classes/quote-repository.abstract'
-import { ReceiveRepository } from 'src/classes/receive-repository.abstract'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
+import { QuoteQueryService } from 'src/read-repositories/queries/quote-query/quote-query.service'
+import { CommandBus } from '@nestjs/cqrs'
+import { ReceiveQuoteCommand } from 'src/domain/commands/receive-quote.command'
 
 const COMMAND_INFO: CommandInfo = {
   name: 'receive',
@@ -30,20 +30,13 @@ export interface IReceiveCommandArgs extends IArgumentMap {
   user?: User
 }
 
-function generateResponseString(quote: IQuote) {
-  return `**"${quote.content}"** - <@${
-    quote.authorId
-  }>, ${quote.submitDt.getFullYear()}`
-}
-
 @Injectable()
 export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
   constructor(
     client: CommandoClient,
-    private quoteRepo: QuoteRepository,
-    private receiveRepo: ReceiveRepository,
-    @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: Logger,
+    private quoteQuery: QuoteQueryService,
+    private logger: Logger,
+    private commandBus: CommandBus,
   ) {
     super(client, COMMAND_INFO)
   }
@@ -54,24 +47,35 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
   ): Promise<Message | Message[]> {
     const { channel, guild, author } = message
 
-    const quote = await this.quoteRepo.getRandomQuote(guild.id, user?.id)
-    if (!quote) {
+    const quoteId = await this.quoteQuery.getRandomQuoteId(guild.id, user?.id)
+    if (!quoteId) {
+      this.logger.verbose(
+        user
+          ? `No quotes found from user ${user.id} published under guild ${guild.id}.`
+          : `No quotes found under guild ${guild.id}.`,
+        ReceiveCommandService.name,
+      )
       return channel.send('No quotes available.')
     }
 
+    const { year, content, authorId } = await this.quoteQuery.getQuoteData(
+      quoteId,
+    )
+
     const response = await channel.send('🤔')
-    await response.edit(generateResponseString(quote))
+    await response.edit(`**"${content}"** - <@${authorId}>, ${year}`)
 
-    const [{ receiveId }] = await this.receiveRepo.createRecieve({
-      channelId: channel.id,
-      guildId: guild.id,
-      quoteId: quote.quoteId,
-      userId: author.id,
-      messageId: response.id,
-    })
+    this.commandBus.execute(
+      new ReceiveQuoteCommand({
+        channelId: channel.id,
+        messageId: response.id,
+        quoteId,
+        userId: author.id,
+      }),
+    )
 
-    this.logger.log(
-      `Created receive ${receiveId} for quote ${quote.quoteId}`,
+    this.logger.verbose(
+      `Processed quote receive for ${quoteId}.`,
       ReceiveCommandService.name,
     )
 
