@@ -93,8 +93,8 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
           `Consumed ${events.length} events to build quote ${quoteId}.`,
         )
 
-        const [lastEvent] = events.reverse()
-        this.relay.queryEvent(streamId, lastEvent.commitPosition + 1n)
+        const [lastResolvedEvent] = events.reverse()
+        this.relay.queryEvent(streamId, lastResolvedEvent.event.revision + 1n)
       })
     } catch (e) {
       this.logger.error(

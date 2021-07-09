@@ -80,8 +80,8 @@ export class ReceiveCatchUpService implements OnModuleInit, ICatchUpService {
         this.logger.verbose(
           `Consumed ${events.length} events to build receive ${receiveId}.`,
         )
-        const [lastEvent] = events.reverse()
-        this.relay.queryEvent(streamId, lastEvent.commitPosition + 1n)
+        const [lastResolvedEvent] = events.reverse()
+        this.relay.queryEvent(streamId, lastResolvedEvent.event.revision + 1n)
       })
     } catch (e) {
       this.logger.error(
