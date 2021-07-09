@@ -1,7 +1,10 @@
 import { DomainEntity } from '../abstracts/domain-entity.abstract'
 import { PendingQuoteAcceptedEvent } from '../events/pending-quote-accepted.event'
 import { PendingQuoteCancelledEvent } from '../events/pending-quote-cancelled.event'
+import { QuoteSubmittedEvent } from '../events/quote-submitted.event'
 import { IPendingQuote } from './pending-quote.interface'
+import { IQuoteToSubmit } from './quote-to-submit.interface'
+import { v4 } from 'uuid'
 
 export class PendingQuote extends DomainEntity implements IPendingQuote {
   quoteId: string
@@ -87,5 +90,29 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     const cancelDt = (this.cancelDt = new Date())
     const { quoteId } = this
     this.apply(new PendingQuoteCancelledEvent({ quoteId, cancelDt }))
+  }
+
+  /**
+   * Creates a quote.
+   * @param quote Data required to create a quote.
+   */
+  static submit(quote: IQuoteToSubmit) {
+    const quoteId = v4()
+
+    const submitEvent = new QuoteSubmittedEvent({
+      ...quote,
+      quoteId,
+    })
+
+    const entity = new PendingQuote({
+      ...quote,
+      quoteId,
+      acceptDt: null,
+      cancelDt: null,
+    })
+
+    entity.apply(submitEvent)
+
+    return entity
   }
 }
