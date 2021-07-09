@@ -19,6 +19,7 @@ import {
 import { IReceiveCreatedPayload } from 'src/domain/events/receive-created.event'
 import { ReceiveTypeormEntity } from 'src/typeorm/entities/receive.typeorm-entity'
 import { ReducerMap } from 'src/read-repositories/types/reducer-map.type'
+import { EventRelayService } from 'src/read-repositories/services/event-relay/event-relay.service'
 
 interface DataType extends IReceiveCreatedPayload, Record<string, any> {}
 type EventType = JSONEventType<DomainEventNames, DataType>
@@ -38,6 +39,7 @@ export class ReceiveCatchUpService implements OnModuleInit, ICatchUpService {
     private conn: Connection,
     private client: EventStoreDBClient,
     private logger: Logger,
+    private relay: EventRelayService,
   ) {}
 
   private async processRootEvent({
@@ -66,6 +68,8 @@ export class ReceiveCatchUpService implements OnModuleInit, ICatchUpService {
             `Receive ${receiveId} is up-to-date.`,
             ReceiveCatchUpService.name,
           )
+
+          this.relay.queryEvent(streamId, fromRevision + 1n)
           return
         }
 
@@ -76,6 +80,8 @@ export class ReceiveCatchUpService implements OnModuleInit, ICatchUpService {
         this.logger.verbose(
           `Consumed ${events.length} events to build receive ${receiveId}.`,
         )
+        const [lastEvent] = events.reverse()
+        this.relay.queryEvent(streamId, lastEvent.commitPosition + 1n)
       })
     } catch (e) {
       this.logger.error(

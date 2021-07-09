@@ -23,6 +23,7 @@ import {
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 import { Logger } from '@nestjs/common'
 import { ReducerMap } from 'src/read-repositories/types/reducer-map.type'
+import { EventRelayService } from 'src/read-repositories/services/event-relay/event-relay.service'
 
 interface DataType extends IQuoteSubmittedEventPayload, Record<string, any> {}
 type EventType = JSONEventType<DomainEventNames, DataType>
@@ -49,6 +50,7 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
     private conn: Connection,
     private client: EventStoreDBClient,
     private logger: Logger,
+    private relay: EventRelayService,
   ) {}
 
   private async processRootEvent({
@@ -78,6 +80,8 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
             `Quote ${quoteId} is up-to-date.`,
             QuoteCatchUpService.name,
           )
+
+          this.relay.queryEvent(streamId, fromRevision + 1n)
           return
         }
 
@@ -88,6 +92,9 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
         this.logger.verbose(
           `Consumed ${events.length} events to build quote ${quoteId}.`,
         )
+
+        const [lastEvent] = events.reverse()
+        this.relay.queryEvent(streamId, lastEvent.commitPosition + 1n)
       })
     } catch (e) {
       this.logger.error(
@@ -96,8 +103,6 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
         QuoteCatchUpService.name,
       )
     }
-
-    // TODO emit latest revision here to trigger minor-catch ups
   }
 
   async catchUp() {
