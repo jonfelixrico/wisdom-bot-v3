@@ -6,6 +6,7 @@ import { EventStoreModule } from 'src/event-store/event-store.module'
 import { ReceiveCatchUpService } from './catch-up/receive-catch-up/receive-catch-up.service'
 import { EventRelayService } from './services/event-relay/event-relay.service'
 import { EventListenerService } from './services/event-listener/event-listener.service'
+import { QuoteQueryService } from './queries/quote-query/quote-query.service'
 
 @Module({
   providers: [
@@ -14,7 +15,9 @@ import { EventListenerService } from './services/event-listener/event-listener.s
     ReceiveCatchUpService,
     EventRelayService,
     EventListenerService,
+    QuoteQueryService,
   ],
   imports: [TypeormModule, EventStoreModule],
+  exports: [QuoteQueryService],
 })
 export class ReadRepositoriesModule {}
