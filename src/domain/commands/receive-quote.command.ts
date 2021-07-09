@@ -7,6 +7,6 @@ interface IReceiveInfo {
   readonly userId: string
 }
 
-export class ReceiveQuote implements ICommand<IReceiveInfo> {
+export class ReceiveQuoteCommand implements ICommand<IReceiveInfo> {
   constructor(readonly payload: IReceiveInfo) {}
 }
