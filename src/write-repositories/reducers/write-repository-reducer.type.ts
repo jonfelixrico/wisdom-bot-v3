@@ -1,6 +1,6 @@
 export type WriteRepositoryReducer<
-  CurrentStateType extends Record<string, any> = Record<string, any>,
-  DataType = any,
+  DataType = unknown,
+  CurrentStateType extends Record<string, any> = unknown,
   UpdatedStateType extends Record<string, any> = CurrentStateType,
 > = (data: DataType, state: CurrentStateType) => UpdatedStateType
 
