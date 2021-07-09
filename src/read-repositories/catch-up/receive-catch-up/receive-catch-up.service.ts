@@ -5,7 +5,6 @@ import {
   receiveCreated,
   receiveInteracted,
 } from 'src/read-repositories/reducers/receive.reducers'
-import { ReadRepositoryReducer } from 'src/read-repositories/types/read-repository-reducer.type'
 import {
   CatchUpOrchestratorService,
   ICatchUpService,
