@@ -68,6 +68,9 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     }
   }
 
+  /**
+   * Flags a pending quote as accepted. Will fail if the quote is already cancelled, expired, or approved.
+   */
   accept() {
     this.checkIfPending()
     const acceptDt = (this.acceptDt = new Date())
@@ -75,6 +78,10 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     this.apply(new PendingQuoteAcceptedEvent({ quoteId, acceptDt }))
   }
 
+  /**
+   * Flags a pending quote as accepted. Assumes that cancellation is caused by the submitter themselves.
+   * Will fail if the quote is already cancelled, expired, or approved.
+   */
   cancel() {
     this.checkIfPending()
     const cancelDt = (this.cancelDt = new Date())
