@@ -45,12 +45,14 @@ export class EventListenerService implements OnModuleInit {
       if (!isProcessed) {
         this.logger.verbose(
           `Ignored revision ${revision} (${type}) from stream ${streamId}`,
+          EventListenerService.name,
         )
         await runner.rollbackTransaction()
       } else {
         await runner.commitTransaction()
         this.logger.verbose(
           `Processed revision ${revision} (${type}) from stream ${streamId}`,
+          EventListenerService.name,
         )
         // We'll do this so that if ever we missed an event because this is still processing, we can catch up gradually
         this.eventRelay.queryEvent(event.streamId, event.revision + 1n)
