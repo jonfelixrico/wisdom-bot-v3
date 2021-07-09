@@ -1,9 +1,11 @@
+import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { IPendingQuoteAcceptedPayload } from 'src/domain/events/pending-quote-accepted.event'
 import { IPendingQuoteCancelledPayload } from 'src/domain/events/pending-quote-cancelled.event'
 import { IQuoteReceivedPayload } from 'src/domain/events/quote-received.event'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 import { ReadRepositoryReducer } from '../types/read-repository-reducer.type'
+import { ReducerMap } from '../types/reducer-map.type'
 
 export const quoteSubmitted: ReadRepositoryReducer<IQuoteSubmittedEventPayload> =
   async ({ revision, data }, manager) => {
@@ -94,3 +96,17 @@ export const quoteReceived: ReadRepositoryReducer<IQuoteReceivedPayload> =
 
     return affected > 0
   }
+
+const {
+  QUOTE_SUBMITTED,
+  QUOTE_RECEIVED,
+  PENDING_QUOTE_ACCEPTED,
+  PENDING_QUOTE_CANCELLED,
+} = DomainEventNames
+
+export const QUOTE_REDUCERS: ReducerMap = Object.freeze({
+  [QUOTE_RECEIVED]: quoteReceived,
+  [QUOTE_SUBMITTED]: quoteSubmitted,
+  [PENDING_QUOTE_ACCEPTED]: pendingQuoteAccepted,
+  [PENDING_QUOTE_CANCELLED]: pendingQuoteCancelled,
+})
