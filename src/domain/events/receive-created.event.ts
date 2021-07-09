@@ -1,7 +1,8 @@
 import { DomainEvent } from '../abstracts/domain-event.abstract'
 import { DomainEventNames } from '../domain-event-names.enum'
+import { EventPayload } from './event-payload.type'
 
-export interface IReceiveCreatedPayload {
+export interface IReceiveCreatedPayload extends EventPayload {
   readonly receiveId: string
   readonly quoteId: string
   readonly userId: string
