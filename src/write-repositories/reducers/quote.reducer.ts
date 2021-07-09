@@ -8,9 +8,9 @@ import {
   WriteRepositoryReducerMap,
 } from './write-repository-reducer.type'
 
-const received: WriteRepositoryReducer = (
-  { receiveId }: IQuoteReceivedPayload,
-  { receives = [], ...state }: IQuoteEntity,
+const received: WriteRepositoryReducer<IQuoteReceivedPayload, IQuoteEntity> = (
+  { receiveId },
+  { receives = [], ...state },
 ) => {
   return {
     ...state,
@@ -41,7 +41,7 @@ const accepted: WriteRepositoryReducer<
 
 const { QUOTE_RECEIVED, PENDING_QUOTE_ACCEPTED, QUOTE_SUBMITTED } =
   DomainEventNames
-export const QUOTE_REDUCERS: WriteRepositoryReducerMap = {
+export const QUOTE_REDUCERS: WriteRepositoryReducerMap<IQuoteEntity> = {
   [QUOTE_RECEIVED]: received,
   [QUOTE_SUBMITTED]: submitted,
   [PENDING_QUOTE_ACCEPTED]: accepted,
