@@ -1,7 +1,7 @@
 import { JSONType } from '@eventstore/db-client'
 
 export abstract class DomainEvent<
-  PayloadType extends JSONType,
+  PayloadType extends JSONType = JSONType,
   EventNameType = string,
 > {
   constructor(
