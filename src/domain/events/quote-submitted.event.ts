@@ -1,11 +1,13 @@
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { DomainEvent } from '../abstracts/domain-event.abstract'
-import { IPendingQuote } from '../entities/pending-quote.interface'
+import { IQuoteToSubmit } from '../entities/quote-to-submit.interface'
 import { EventPayload } from './event-payload.type'
 
 export interface IQuoteSubmittedEventPayload
   extends EventPayload,
-    IPendingQuote {}
+    IQuoteToSubmit {
+  quoteId: string
+}
 
 export class QuoteSubmittedEvent extends DomainEvent<IQuoteSubmittedEventPayload> {
   constructor(created: IQuoteSubmittedEventPayload) {
