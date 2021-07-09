@@ -1,7 +1,8 @@
 export type WriteRepositoryReducer<
-  StateType extends Record<string, any> = Record<string, any>,
+  CurrentStateType extends Record<string, any> = Record<string, any>,
   DataType = any,
-> = (data: DataType, state: StateType) => StateType
+  UpdatedStateType extends Record<string, any> = CurrentStateType,
+> = (data: DataType, state: CurrentStateType) => UpdatedStateType
 
 export type WriteRepositoryReducerMap = {
   [key: string]: WriteRepositoryReducer
