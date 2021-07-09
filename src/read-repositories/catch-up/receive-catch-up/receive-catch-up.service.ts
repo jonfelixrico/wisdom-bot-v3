@@ -12,6 +12,7 @@ import {
 } from '../catch-up-orchestrator/catch-up-orchestrator.service'
 import { Connection } from 'typeorm'
 import {
+  ErrorType,
   EventStoreDBClient,
   JSONEventType,
   JSONRecordedEvent,
@@ -86,13 +87,22 @@ export class ReceiveCatchUpService implements OnModuleInit, ICatchUpService {
   }
 
   async catchUp() {
-    await this.streamReader.readStream<EventType>(
-      `$et-${RECEIVE_CREATED}`,
-      ({ event }) => this.processRootEvent(event),
-      {
-        resolveLinkTos: true,
-      },
-    )
+    const streamName = `$et-${RECEIVE_CREATED}`
+    try {
+      await this.streamReader.readStream<EventType>(
+        streamName,
+        ({ event }) => this.processRootEvent(event),
+        {
+          resolveLinkTos: true,
+        },
+      )
+    } catch (e) {
+      if (e.type === ErrorType.STREAM_NOT_FOUND) {
+        this.logger.warn(
+          `${streamName} not found. This may be due to the projection not being created since there's no instances of ${RECEIVE_CREATED} event yet, or the projection may be disabled.`,
+        )
+      }
+    }
   }
 
   onModuleInit() {

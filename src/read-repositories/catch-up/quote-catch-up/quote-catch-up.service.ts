@@ -8,6 +8,7 @@ import {
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import {
+  ErrorType,
   EventStoreDBClient,
   JSONEventType,
   JSONRecordedEvent,
@@ -100,19 +101,22 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
   }
 
   async catchUp() {
-    await this.streamReader.readStream<EventType>(
-      /*
-       * We're getting the projection for all QUOTE_SUBMITTED events.
-       * The reason why we're using QUOTE_SUBMITTED specifically because this is the "entry point" for all quote-related
-       * entities.
-       */
-      `$et-${QUOTE_SUBMITTED}`,
-      ({ event }) => this.processRootEvent(event),
-      {
-        // This is required when using projections so that it'll link the events of that projection to the actual event from other streams
-        resolveLinkTos: true,
-      },
-    )
+    const streamName = `$et-${QUOTE_SUBMITTED}`
+    try {
+      await this.streamReader.readStream<EventType>(
+        streamName,
+        ({ event }) => this.processRootEvent(event),
+        {
+          resolveLinkTos: true,
+        },
+      )
+    } catch (e) {
+      if (e.type === ErrorType.STREAM_NOT_FOUND) {
+        this.logger.warn(
+          `${streamName} not found. This may be due to the projection not being created since there's no instances of ${QUOTE_SUBMITTED} event yet, or the projection may be disabled.`,
+        )
+      }
+    }
   }
 
   onModuleInit() {
