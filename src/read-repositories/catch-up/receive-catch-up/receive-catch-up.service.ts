@@ -100,6 +100,7 @@ export class ReceiveCatchUpService implements OnModuleInit, ICatchUpService {
       if (e.type === ErrorType.STREAM_NOT_FOUND) {
         this.logger.warn(
           `${streamName} not found. This may be due to the projection not being created since there's no instances of ${RECEIVE_CREATED} event yet, or the projection may be disabled.`,
+          ReceiveCatchUpService.name,
         )
       }
     }

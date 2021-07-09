@@ -114,6 +114,7 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
       if (e.type === ErrorType.STREAM_NOT_FOUND) {
         this.logger.warn(
           `${streamName} not found. This may be due to the projection not being created since there's no instances of ${QUOTE_SUBMITTED} event yet, or the projection may be disabled.`,
+          QuoteCatchUpService.name,
         )
       }
     }
