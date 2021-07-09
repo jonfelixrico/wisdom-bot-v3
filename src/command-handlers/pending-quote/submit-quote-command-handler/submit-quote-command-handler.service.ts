@@ -1,8 +1,9 @@
+import { NO_STREAM } from '@eventstore/db-client'
 import { Logger } from '@nestjs/common'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { SubmitQuoteCommand } from 'src/domain/commands/submit-quote.command'
-import { QuoteSubmittedEvent } from 'src/domain/events/quote-submitted.event'
-import { PendingQuoteEsdbRepository } from 'src/write-repositories/abstract/pending-quote-esdb-repository.abstract'
+import { PendingQuote } from 'src/domain/entities/pending-quote.entity'
+import { PendingQuoteWriteRepositoryService } from 'src/write-repositories/pending-quote-write-repository/pending-quote-write-repository.service'
 import { v4 } from 'uuid'
 
 @CommandHandler(SubmitQuoteCommand)
@@ -11,20 +12,15 @@ export class SubmitQuoteCommandHandlerService
 {
   constructor(
     private logger: Logger,
-    private repo: PendingQuoteEsdbRepository,
+    private repo: PendingQuoteWriteRepositoryService,
   ) {}
 
   async execute({ payload }: SubmitQuoteCommand): Promise<any> {
     const quoteId = v4()
 
-    const event = new QuoteSubmittedEvent({
-      ...payload,
-      quoteId,
-      acceptDt: null,
-      cancelDt: null,
-    })
+    const submitted = PendingQuote.submit(payload)
 
-    await this.repo.publishEvent(event)
+    await this.repo.publishEvents(submitted, NO_STREAM)
 
     this.logger.debug(
       `Created quote ${quoteId}.`,

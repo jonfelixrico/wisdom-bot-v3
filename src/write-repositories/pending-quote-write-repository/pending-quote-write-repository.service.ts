@@ -5,10 +5,15 @@ import {
   ReadStreamService,
   Reducer,
 } from 'src/write-repositories/read-stream/read-stream.service'
-import { ResolvedEvent } from '@eventstore/db-client'
+import {
+  EventStoreDBClient,
+  ExpectedRevision,
+  ResolvedEvent,
+} from '@eventstore/db-client'
 import { IPendingQuoteCancelledPayload } from 'src/domain/events/pending-quote-cancelled.event'
 import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
 import { EsdbRepository } from '../abstract/esdb-repository.abstract'
+import { convertDomainEventToJsonEvent } from '../utils/convert-domain-event-to-json-event.util'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function quoteSubmitted(state: IPendingQuote, data: IPendingQuote) {
@@ -48,7 +53,10 @@ export const pendingQuoteReducer: Reducer<IPendingQuote> = (
 
 @Injectable()
 export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQuote> {
-  constructor(private readStream: ReadStreamService) {
+  constructor(
+    private readStream: ReadStreamService,
+    private client: EventStoreDBClient,
+  ) {
     super()
   }
 
@@ -62,5 +70,20 @@ export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQu
       entity: new PendingQuote(state),
       revision,
     }
+  }
+
+  async publishEvents(
+    { events }: PendingQuote,
+    expectedRevision: ExpectedRevision,
+  ) {
+    const [firstEvent] = events
+    this.client.appendToStream(
+      // We're going to trust that all aggregateIds here are the same
+      firstEvent.aggregateId,
+      events.map(convertDomainEventToJsonEvent),
+      {
+        expectedRevision,
+      },
+    )
   }
 }
