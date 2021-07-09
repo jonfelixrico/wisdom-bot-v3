@@ -106,7 +106,7 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
        * The reason why we're using QUOTE_SUBMITTED specifically because this is the "entry point" for all quote-related
        * entities.
        */
-      `$et-${DomainEventNames.QUOTE_SUBMITTED}`,
+      `$et-${QUOTE_SUBMITTED}`,
       ({ event }) => this.processRootEvent(event),
       {
         // This is required when using projections so that it'll link the events of that projection to the actual event from other streams
