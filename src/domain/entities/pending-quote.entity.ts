@@ -1,13 +1,9 @@
 import { DomainEntity } from '../abstracts/domain-entity.abstract'
-import { BasePendingQuoteEvent } from '../events/base-pending-quote-event.abstract'
 import { PendingQuoteAcceptedEvent } from '../events/pending-quote-accepted.event'
 import { PendingQuoteCancelledEvent } from '../events/pending-quote-cancelled.event'
 import { IPendingQuote } from './pending-quote.interface'
 
-export class PendingQuote
-  extends DomainEntity<BasePendingQuoteEvent>
-  implements IPendingQuote
-{
+export class PendingQuote extends DomainEntity implements IPendingQuote {
   quoteId: string
   acceptDt: Date
   cancelDt: Date

@@ -1,11 +1,9 @@
 import { DomainEvent } from './domain-event.abstract'
 
-export abstract class DomainEntity<
-  EventType extends DomainEvent = DomainEvent,
-> {
-  private _events: EventType[] = []
+export abstract class DomainEntity {
+  private _events: DomainEvent[] = []
 
-  apply(...events: EventType[]) {
+  apply(...events: DomainEvent[]) {
     this._events.push(...events)
   }
 
