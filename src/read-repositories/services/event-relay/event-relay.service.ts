@@ -55,6 +55,10 @@ export class EventRelayService implements OnModuleInit {
     return resolvedEvent.event
   }
 
+  get eventStream() {
+    return this.stream$.asObservable()
+  }
+
   onModuleInit() {
     this.client
       .subscribeToAll({ fromPosition: END })
