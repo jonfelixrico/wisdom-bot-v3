@@ -1,12 +1,14 @@
 import { ICommand } from '../command.interface'
 
-interface IInteraction {
+export interface IInteractReceiveCommandPayload {
   readonly quoteId: string
   readonly receiveId: string
   readonly userId: string
   readonly karma: number
 }
 
-export class InteractReceiveCommand implements ICommand<IInteraction> {
-  constructor(readonly payload: IInteraction) {}
+export class InteractReceiveCommand
+  implements ICommand<IInteractReceiveCommandPayload>
+{
+  constructor(readonly payload: IInteractReceiveCommandPayload) {}
 }
