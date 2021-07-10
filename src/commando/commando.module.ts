@@ -9,6 +9,7 @@ import { CqrsModule } from '@nestjs/cqrs'
 import { TypeormModule } from 'src/typeorm/typeorm.module'
 import { ReceiveCommandService } from './receive-command/receive-command.service'
 import { ReadRepositoriesModule } from 'src/read-repositories/read-repositories.module'
+import { ConcurCommandService } from './concur-command/concur-command.service'
 
 @Module({
   imports: [DiscordModule, CqrsModule, TypeormModule, ReadRepositoriesModule],
@@ -19,6 +20,7 @@ import { ReadRepositoriesModule } from 'src/read-repositories/read-repositories.
     QuoteApproverService,
     DeleteListenerService,
     ReceiveCommandService,
+    ConcurCommandService,
   ],
 })
 export class CommandoModule {}
