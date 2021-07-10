@@ -7,6 +7,6 @@ interface IInteraction {
   readonly karma: number
 }
 
-export class InteractReceive implements ICommand<IInteraction> {
+export class InteractReceiveCommand implements ICommand<IInteraction> {
   constructor(readonly payload: IInteraction) {}
 }
