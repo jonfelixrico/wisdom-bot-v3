@@ -44,14 +44,19 @@ export class Receive extends DomainEntity implements IReceiveEntity {
   }
 
   interact({ karma = 1, userId }: IReceiveInteractInput) {
+    const { interactions } = this
     if (karma === 0) {
       throw new Error('Karma cannot be 0.')
+    } else if (
+      interactions.some((interaction) => interaction.userId === userId)
+    ) {
+      throw new Error('Each user can only interact with a received quote once.')
     }
 
     const interactionDt = new Date()
     const interactionId = v4()
 
-    this.interactions.push({
+    interactions.push({
       interactionId,
       userId,
     })
