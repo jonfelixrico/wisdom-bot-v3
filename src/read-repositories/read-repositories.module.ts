@@ -20,6 +20,6 @@ import { ReceiveQueryService } from './queries/receive-query/receive-query.servi
     ReceiveQueryService,
   ],
   imports: [TypeormModule, EventStoreModule],
-  exports: [QuoteQueryService],
+  exports: [QuoteQueryService, ReceiveQueryService],
 })
 export class ReadRepositoriesModule {}
