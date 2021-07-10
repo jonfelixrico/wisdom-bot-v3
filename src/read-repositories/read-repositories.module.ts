@@ -7,6 +7,7 @@ import { ReceiveCatchUpService } from './catch-up/receive-catch-up/receive-catch
 import { EventRelayService } from './services/event-relay/event-relay.service'
 import { EventListenerService } from './services/event-listener/event-listener.service'
 import { QuoteQueryService } from './queries/quote-query/quote-query.service'
+import { ReceiveQueryService } from './queries/receive-query/receive-query.service'
 
 @Module({
   providers: [
@@ -16,6 +17,7 @@ import { QuoteQueryService } from './queries/quote-query/quote-query.service'
     EventRelayService,
     EventListenerService,
     QuoteQueryService,
+    ReceiveQueryService,
   ],
   imports: [TypeormModule, EventStoreModule],
   exports: [QuoteQueryService],
