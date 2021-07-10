@@ -7,7 +7,7 @@ interface IInteraction {
   readonly userId: string
 }
 
-interface IReceiveEntity {
+export interface IReceiveEntity {
   receiveId: string
   quoteId: string
   channelId: string
