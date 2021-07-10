@@ -1,4 +1,5 @@
 import {
+  ErrorType,
   EventStoreDBClient,
   ExpectedRevision,
   JSONRecordedEvent,
@@ -19,20 +20,28 @@ export class ReceiveWriteRepositoryService extends EsdbRepository<Receive> {
   }
 
   async findById(id: string): Promise<IEsdbRepositoryEntity<Receive>> {
-    const resolvedEvents = await this.client.readStream(id)
+    try {
+      const resolvedEvents = await this.client.readStream(id)
+      const events = resolvedEvents.map(
+        ({ event }) => event as JSONRecordedEvent,
+      )
 
-    const events = resolvedEvents.map(({ event }) => event as JSONRecordedEvent)
+      const asObject = events.reduce<IReceiveEntity>(
+        (state, { data, type }) => RECEIVE_REDUCERS[type](data, state),
+        null,
+      )
 
-    const asObject = events.reduce<IReceiveEntity>(
-      (state, { data, type }) => RECEIVE_REDUCERS[type](data, state),
-      null,
-    )
+      const [lastEvent] = events.reverse()
+      return {
+        entity: new Receive(asObject),
+        revision: lastEvent.revision,
+      }
+    } catch (e) {
+      if (e.type === ErrorType.NO_STREAM) {
+        return null
+      }
 
-    const [lastEvent] = events.reverse()
-
-    return {
-      entity: new Receive(asObject),
-      revision: lastEvent.revision,
+      throw e
     }
   }
 
