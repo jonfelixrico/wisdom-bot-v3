@@ -4,6 +4,7 @@ import { CqrsModule } from '@nestjs/cqrs'
 import { WriteRepositoriesModule } from 'src/write-repositories/write-repositories.module'
 import { AcceptQuoteCommandHandlerService } from './pending-quote/accept-quote-command-handler/accept-quote-command-handler.service'
 import { ReceiveQuoteCommandHandlerService } from './quote/receive-quote-command-handler/receive-quote-command-handler.service'
+import { InteractReceiveCommandHandlerService } from './receive/interact-receive-command-handler/interact-receive-command-handler.service'
 
 @Module({
   imports: [CqrsModule, WriteRepositoriesModule],
@@ -11,6 +12,7 @@ import { ReceiveQuoteCommandHandlerService } from './quote/receive-quote-command
     SubmitQuoteCommandHandlerService,
     AcceptQuoteCommandHandlerService,
     ReceiveQuoteCommandHandlerService,
+    InteractReceiveCommandHandlerService,
   ],
 
   // TODO import repository
