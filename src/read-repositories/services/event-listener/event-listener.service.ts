@@ -17,6 +17,7 @@ export class EventListenerService implements OnModuleInit {
 
     this.logger.verbose(
       `Received revision ${revision} (${type}) from stream ${streamId}`,
+      EventListenerService.name,
     )
     const runner = this.conn.createQueryRunner()
     try {
