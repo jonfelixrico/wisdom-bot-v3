@@ -1,6 +1,11 @@
 import { v4 } from 'uuid'
 import { DomainEntity } from '../abstracts/domain-entity.abstract'
+import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
+import { DomainError } from '../errors/domain-error.class'
 import { ReceiveInteractedEvent } from '../events/receive-interacted.event'
+
+const { INTERACTION_DUPLICATE_USER, INTERACTION_INVALID_KARMA } =
+  DomainErrorCodes
 
 interface IInteraction {
   readonly interactionId: string
@@ -46,11 +51,11 @@ export class Receive extends DomainEntity implements IReceiveEntity {
   interact({ karma = 1, userId }: IReceiveInteractInput) {
     const { interactions } = this
     if (karma === 0) {
-      throw new Error('Karma cannot be 0.')
+      throw new DomainError(INTERACTION_INVALID_KARMA)
     } else if (
       interactions.some((interaction) => interaction.userId === userId)
     ) {
-      throw new Error('Each user can only interact with a received quote once.')
+      throw new DomainError(INTERACTION_DUPLICATE_USER)
     }
 
     const interactionDt = new Date()

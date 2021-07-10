@@ -5,6 +5,10 @@ import { QuoteSubmittedEvent } from '../events/quote-submitted.event'
 import { IPendingQuote } from './pending-quote.interface'
 import { IQuoteToSubmit } from './quote-to-submit.interface'
 import { v4 } from 'uuid'
+import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
+import { DomainError } from '../errors/domain-error.class'
+
+const { QUOTE_APPROVED, QUOTE_CANCELLED, QUOTE_EXPIRED } = DomainErrorCodes
 
 export class PendingQuote extends DomainEntity implements IPendingQuote {
   quoteId: string
@@ -63,11 +67,11 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     const { acceptDt: approveDt, cancelDt, isExpired } = this
 
     if (!!approveDt) {
-      throw new Error('Already approved.')
+      throw new DomainError(QUOTE_APPROVED)
     } else if (!!cancelDt) {
-      throw new Error('Already cancelled.')
+      throw new DomainError(QUOTE_CANCELLED)
     } else if (isExpired) {
-      throw new Error('Already expired.')
+      throw new DomainError(QUOTE_EXPIRED)
     }
   }
 
