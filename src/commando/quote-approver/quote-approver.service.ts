@@ -1,21 +1,22 @@
-import { Inject, Injectable, Logger } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { filter, map } from 'rxjs/operators'
 import { GuildRepoService } from 'src/discord/guild-repo/guild-repo.service'
 import { DeleteListenerService } from '../delete-listener/delete-listener.service'
 import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
-import {
-  IPendingQuote,
-  PendingQuoteRepository,
-} from 'src/classes/pending-quote-repository.abstract'
+import { CommandBus } from '@nestjs/cqrs'
+import { AcceptPendingQuoteCommand } from 'src/domain/commands/accept-pending-quote.command'
+import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
+import { QuoteTypeormRepository } from 'src/typeorm/providers/quote.typeorm-repository'
 
 function generateResponseString({
   content,
   submitterId,
   authorId,
   submitDt,
-}: IPendingQuote) {
-  const quoteLine = `**"${content}"** - <@${authorId}>, ${submitDt.getFullYear()}`
+}: QuoteTypeormEntity) {
+  const quoteLine = `**"${content}"** - <@${authorId}>, ${new Date(
+    submitDt,
+  ).getFullYear()}`
   const acceptLine = `<@${submitterId}>, your submission has been accepted.`
 
   return [quoteLine, acceptLine].join('\n')
@@ -25,11 +26,11 @@ function generateResponseString({
 export class QuoteApproverService {
   constructor(
     private guildRepo: GuildRepoService,
-    private pendingRepo: PendingQuoteRepository,
     private reactListener: ReactionListenerService,
     private deleteListener: DeleteListenerService,
-    @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: Logger,
+    private commandBus: CommandBus,
+    // TODO this is just a temporary change so just that we'll be able to test
+    private repo: QuoteTypeormRepository,
   ) {
     this.setUp()
   }
@@ -44,8 +45,14 @@ export class QuoteApproverService {
       .subscribe(this.approveQuoteByMessageId.bind(this))
   }
 
-  private async approveQuoteByMessageId(messageId: string) {
-    const quote = await this.pendingRepo.getPendingQuoteByMessageId(messageId)
+  private getQuoteIdByMessageId(
+    messageId: string,
+  ): Promise<QuoteTypeormEntity> {
+    return this.repo.findOne({ messageId })
+  }
+
+  private async approveQuoteByMessageId(messageId: string): Promise<void> {
+    const quote = await this.getQuoteIdByMessageId(messageId)
     if (!quote) {
       // TODO add logging here
       return
@@ -58,7 +65,7 @@ export class QuoteApproverService {
     guildId,
     messageId,
     channelId,
-  }: IPendingQuote): Promise<void> {
+  }: QuoteTypeormEntity): Promise<void> {
     this.guildRepo.deleteMessage(
       guildId,
       channelId,
@@ -67,7 +74,7 @@ export class QuoteApproverService {
     )
   }
 
-  private async announceApproval(quote: IPendingQuote): Promise<void> {
+  private async announceApproval(quote: QuoteTypeormEntity): Promise<void> {
     const channel = await this.guildRepo.getTextChannel(
       quote.guildId,
       quote.channelId,
@@ -81,13 +88,10 @@ export class QuoteApproverService {
     channel.send(generateResponseString(quote))
   }
 
-  private async processQuote(quote: IPendingQuote) {
-    const { quoteId, messageId, guildId } = quote
-    await this.pendingRepo.approvePendingQuote(quoteId)
-    this.logger.log(
-      `Approved quote ${quoteId} of guild ${guildId}`,
-      QuoteApproverService.name,
-    )
+  private async processQuote(quote: QuoteTypeormEntity) {
+    const { messageId } = quote
+
+    this.commandBus.execute(new AcceptPendingQuoteCommand(quote.id))
 
     this.deleteListener.unwatch(messageId)
     this.reactListener.unwatch(messageId)
@@ -96,15 +100,5 @@ export class QuoteApproverService {
     // TODO unsubscribe regenerator
     // TODO unsubscribe watcher
     await this.announceApproval(quote)
-  }
-
-  async approveQuote(quoteId: string): Promise<IPendingQuote> {
-    const quote = await this.pendingRepo.getPendingQuote(quoteId)
-    if (!quote) {
-      // TODO log warnings
-      return
-    }
-
-    await this.processQuote(quote)
   }
 }

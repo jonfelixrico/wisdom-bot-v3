@@ -18,12 +18,15 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "esdb:create": "docker run --name esdb-node --restart unless-stopped -d -p 2113:2113 -p 1113:1113 eventstore/eventstore:latest --insecure --run-projections=All --enable-external-tcp --enable-atom-pub-over-http"
   },
   "dependencies": {
+    "@eventstore/db-client": "^1.2.1",
     "@nestjs/common": "^7.6.15",
     "@nestjs/config": "^0.6.3",
     "@nestjs/core": "^7.6.15",
+    "@nestjs/cqrs": "^7.0.1",
     "@nestjs/platform-express": "^7.6.15",
     "discord.js": "^12.5.3",
     "discord.js-commando": "^0.12.3",
@@ -35,6 +38,7 @@
     "rxjs": "^6.6.6",
     "sprintf-js": "^1.1.2",
     "typeorm": "^0.2.32",
+    "uuid": "^8.3.2",
     "winston": "^3.3.3"
   },
   "devDependencies": {
@@ -46,6 +50,7 @@
     "@types/node": "^14.14.36",
     "@types/sprintf-js": "^1.1.2",
     "@types/supertest": "^2.0.10",
+    "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.19.0",
     "@typescript-eslint/parser": "^4.19.0",
     "eslint": "^7.22.0",
@@ -59,8 +64,7 @@
     "ts-loader": "^8.0.18",
     "ts-node": "^9.1.1",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^4.2.3",
-    "uuid": "^8.3.2"
+    "typescript": "^4.2.3"
   },
   "jest": {
     "moduleFileExtensions": [

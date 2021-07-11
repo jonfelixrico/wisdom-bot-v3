@@ -5,16 +5,13 @@ import {
   CommandoClient,
   CommandoMessage,
 } from 'discord.js-commando'
-import { sprintf } from 'sprintf-js'
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
-import { ConcurRepository } from 'src/classes/concur-repository.abstract'
-import { IQuote, QuoteRepository } from 'src/classes/quote-repository.abstract'
-import {
-  IReceive,
-  ReceiveRepository,
-} from 'src/classes/receive-repository.abstract'
-import { GuildRepoService } from 'src/discord/guild-repo/guild-repo.service'
 import { WrappedCommand } from '../wrapped-command.class'
+import { ReceiveQueryService } from 'src/read-repositories/queries/receive-query/receive-query.service'
+import { CommandBus } from '@nestjs/cqrs'
+import { InteractReceiveCommand } from 'src/domain/commands/interact-receive.command'
+import { DomainError } from 'src/domain/errors/domain-error.class'
+import { DomainErrorCodes } from 'src/domain/errors/domain-error-codes.enum'
 
 const COMMAND_INFO: CommandInfo = {
   name: 'amen',
@@ -24,115 +21,63 @@ const COMMAND_INFO: CommandInfo = {
   group: 'commands',
 }
 
-function generateResponseString(
-  { content, authorId, submitDt }: IQuote,
-  concurs: number,
-) {
-  return [
-    sprintf('**"%s"** - <@%s>, %d', content, authorId, submitDt.getFullYear()),
-    sprintf('**Upvotes:** %d', concurs),
-  ].join('\n')
-}
-
 @Injectable()
 export class ConcurCommandService extends WrappedCommand {
   constructor(
     client: CommandoClient,
-    private recvRepo: ReceiveRepository,
-    private concurRepo: ConcurRepository,
-    private quoteRepo: QuoteRepository,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: Logger,
-    private discordGuildRepo: GuildRepoService,
+    private query: ReceiveQueryService,
+    private commandBus: CommandBus,
   ) {
     super(client, COMMAND_INFO)
   }
 
   async run(message: CommandoMessage): Promise<Message | Message[]> {
-    const { channel, reference, author, guild } = message
+    const { channel, reference } = message
 
     if (!reference) {
       return await channel.send('Invalid invocation.')
     }
 
-    const receive = await this.recvRepo.findReceiveByMessageId(
+    const receiveId = await this.query.getReceiveIdFromMessageId(
       reference.messageID,
     )
 
-    if (!receive) {
+    if (!receiveId) {
       return await channel.send('Invalid invocation.')
     }
 
-    const concurs = await this.concurRepo.findConcursByReceiveId(
-      receive.receiveId,
-    )
+    const userId = message.author.id
 
-    const hasUserConcurred = concurs.some(({ userId }) => author.id === userId)
-    if (hasUserConcurred) {
-      this.logger.warn(
-        `User ${author.id} has already concurred quote ${receive.quoteId}`,
-        ConcurCommandService.name,
+    try {
+      await this.commandBus.execute(
+        new InteractReceiveCommand({
+          // temporarily force all concurs as karma 1
+          karma: 1,
+          receiveId,
+          userId,
+        }),
       )
+    } catch (e) {
+      if (
+        e instanceof DomainError &&
+        e.code === DomainErrorCodes.INTERACTION_DUPLICATE_USER
+      ) {
+        this.logger.log(
+          `User ${userId} has already interacted with receive ${receiveId}.`,
+          ConcurCommandService.name,
+        )
 
-      message.reply('you have already upvoted this quote.')
-      return
+        return message.channel.send(
+          'You have already interacted with this received quote.',
+        )
+      }
+
+      // the dupe user interact is the only error we'll handle. for the rest, they are uncaught exceptions
+      throw e
     }
 
-    const [concur] = await this.concurRepo.createConcur({
-      channelId: channel.id,
-      // TODO remove guild and channel information
-      guildId: guild.id,
-      userId: author.id,
-      receiveId: receive.receiveId,
-    })
-
-    this.logger.log(
-      `Created concur ${concur.concurId} for receive ${receive.receiveId}.`,
-      ConcurCommandService.name,
-    )
-
-    await this.updateReceiveMessage(receive, concurs.length + 1)
     await message.react('👌')
-  }
-
-  private async updateReceiveMessage(
-    { channelId, guildId, messageId, quoteId }: IReceive,
-    concurCount: number,
-  ) {
-    const quote = await this.quoteRepo.getQuote(quoteId)
-
-    if (!quote) {
-      this.logger.error(
-        `Quote ${quoteId} not found while trying to concur.`,
-        ConcurCommandService.name,
-      )
-      return
-    }
-
-    const channel = await this.discordGuildRepo.getTextChannel(
-      guildId,
-      channelId,
-    )
-
-    if (!channel) {
-      this.logger.error(
-        `Channel ${channelId} not found while trying to update concur message.`,
-        ConcurCommandService.name,
-      )
-      return
-    }
-
-    const { messages } = channel
-    const message = await messages.fetch(messageId)
-
-    if (!message) {
-      this.logger.error(
-        `Message ${messageId} not found while trying to concur.`,
-        ConcurCommandService.name,
-      )
-      return
-    }
-
-    await message.edit(generateResponseString(quote, concurCount))
   }
 }
