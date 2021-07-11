@@ -1,21 +1,19 @@
 import { Module } from '@nestjs/common'
 import { PendingQuoteWriteRepositoryService } from './pending-quote-write-repository/pending-quote-write-repository.service'
-import { PendingQuoteEsdbRepository } from './abstract/pending-quote-esdb-repository.abstract'
-import { DomainEventPublisherService } from './domain-event-publisher/domain-event-publisher.service'
 import { EventStoreModule } from 'src/event-store/event-store.module'
 import { ReadStreamService } from './read-stream/read-stream.service'
+import { QuoteWriteRepositoryService } from './quote-write-repository/quote-write-repository.service'
+import { ReceiveWriteRepositoryService } from './receive-write-repository/receive-write-repository.service'
 
 const providersToExport = [
-  {
-    useClass: PendingQuoteWriteRepositoryService,
-    provide: PendingQuoteEsdbRepository,
-  },
-  ReadStreamService,
+  PendingQuoteWriteRepositoryService,
+  QuoteWriteRepositoryService,
+  ReceiveWriteRepositoryService,
 ]
 
 @Module({
-  providers: [...providersToExport, DomainEventPublisherService],
+  providers: [...providersToExport, ReadStreamService],
   imports: [EventStoreModule],
-  exports: [...providersToExport],
+  exports: providersToExport,
 })
 export class WriteRepositoriesModule {}

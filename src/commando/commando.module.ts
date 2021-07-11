@@ -7,15 +7,20 @@ import { QuoteApproverService } from './quote-approver/quote-approver.service'
 import { DeleteListenerService } from './delete-listener/delete-listener.service'
 import { CqrsModule } from '@nestjs/cqrs'
 import { TypeormModule } from 'src/typeorm/typeorm.module'
+import { ReceiveCommandService } from './receive-command/receive-command.service'
+import { ReadRepositoriesModule } from 'src/read-repositories/read-repositories.module'
+import { ConcurCommandService } from './concur-command/concur-command.service'
 
 @Module({
-  imports: [DiscordModule, CqrsModule, TypeormModule],
+  imports: [DiscordModule, CqrsModule, TypeormModule, ReadRepositoriesModule],
   providers: [
     SetupService,
     SubmitCommandService,
     ReactionListenerService,
     QuoteApproverService,
     DeleteListenerService,
+    ReceiveCommandService,
+    ConcurCommandService,
   ],
 })
 export class CommandoModule {}

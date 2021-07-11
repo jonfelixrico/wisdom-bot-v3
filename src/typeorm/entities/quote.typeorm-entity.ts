@@ -1,5 +1,4 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm'
-import { EsdbEntity } from './esdb-entity.embedded-entity'
 
 @Entity({
   name: 'quote',
@@ -48,8 +47,15 @@ export class QuoteTypeormEntity {
   })
   expireDt: Date
 
-  @Column(() => EsdbEntity)
-  esdb: EsdbEntity
+  @Column({
+    type: 'bigint',
+    // without this, we need to make sure to cast `revision` as BigInt every time we need to use it
+    transformer: {
+      to: (val) => val,
+      from: (val) => BigInt(val),
+    },
+  })
+  revision: bigint
 
   @Column({ nullable: true })
   acceptDt: Date

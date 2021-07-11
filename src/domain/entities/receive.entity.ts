@@ -1,15 +1,18 @@
-import { AggregateRoot } from '@nestjs/cqrs'
 import { v4 } from 'uuid'
-import { ReceiveInteracted } from '../events/receive-interacted.event'
+import { DomainEntity } from '../abstracts/domain-entity.abstract'
+import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
+import { DomainError } from '../errors/domain-error.class'
+import { ReceiveInteractedEvent } from '../events/receive-interacted.event'
 
-export interface IInteraction {
+const { INTERACTION_DUPLICATE_USER, INTERACTION_INVALID_KARMA } =
+  DomainErrorCodes
+
+interface IInteraction {
   readonly interactionId: string
   readonly userId: string
-  readonly interactDt: Date
-  readonly karma: number
 }
 
-export interface IReceiveAggregate {
+export interface IReceiveEntity {
   receiveId: string
   quoteId: string
   channelId: string
@@ -18,12 +21,12 @@ export interface IReceiveAggregate {
   interactions: IInteraction[]
 }
 
-interface INewInteraction {
+interface IReceiveInteractInput {
   readonly userId: string
   readonly karma: number
 }
 
-export class Receive extends AggregateRoot implements IReceiveAggregate {
+export class Receive extends DomainEntity implements IReceiveEntity {
   receiveId: string
   quoteId: string
   channelId: string
@@ -36,7 +39,7 @@ export class Receive extends AggregateRoot implements IReceiveAggregate {
     messageId,
     quoteId,
     receiveId,
-  }: IReceiveAggregate) {
+  }: IReceiveEntity) {
     super()
     this.channelId = channelId
     this.interactions = interactions || []
@@ -45,26 +48,32 @@ export class Receive extends AggregateRoot implements IReceiveAggregate {
     this.receiveId = receiveId
   }
 
-  interact({ karma = 1, userId }: INewInteraction) {
+  interact({ karma = 1, userId }: IReceiveInteractInput) {
+    const { interactions } = this
     if (karma === 0) {
-      throw new Error('Karma cannot be 0.')
+      throw new DomainError(INTERACTION_INVALID_KARMA)
+    } else if (
+      interactions.some((interaction) => interaction.userId === userId)
+    ) {
+      throw new DomainError(INTERACTION_DUPLICATE_USER)
     }
 
-    const newInteraction: IInteraction = {
-      interactionId: v4(),
-      interactDt: new Date(),
-      karma,
+    const interactionDt = new Date()
+    const interactionId = v4()
+
+    interactions.push({
+      interactionId,
       userId,
-    }
+    })
 
-    this.interactions.push(newInteraction)
-
-    const { receiveId, quoteId } = this
+    const { receiveId } = this
     this.apply(
-      new ReceiveInteracted({
-        ...newInteraction,
+      new ReceiveInteractedEvent({
+        interactionDt,
+        interactionId,
         receiveId,
-        quoteId,
+        karma,
+        userId,
       }),
     )
   }

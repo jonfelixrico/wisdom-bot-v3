@@ -1,16 +1,14 @@
 import { DomainEvent } from '../abstracts/domain-event.abstract'
 import { DomainEventNames } from '../domain-event-names.enum'
+import { EventPayload } from './event-payload.type'
 
-interface IReceive {
-  readonly userId: string
-  readonly messageId: string
-  readonly channelId: string
+export interface IQuoteReceivedPayload extends EventPayload {
   readonly receiveId: string
   readonly quoteId: string
 }
 
-export class QuoteReceived extends DomainEvent<IReceive> {
-  constructor(receive: IReceive) {
+export class QuoteReceivedEvent extends DomainEvent<IQuoteReceivedPayload> {
+  constructor(receive: IQuoteReceivedPayload) {
     super(DomainEventNames.QUOTE_RECEIVED, receive.quoteId, receive)
   }
 }

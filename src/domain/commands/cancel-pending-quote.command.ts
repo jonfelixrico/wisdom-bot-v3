@@ -1,5 +1,5 @@
 import { ICommand } from '../command.interface'
 
-export class CancelPendingQuote implements ICommand<string> {
+export class CancelPendingQuoteCommand implements ICommand<string> {
   constructor(readonly payload: string) {}
 }

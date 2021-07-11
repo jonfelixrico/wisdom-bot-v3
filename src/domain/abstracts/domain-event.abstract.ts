@@ -1,7 +1,7 @@
-export type ObjectType = { [key: string]: any }
+import { JSONType } from '@eventstore/db-client'
 
 export abstract class DomainEvent<
-  PayloadType extends ObjectType = ObjectType,
+  PayloadType extends JSONType = JSONType,
   EventNameType = string,
 > {
   constructor(

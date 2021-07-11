@@ -1,17 +1,21 @@
 import { DomainEvent } from '../abstracts/domain-event.abstract'
 import { DomainEventNames } from '../domain-event-names.enum'
+import { EventPayload } from './event-payload.type'
 
-interface IInteraction {
+export interface IReceiveInteractedPayload extends EventPayload {
   readonly interactionId: string
-  readonly interactDt: Date
+  readonly interactionDt: Date
   readonly receiveId: string
   readonly userId: string
   readonly karma: number
-  readonly quoteId: string
 }
 
-export class ReceiveInteracted extends DomainEvent<IInteraction> {
-  constructor(interaction: IInteraction) {
-    super(DomainEventNames.RECEIVE_INTERACTED, interaction.quoteId, interaction)
+export class ReceiveInteractedEvent extends DomainEvent<IReceiveInteractedPayload> {
+  constructor(interaction: IReceiveInteractedPayload) {
+    super(
+      DomainEventNames.RECEIVE_INTERACTED,
+      interaction.receiveId,
+      interaction,
+    )
   }
 }
