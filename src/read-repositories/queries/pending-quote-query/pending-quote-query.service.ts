@@ -59,4 +59,22 @@ export class PendingQuoteQueryService {
       },
     )
   }
+
+  /**
+   * Retrieves the list of guilds with pending quotes.
+   * @returns Array of guild ids with pending quotes.
+   */
+  async getGuildsWithPendingQuotes() {
+    const results = await this.repo
+      .createQueryBuilder('quote')
+      .select('quote.guildId')
+      .andWhere('quote.expiredAt >= NOW()')
+      .andWhere('quote.approveDt IS NULL')
+      .andWhere('quote.cancelDt IS NULL')
+      .groupBy('quote.guildId')
+      .having('COUNT(quote.guildId)')
+      .getRawMany<{ guildId: string }>()
+
+    return results.map(({ guildId }) => guildId)
+  }
 }
