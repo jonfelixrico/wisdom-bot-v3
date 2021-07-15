@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
-import { Connection } from 'typeorm'
+import { QuoteTypeormRepository } from 'src/typeorm/providers/quote.typeorm-repository'
 
 interface IChannelAndPendingCount {
   channelId: string
@@ -9,7 +8,7 @@ interface IChannelAndPendingCount {
 
 @Injectable()
 export class PendingQuoteQueryService {
-  constructor(private conn: Connection) {}
+  constructor(private repo: QuoteTypeormRepository) {}
 
   /**
    * Retrieves the ids of channels with pending quotes left.
@@ -17,8 +16,7 @@ export class PendingQuoteQueryService {
    * @returns
    */
   async getChannelIdsWithPendingQuotes(guildId: string) {
-    const results = await this.conn
-      .getRepository(QuoteTypeormEntity)
+    const results = await this.repo
       .createQueryBuilder('quote')
       .select('quote.guildid')
       .addSelect('COUNT(*)', 'count')
@@ -40,8 +38,7 @@ export class PendingQuoteQueryService {
    * @returns
    */
   async getPendingQuotesFromChannel(channelId: string) {
-    const results = await this.conn
-      .getRepository(QuoteTypeormEntity)
+    const results = await this.repo
       .createQueryBuilder()
       .where('channelId = :channelId', { channelId })
       .andWhere('expiredAt >= NOW()')
