@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { QuoteTypeormRepository } from 'src/typeorm/providers/quote.typeorm-repository'
 
-interface IChannelAndPendingCount {
-  channelId: string
-  count: number
-}
-
 @Injectable()
 export class PendingQuoteQueryService {
   constructor(private repo: QuoteTypeormRepository) {}
@@ -18,18 +13,16 @@ export class PendingQuoteQueryService {
   async getChannelIdsWithPendingQuotes(guildId: string) {
     const results = await this.repo
       .createQueryBuilder('quote')
-      .select('quote.guildid')
-      .addSelect('COUNT(*)', 'count')
-      .groupBy('quote.channelId')
+      .select('quote.channelId')
       .where('quote.guildId = :guildId', { guildId })
       .andWhere('quote.expiredAt >= NOW()')
       .andWhere('quote.approveDt IS NULL')
       .andWhere('quote.cancelDt IS NULL')
-      .getRawMany<IChannelAndPendingCount>()
+      .groupBy('quote.channelId')
+      .having('COUNT(quote.channelId)')
+      .getRawMany<{ channelId: string }>()
 
-    return results
-      .filter(({ count }) => !!count)
-      .map(({ channelId }) => channelId)
+    return results.map(({ channelId }) => channelId)
   }
 
   /**
