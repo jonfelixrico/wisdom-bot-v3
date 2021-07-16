@@ -10,7 +10,7 @@ import { WriteRepositoriesModule } from './write-repositories/write-repositories
 import { ReadRepositoriesModule } from './read-repositories/read-repositories.module'
 import { ServicesModule } from './services/services.module'
 import { InfrastructureModule } from './infrastructure/infrastructure.module'
-import { InfrastructureModule } from './infrastructure/infrastructure.module'
+
 @Module({
   imports: [
     LoggerModule,
