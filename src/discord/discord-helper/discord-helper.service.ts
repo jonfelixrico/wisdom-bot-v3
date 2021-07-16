@@ -79,7 +79,7 @@ export class DiscordHelperService {
 
     const { messages } = channel
     try {
-      await messages.fetch(messageId)
+      return await messages.fetch(messageId)
     } catch (e) {
       if (is404Error(e)) {
         return null
