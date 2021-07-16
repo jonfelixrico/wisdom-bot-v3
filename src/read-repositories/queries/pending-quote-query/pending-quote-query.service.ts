@@ -40,21 +40,13 @@ export class PendingQuoteQueryService {
       .getMany()
 
     return results.map(
-      ({
-        id: quoteId,
-        upvoteCount,
-        upvoteEmoji,
-        messageId,
-        expireDt,
-        submitDt,
-      }) => {
+      ({ id: quoteId, upvoteCount, upvoteEmoji, messageId, expireDt }) => {
         return {
           quoteId,
           upvoteCount,
           upvoteEmoji,
           messageId,
           expireDt,
-          submitDt,
         }
       },
     )
@@ -109,6 +101,7 @@ export class PendingQuoteQueryService {
       upvoteCount,
       upvoteEmoji,
       quoteId,
+      expireDt,
     }
   }
 }
