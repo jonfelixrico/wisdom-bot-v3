@@ -7,11 +7,11 @@ import {
 } from '@nestjs/cqrs'
 import { Client, Message, MessageReaction, ReactionEmoji } from 'discord.js'
 import { fromEvent, merge, Subject, timer } from 'rxjs'
-import { PendingQuoteReactionsReachedEvent } from 'src/infrastructure/events/pending-quote-reactions-reached.event'
 import { WatchPendingQuoteCommand } from '../../commands/watch-pending-quote.command'
 import { filter, takeUntil } from 'rxjs/operators'
 import { PendingQuoteReachedExpirationEvent } from 'src/infrastructure/events/pending-quote-reached-expiration.event'
 import { RegeneratePendingQuoteMessageCommand } from 'src/infrastructure/commands/regenerate-pending-quote-message.command'
+import { AcceptPendingQuoteCommand } from 'src/domain/commands/accept-pending-quote.command'
 
 interface IWatchedMessages {
   [messageId: string]: {
@@ -143,12 +143,7 @@ export class WatchPendingQuoteCommandHandlerService
       }
 
       stop$.next(message.id)
-      this.eventBus.publish(
-        new PendingQuoteReactionsReachedEvent({
-          quoteId,
-          message,
-        }),
-      )
+      this.commandBus.execute(new AcceptPendingQuoteCommand(quoteId))
       logger.verbose(
         `Completed the required reactions for quote ${quoteId}`,
         WatchPendingQuoteCommandHandlerService.name,
