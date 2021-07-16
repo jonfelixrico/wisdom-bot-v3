@@ -1,20 +1,52 @@
-import { Logger, OnApplicationBootstrap } from '@nestjs/common'
-import { Injectable } from '@nestjs/common'
-import { CommandBus } from '@nestjs/cqrs'
+import { Injectable, Logger } from '@nestjs/common'
+import { CommandBus, EventBus, ofType } from '@nestjs/cqrs'
 import { TextChannel } from 'discord.js'
 import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 import { RegeneratePendingQuoteMessageCommand } from 'src/infrastructure/commands/regenerate-pending-quote-message.command'
 import { WatchPendingQuoteCommand } from 'src/infrastructure/commands/watch-pending-quote.command'
+import { CatchUpFinishedEvent } from 'src/read-repositories/catch-up-finsihed.event'
 import { PendingQuoteQueryService } from 'src/read-repositories/queries/pending-quote-query/pending-quote-query.service'
 
 @Injectable()
-export class MessageRecacheService implements OnApplicationBootstrap {
+export class MessageRecacheService {
   constructor(
     private discordHelper: DiscordHelperService,
     private query: PendingQuoteQueryService,
     private commandBus: CommandBus,
     private logger: Logger,
-  ) {}
+    private eventBus: EventBus,
+  ) {
+    this.eventBus
+      .pipe(ofType(CatchUpFinishedEvent))
+      .subscribe(this.handle.bind(this))
+  }
+
+  async handle() {
+    this.logger.log('Starting message recache.', MessageRecacheService.name)
+
+    const guildIds = await this.query.getGuildsWithPendingQuotes()
+
+    for (const guildId of guildIds) {
+      try {
+        const guild = await this.discordHelper.getGuild(guildId)
+        // TODO add error handling
+
+        // Check if we have access to the guild
+        if (!guild.available) {
+          this.logWarn(
+            `Skipped guild ${guild.id} because the bot lacks access.`,
+          )
+          return
+        }
+
+        this.processGuild(guildId)
+      } catch (e) {
+        this.logError(e)
+      }
+    }
+
+    this.logger.log('Finished recaching messages.', MessageRecacheService.name)
+  }
 
   private logError(error: Error, message?: string) {
     this.logger.error(
@@ -91,29 +123,6 @@ export class MessageRecacheService implements OnApplicationBootstrap {
       // TODO permissions checking here maybe?
 
       this.processChannelMessages(channel)
-    }
-  }
-
-  async onApplicationBootstrap() {
-    const guildIds = await this.query.getGuildsWithPendingQuotes()
-
-    for (const guildId of guildIds) {
-      try {
-        const guild = await this.discordHelper.getGuild(guildId)
-        // TODO add error handling
-
-        // Check if we have access to the guild
-        if (!guild.available) {
-          this.logWarn(
-            `Skipped guild ${guild.id} because the bot lacks access.`,
-          )
-          return
-        }
-
-        this.processGuild(guildId)
-      } catch (e) {
-        this.logError(e)
-      }
     }
   }
 }
