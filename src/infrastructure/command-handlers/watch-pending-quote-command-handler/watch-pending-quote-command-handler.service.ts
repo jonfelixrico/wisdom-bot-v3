@@ -1,4 +1,4 @@
-import { OnModuleInit } from '@nestjs/common'
+import { Logger, OnModuleInit } from '@nestjs/common'
 import {
   CommandBus,
   CommandHandler,
@@ -34,10 +34,16 @@ export class WatchPendingQuoteCommandHandlerService
     private client: Client,
     private eventBus: EventBus,
     private commandBus: CommandBus,
+    private logger: Logger,
   ) {}
 
   async execute({ payload }: WatchPendingQuoteCommand): Promise<any> {
     const { expireDt, message, quoteId, upvoteCount, upvoteEmoji } = payload
+
+    this.logger.debug(
+      `Received command to watch over quote ${quoteId}`,
+      WatchPendingQuoteCommandHandlerService.name,
+    )
 
     this.watched[message.id] = {
       quoteId,
@@ -63,11 +69,15 @@ export class WatchPendingQuoteCommandHandlerService
             quoteId,
           }),
         )
+        this.logger.verbose(
+          `Quote ${quoteId} has expired.`,
+          WatchPendingQuoteCommandHandlerService.name,
+        )
       })
   }
 
   onModuleInit() {
-    const { client, stop$, watched } = this
+    const { client, stop$, watched, logger } = this
 
     stop$.subscribe((messageId) => {
       delete watched[messageId]
@@ -91,6 +101,11 @@ export class WatchPendingQuoteCommandHandlerService
           ...entry,
         }),
       )
+
+      logger.verbose(
+        `Message ${messageId} of quote ${entry.quoteId} got deleted. Attempting to regenerate.`,
+        WatchPendingQuoteCommandHandlerService.name,
+      )
     })
 
     merge(
@@ -109,8 +124,15 @@ export class WatchPendingQuoteCommandHandlerService
         return
       }
 
+      const { quoteId } = entry
+
       // the ternary operator is to subtract the reaction from the bot
       const reactionCount = count + (me ? -1 : 1)
+
+      logger.debug(
+        `Upvote reaction change detected for quote ${quoteId}; new count is ${count}`,
+        WatchPendingQuoteCommandHandlerService.name,
+      )
 
       // emoji matches, but we haven't reached the count yet
       if (reactionCount < count) {
@@ -120,9 +142,13 @@ export class WatchPendingQuoteCommandHandlerService
       stop$.next(message.id)
       this.eventBus.publish(
         new PendingQuoteReactionsReachedEvent({
-          quoteId: entry.quoteId,
+          quoteId,
           message,
         }),
+      )
+      logger.verbose(
+        `Completed the required reactions for quote ${quoteId}`,
+        WatchPendingQuoteCommandHandlerService.name,
       )
     })
   }
