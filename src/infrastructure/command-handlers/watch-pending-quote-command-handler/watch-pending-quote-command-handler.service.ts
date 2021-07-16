@@ -94,9 +94,9 @@ export class WatchPendingQuoteCommandHandlerService
     })
 
     merge(
-      fromEvent<MessageReaction>(client, 'messageReactionAdd'),
-      fromEvent<MessageReaction>(client, 'messageReactionRemove'),
-    ).subscribe(({ message, emoji, me, count }) => {
+      fromEvent<[MessageReaction]>(client, 'messageReactionAdd'),
+      fromEvent<[MessageReaction]>(client, 'messageReactionRemove'),
+    ).subscribe(([{ message, emoji, me, count }]) => {
       const entry = watched[message.id]
       if (!entry) {
         // message is not being watched
