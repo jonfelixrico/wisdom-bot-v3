@@ -15,7 +15,7 @@ export class PendingQuoteQueryService {
       .createQueryBuilder('quote')
       .select('quote.channelId', 'channelId')
       .where('quote.guildId = :guildId', { guildId })
-      .andWhere('quote.expireDt >= NOW()')
+      .andWhere('quote.expireDt >= :now', { now: new Date() })
       .andWhere('quote.acceptDt IS NULL')
       .andWhere('quote.cancelDt IS NULL')
       .groupBy('quote.channelId')
@@ -34,7 +34,7 @@ export class PendingQuoteQueryService {
     const results = await this.repo
       .createQueryBuilder()
       .where('channelId = :channelId', { channelId })
-      .andWhere('expireDt >= NOW()')
+      .andWhere('expireDt >= :now', { now: new Date() })
       .andWhere('acceptDt IS NULL')
       .andWhere('cancelDt IS NULL')
       .getMany()
@@ -60,7 +60,7 @@ export class PendingQuoteQueryService {
     const results = await this.repo
       .createQueryBuilder('quote')
       .select('quote.guildId', 'guildId')
-      .andWhere('quote.expireDt >= NOW()')
+      .where('quote.expireDt >= :now', { now: new Date() })
       .andWhere('quote.acceptDt IS NULL')
       .andWhere('quote.cancelDt IS NULL')
       .groupBy('quote.guildId')
