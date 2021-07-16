@@ -14,15 +14,17 @@ export class AcceptQuoteCommandHandlerService
 
   async execute({ payload: quoteId }: AcceptPendingQuoteCommand): Promise<any> {
     const { repo } = this
-    const { entity, revision } = await repo.findById(quoteId)
+    const result = await repo.findById(quoteId)
 
-    if (!entity) {
+    if (!result) {
       this.logger.debug(
         `Attempted to accept nonexistent quote ${quoteId}.`,
         AcceptQuoteCommandHandlerService.name,
       )
       throw new Error(`Quote ${quoteId} not found.`)
     }
+
+    const { entity, revision } = result
 
     entity.accept()
 
