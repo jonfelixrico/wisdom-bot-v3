@@ -7,11 +7,6 @@ import { RegeneratePendingQuoteMessageCommand } from 'src/infra-command-handlers
 import { WatchPendingQuoteCommand } from 'src/infra-command-handlers/commands/watch-pending-quote.command'
 import { PendingQuoteQueryService } from 'src/read-repositories/queries/pending-quote-query/pending-quote-query.service'
 
-interface IMessageData {
-  messageId: string
-  quoteId: string
-}
-
 @Injectable()
 export class MessageRecacheService implements OnApplicationBootstrap {
   constructor(
@@ -34,9 +29,15 @@ export class MessageRecacheService implements OnApplicationBootstrap {
   }
 
   private async processChannelMessages({ guild, ...channel }: TextChannel) {
-    const messageMapping = await this.getProcessedMessageDataArr(channel.id)
+    const messageData = await this.query.getPendingQuotesFromChannel(channel.id)
 
-    for (const { messageId, quoteId } of messageMapping) {
+    for (const {
+      messageId,
+      quoteId,
+      upvoteCount,
+      upvoteEmoji,
+      expireDt,
+    } of messageData) {
       const message = await this.discordHelper.getMessage(
         guild.id,
         channel.id,
@@ -50,6 +51,11 @@ export class MessageRecacheService implements OnApplicationBootstrap {
         await commandBus.execute(
           new RegeneratePendingQuoteMessageCommand({
             quoteId,
+            upvoteCount,
+            upvoteEmoji,
+            expireDt,
+            channelId: channel.id,
+            guildId: guild.id,
           }),
         )
         return
@@ -58,20 +64,13 @@ export class MessageRecacheService implements OnApplicationBootstrap {
           new WatchPendingQuoteCommand({
             message,
             quoteId,
+            expireDt,
+            upvoteCount,
+            upvoteEmoji,
           }),
         )
       }
     }
-  }
-
-  async getProcessedMessageDataArr(channelId: string) {
-    const messageDataArr = await this.query.getPendingQuotesFromChannel(
-      channelId,
-    )
-
-    return messageDataArr
-      .sort((a, b) => a.submitDt.getTime() - b.submitDt.getTime())
-      .map<IMessageData>(({ messageId, quoteId }) => ({ messageId, quoteId }))
   }
 
   async processGuild(guildId: string) {
