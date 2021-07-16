@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common'
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs'
+import { GuildRepoService } from 'src/discord/guild-repo/guild-repo.service'
 import { PendingQuoteWriteRepositoryService } from 'src/write-repositories/pending-quote-write-repository/pending-quote-write-repository.service'
 import { RegeneratePendingQuoteMessageCommand } from '../commands/regenerate-pending-quote-message.command'
 
@@ -10,16 +11,25 @@ export class RegeneratePendingQuoteMessageCommandHandlerService
   constructor(
     private writeRepo: PendingQuoteWriteRepositoryService,
     private logger: Logger,
+    private guildRepo: GuildRepoService,
+    private eventBus: EventBus,
   ) {}
 
   async execute({
     payload,
   }: RegeneratePendingQuoteMessageCommand): Promise<any> {
-    const { quoteId } = payload
+    const { quoteId, channelId, guildId } = payload
 
-    const quote = this.writeRepo.findById(quoteId)
+    const channel = await this.guildRepo.getTextChannel(guildId, channelId)
+    if (!channel) {
+      this.logger.warn(
+        `Channel ${channelId} not found.`,
+        RegeneratePendingQuoteMessageCommandHandlerService.name,
+      )
+    }
 
-    if (!quote) {
+    const result = await this.writeRepo.findById(quoteId)
+    if (!result) {
       this.logger.warn(
         `Quote not found ${quoteId}`,
         RegeneratePendingQuoteMessageCommandHandlerService.name,
@@ -27,6 +37,13 @@ export class RegeneratePendingQuoteMessageCommandHandlerService
       return null
     }
 
-    // TODO updateMessageId command for the pending quote entity
+    const newMessage = await channel.send('regeneration message')
+
+    const { entity, revision } = result
+
+    entity.updateMessageId(newMessage.id)
+    await this.writeRepo.publishEvents(entity, revision)
+
+    // TODO watch message here
   }
 }
