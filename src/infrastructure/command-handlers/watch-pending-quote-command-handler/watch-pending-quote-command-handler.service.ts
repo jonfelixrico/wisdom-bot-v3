@@ -122,20 +122,23 @@ export class WatchPendingQuoteCommandHandlerService
       ) {
         // message is being watched, but the reaction that we received does not match
         return
+      } else if (me) {
+        // The bot itself triggered the reaction event
+        return
       }
 
-      const { quoteId } = entry
+      const { quoteId, upvoteCount } = entry
 
-      // the ternary operator is to subtract the reaction from the bot
-      const reactionCount = count + (me ? -1 : 1)
+      // we're doing -1 because we're assuming that the bot has always reacted to the message
+      const reactionCount = count - 1
 
       logger.debug(
-        `Upvote reaction change detected for quote ${quoteId}; new count is ${count}`,
+        `Upvote reaction change detected for quote ${quoteId}; new count is ${reactionCount}`,
         WatchPendingQuoteCommandHandlerService.name,
       )
 
       // emoji matches, but we haven't reached the count yet
-      if (reactionCount < count) {
+      if (reactionCount < upvoteCount) {
         return
       }
 
