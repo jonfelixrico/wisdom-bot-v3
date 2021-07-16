@@ -1,14 +1,35 @@
 import { Injectable } from '@nestjs/common'
-import { Client, Guild, GuildChannel, TextChannel } from 'discord.js'
+import {
+  Client,
+  DiscordAPIError,
+  Guild,
+  GuildChannel,
+  TextChannel,
+} from 'discord.js'
 
-// TODO for deprecation
+function is404Error(e: Error) {
+  return e instanceof DiscordAPIError && e.code === 404
+}
+
 @Injectable()
-export class GuildRepoService {
+/**
+ * Houses several methods which are basically wrappers for the default Discord API.
+ * Usually the wrapping done here is null-handling for fetch-related operations.
+ */
+export class DiscordHelperService {
   constructor(private client: Client) {}
 
   async getGuild(guildId: string): Promise<Guild | null> {
     const { guilds } = this.client
-    return await guilds.fetch(guildId)
+    try {
+      return await guilds.fetch(guildId)
+    } catch (e) {
+      if (is404Error(e)) {
+        return null
+      }
+
+      throw e
+    }
   }
 
   async getChannel(
@@ -21,7 +42,21 @@ export class GuildRepoService {
     }
 
     const { channels } = guild
-    return await channels.resolve(channelId)
+
+    const channel = channels.cache.get(channelId)
+    if (channel) {
+      return channel
+    }
+
+    try {
+      return await channels.resolve(channelId)
+    } catch (e) {
+      if (is404Error(e)) {
+        return null
+      }
+
+      throw e
+    }
   }
 
   async getTextChannel(
