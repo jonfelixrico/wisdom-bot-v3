@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common'
-import { Message, MessageReaction } from 'discord.js'
-import { CommandoClient } from 'discord.js-commando'
+import { Client, Message, MessageReaction } from 'discord.js'
 import { merge, Observable, of, race, Subject, timer } from 'rxjs'
 import { debounceTime, filter, map, mapTo, takeUntil } from 'rxjs/operators'
 
 function fromMessageReactionEvent(
-  client: CommandoClient,
+  client: Client,
   eventName: 'messageReactionAdd' | 'messageReactionRemove',
 ) {
   const subj = new Subject<Message>()
@@ -15,7 +14,7 @@ function fromMessageReactionEvent(
   return subj.asObservable()
 }
 
-function buildSubjects(client: CommandoClient) {
+function buildSubjects(client: Client) {
   return merge(
     fromMessageReactionEvent(client, 'messageReactionAdd'),
     fromMessageReactionEvent(client, 'messageReactionRemove'),
@@ -32,18 +31,15 @@ export interface IReactionListenerEmission {
   status: StatusString
 }
 
-// TODO deprecate this
 @Injectable()
 export class ReactionListenerService {
   private reaction$: Observable<Message>
   private unwatchSubj = new Subject<string>()
   private watched = new Set<string>()
-  private client: CommandoClient
 
   private emitterSubj = new Subject<IReactionListenerEmission>()
 
-  constructor(client: CommandoClient) {
-    this.client = client
+  constructor(private client: Client) {
     this.reaction$ = buildSubjects(client)
   }
 
