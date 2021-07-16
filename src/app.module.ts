@@ -9,6 +9,7 @@ import { EventStoreModule } from './event-store/event-store.module'
 import { WriteRepositoriesModule } from './write-repositories/write-repositories.module'
 import { ReadRepositoriesModule } from './read-repositories/read-repositories.module'
 import { ServicesModule } from './services/services.module'
+import { InfraCommandHandlersModule } from './infra-command-handlers/infra-command-handlers.module'
 @Module({
   imports: [
     LoggerModule,
@@ -24,6 +25,7 @@ import { ServicesModule } from './services/services.module'
     WriteRepositoriesModule,
     ReadRepositoriesModule,
     ServicesModule,
+    InfraCommandHandlersModule,
   ],
 })
 export class AppModule {}
