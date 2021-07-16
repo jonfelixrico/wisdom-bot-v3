@@ -1,6 +1,7 @@
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { IPendingQuoteAcceptedPayload } from 'src/domain/events/pending-quote-accepted.event'
 import { IPendingQuoteCancelledPayload } from 'src/domain/events/pending-quote-cancelled.event'
+import { IQuoteMessageIdUpdatedPayload } from 'src/domain/events/quote-message-id-updated.event'
 import { IQuoteReceivedPayload } from 'src/domain/events/quote-received.event'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
@@ -97,11 +98,27 @@ export const quoteReceived: ReadRepositoryReducer<IQuoteReceivedPayload> =
     return affected > 0
   }
 
+export const messageIdUpdated: ReadRepositoryReducer<IQuoteMessageIdUpdatedPayload> =
+  async ({ revision, data }, manager) => {
+    const { quoteId, messageId } = data
+
+    const { affected } = await manager.update(
+      QuoteTypeormEntity,
+      {
+        id: quoteId,
+      },
+      { messageId, revision },
+    )
+
+    return affected > 0
+  }
+
 const {
   QUOTE_SUBMITTED,
   QUOTE_RECEIVED,
   PENDING_QUOTE_ACCEPTED,
   PENDING_QUOTE_CANCELLED,
+  QUOTE_MESSAGE_ID_UPDATED,
 } = DomainEventNames
 
 export const QUOTE_REDUCERS: ReducerMap = Object.freeze({
@@ -109,4 +126,5 @@ export const QUOTE_REDUCERS: ReducerMap = Object.freeze({
   [QUOTE_SUBMITTED]: quoteSubmitted,
   [PENDING_QUOTE_ACCEPTED]: pendingQuoteAccepted,
   [PENDING_QUOTE_CANCELLED]: pendingQuoteCancelled,
+  [QUOTE_MESSAGE_ID_UPDATED]: messageIdUpdated,
 })
