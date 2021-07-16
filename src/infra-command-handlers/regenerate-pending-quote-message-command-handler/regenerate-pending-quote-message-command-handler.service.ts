@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common'
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { GuildRepoService } from 'src/discord/guild-repo/guild-repo.service'
+import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 import { UpdateQuoteMessageIdCommand } from 'src/domain/commands/update-quote-message-id.command'
 import { RegeneratePendingQuoteMessageCommand } from '../commands/regenerate-pending-quote-message.command'
 import { WatchPendingQuoteCommand } from '../commands/watch-pending-quote.command'
@@ -11,7 +11,7 @@ export class RegeneratePendingQuoteMessageCommandHandlerService
 {
   constructor(
     private logger: Logger,
-    private guildRepo: GuildRepoService,
+    private discordHelper: DiscordHelperService,
     private commandBus: CommandBus,
   ) {}
 
@@ -21,7 +21,7 @@ export class RegeneratePendingQuoteMessageCommandHandlerService
     const { quoteId, upvoteEmoji, upvoteCount, expireDt, guildId, channelId } =
       payload
 
-    const channel = await this.guildRepo.getTextChannel(guildId, channelId)
+    const channel = await this.discordHelper.getTextChannel(guildId, channelId)
     if (!channel) {
       this.logger.warn(
         `Channel ${channelId} not found.`,
