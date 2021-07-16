@@ -12,7 +12,7 @@ import {
 const quoteSubmitted: WriteRepositoryReducer<
   IQuoteSubmittedEventPayload,
   IPendingQuote
-> = (data, state) => ({
+> = (data) => ({
   ...data,
   acceptDt: null,
   cancelDt: null,
