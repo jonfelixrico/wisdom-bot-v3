@@ -65,9 +65,9 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
   }
 
   private checkIfPending(): void {
-    const { acceptDt: approveDt, cancelDt, isExpired } = this
+    const { acceptDt, cancelDt, isExpired } = this
 
-    if (!!approveDt) {
+    if (!!acceptDt) {
       throw new DomainError(QUOTE_APPROVED)
     } else if (!!cancelDt) {
       throw new DomainError(QUOTE_CANCELLED)
