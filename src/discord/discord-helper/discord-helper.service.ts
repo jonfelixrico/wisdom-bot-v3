@@ -71,6 +71,24 @@ export class DiscordHelperService {
     return channel
   }
 
+  async getMessage(guildId: string, channelId: string, messageId: string) {
+    const channel = await this.getTextChannel(guildId, channelId)
+    if (!channel) {
+      return null
+    }
+
+    const { messages } = channel
+    try {
+      await messages.fetch(messageId)
+    } catch (e) {
+      if (is404Error(e)) {
+        return null
+      }
+
+      throw e
+    }
+  }
+
   async deleteMessage(
     guildId: string,
     channelId: string,
