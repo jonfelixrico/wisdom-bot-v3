@@ -20,9 +20,8 @@ export class SubmitQuoteCommandHandlerService
   ) {}
 
   async execute({ payload }: SubmitQuoteCommand): Promise<any> {
-    const quoteId = v4()
-
     const submitted = PendingQuote.submit(payload)
+    const { quoteId } = submitted
 
     await this.repo.publishEvents(submitted, NO_STREAM)
 
