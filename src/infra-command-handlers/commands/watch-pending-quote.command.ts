@@ -4,6 +4,9 @@ import { ICommand } from 'src/domain/command.interface'
 export interface IWatchPendingQuoteCommandPayload {
   quoteId: string
   message: Message
+  upvoteCount: number
+  upvoteEmoji: string
+  expireDt: Date
 }
 
 export class WatchPendingQuoteCommand
