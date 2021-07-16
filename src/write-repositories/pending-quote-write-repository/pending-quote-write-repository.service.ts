@@ -52,7 +52,7 @@ export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQu
         revision: lastEvent.revision,
       }
     } catch (e) {
-      if (e.type === ErrorType.NO_STREAM) {
+      if (e.type === ErrorType.STREAM_NOT_FOUND) {
         return null
       }
 
