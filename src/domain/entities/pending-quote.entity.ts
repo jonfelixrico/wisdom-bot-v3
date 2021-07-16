@@ -7,6 +7,7 @@ import { IQuoteToSubmit } from './quote-to-submit.interface'
 import { v4 } from 'uuid'
 import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
 import { DomainError } from '../errors/domain-error.class'
+import { QuoteMessageIdUpdatedEvent } from '../events/quote-message-id-updated.event'
 
 const { QUOTE_APPROVED, QUOTE_CANCELLED, QUOTE_EXPIRED } = DomainErrorCodes
 
@@ -94,6 +95,13 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     const cancelDt = (this.cancelDt = new Date())
     const { quoteId } = this
     this.apply(new PendingQuoteCancelledEvent({ quoteId, cancelDt }))
+  }
+
+  updateMessageId(messageId: string) {
+    this.checkIfPending()
+    this.messageId = messageId
+    const { quoteId } = this
+    this.apply(new QuoteMessageIdUpdatedEvent({ quoteId, messageId }))
   }
 
   /**
