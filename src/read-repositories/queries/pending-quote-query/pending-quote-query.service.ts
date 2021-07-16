@@ -77,4 +77,38 @@ export class PendingQuoteQueryService {
 
     return results.map(({ guildId }) => guildId)
   }
+
+  async getPendingQuote(quoteId) {
+    const result = await this.repo.findOne({ id: quoteId })
+
+    if (!result) {
+      return null
+    }
+
+    const { expireDt, acceptDt, cancelDt } = result
+    if (new Date() > expireDt || acceptDt || cancelDt) {
+      return null
+    }
+
+    const {
+      messageId,
+      channelId,
+      guildId,
+      content,
+      submitDt,
+      upvoteCount,
+      upvoteEmoji,
+    } = result
+
+    return {
+      messageId,
+      channelId,
+      guildId,
+      content,
+      submitDt,
+      upvoteCount,
+      upvoteEmoji,
+      quoteId,
+    }
+  }
 }
