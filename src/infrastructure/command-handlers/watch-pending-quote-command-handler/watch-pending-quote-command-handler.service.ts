@@ -1,18 +1,24 @@
 import { OnModuleInit } from '@nestjs/common'
-import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs'
+import {
+  CommandBus,
+  CommandHandler,
+  EventBus,
+  ICommandHandler,
+} from '@nestjs/cqrs'
 import { Client, Message, MessageReaction, ReactionEmoji } from 'discord.js'
 import { fromEvent, merge, Subject, timer } from 'rxjs'
 import { PendingQuoteReactionsReachedEvent } from 'src/infrastructure/events/pending-quote-reactions-reached.event'
 import { WatchPendingQuoteCommand } from '../../commands/watch-pending-quote.command'
 import { filter, takeUntil } from 'rxjs/operators'
 import { PendingQuoteReachedExpirationEvent } from 'src/infrastructure/events/pending-quote-reached-expiration.event'
-import { PendingQuoteMessageDeletedEvent } from 'src/infrastructure/events/pending-quote-message-deleted.event'
+import { RegeneratePendingQuoteMessageCommand } from 'src/infrastructure/commands/regenerate-pending-quote-message.command'
 
 interface IWatchedMessages {
   [messageId: string]: {
     quoteId: string
     upvoteCount: number
     upvoteEmoji: string
+    expireDt: Date
   }
 }
 
@@ -24,7 +30,11 @@ export class WatchPendingQuoteCommandHandlerService
 
   private watched: IWatchedMessages = {}
 
-  constructor(private client: Client, private eventBus: EventBus) {}
+  constructor(
+    private client: Client,
+    private eventBus: EventBus,
+    private commandBus: CommandBus,
+  ) {}
 
   async execute({ payload }: WatchPendingQuoteCommand): Promise<any> {
     const { expireDt, message, quoteId, upvoteCount, upvoteEmoji } = payload
@@ -33,6 +43,7 @@ export class WatchPendingQuoteCommandHandlerService
       quoteId,
       upvoteCount,
       upvoteEmoji,
+      expireDt,
     }
 
     timer(expireDt)
@@ -71,10 +82,13 @@ export class WatchPendingQuoteCommandHandlerService
 
       // TODO add verbose logging here to say that message has been deleted while watching
       stop$.next(messageId)
-      this.eventBus.publish(
-        new PendingQuoteMessageDeletedEvent({
-          message,
-          quoteId: entry.quoteId,
+
+      // intentionally didn't wait for this execute to finish
+      this.commandBus.execute(
+        new RegeneratePendingQuoteMessageCommand({
+          channelId: message.channel.id,
+          guildId: message.guild.id,
+          ...entry,
         }),
       )
     })
