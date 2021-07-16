@@ -14,6 +14,9 @@ import { IPendingQuoteCancelledPayload } from 'src/domain/events/pending-quote-c
 import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
 import { EsdbRepository } from '../abstract/esdb-repository.abstract'
 import { convertDomainEventToJsonEvent } from '../utils/convert-domain-event-to-json-event.util'
+import { IQuoteMessageIdUpdatedPayload } from 'src/domain/events/quote-message-id-updated.event'
+
+// TODO follow the reducers of the read repository
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function quoteSubmitted(state: IPendingQuote, data: IPendingQuote) {
@@ -28,12 +31,25 @@ function quoteCancelled(
   return state
 }
 
-const { PENDING_QUOTE_ACCEPTED, PENDING_QUOTE_CANCELLED, QUOTE_SUBMITTED } =
-  DomainEventNames
+function messageIdUpdated(
+  state: IPendingQuote,
+  { messageId }: IQuoteMessageIdUpdatedPayload,
+) {
+  state.messageId = messageId
+  return state
+}
+
+const {
+  PENDING_QUOTE_ACCEPTED,
+  PENDING_QUOTE_CANCELLED,
+  QUOTE_SUBMITTED,
+  QUOTE_MESSAGE_ID_UPDATED,
+} = DomainEventNames
 
 const ReducerMapping = {
   [PENDING_QUOTE_CANCELLED]: quoteCancelled,
   [QUOTE_SUBMITTED]: quoteSubmitted,
+  [QUOTE_MESSAGE_ID_UPDATED]: messageIdUpdated,
 }
 
 export const pendingQuoteReducer: Reducer<IPendingQuote> = (
