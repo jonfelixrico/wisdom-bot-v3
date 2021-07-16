@@ -1,24 +1,37 @@
 import { Logger } from '@nestjs/common'
-import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs'
+import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { GuildRepoService } from 'src/discord/guild-repo/guild-repo.service'
-import { PendingQuoteWriteRepositoryService } from 'src/write-repositories/pending-quote-write-repository/pending-quote-write-repository.service'
+import { UpdateQuoteMessageIdCommand } from 'src/domain/commands/update-quote-message-id.command'
+import { PendingQuoteQueryService } from 'src/read-repositories/queries/pending-quote-query/pending-quote-query.service'
 import { RegeneratePendingQuoteMessageCommand } from '../commands/regenerate-pending-quote-message.command'
+import { WatchPendingQuoteCommand } from '../commands/watch-pending-quote.command'
 
 @CommandHandler(RegeneratePendingQuoteMessageCommand)
 export class RegeneratePendingQuoteMessageCommandHandlerService
   implements ICommandHandler<RegeneratePendingQuoteMessageCommand>
 {
   constructor(
-    private writeRepo: PendingQuoteWriteRepositoryService,
     private logger: Logger,
+    private query: PendingQuoteQueryService,
     private guildRepo: GuildRepoService,
-    private eventBus: EventBus,
+    private commandBus: CommandBus,
   ) {}
 
   async execute({
     payload,
   }: RegeneratePendingQuoteMessageCommand): Promise<any> {
-    const { quoteId, channelId, guildId } = payload
+    const { quoteId } = payload
+
+    const quote = await this.query.getPendingQuote(quoteId)
+    if (!quote) {
+      this.logger.warn(
+        `Quote not found ${quoteId}`,
+        RegeneratePendingQuoteMessageCommandHandlerService.name,
+      )
+      return null
+    }
+
+    const { guildId, channelId } = quote
 
     const channel = await this.guildRepo.getTextChannel(guildId, channelId)
     if (!channel) {
@@ -28,22 +41,25 @@ export class RegeneratePendingQuoteMessageCommandHandlerService
       )
     }
 
-    const result = await this.writeRepo.findById(quoteId)
-    if (!result) {
-      this.logger.warn(
-        `Quote not found ${quoteId}`,
-        RegeneratePendingQuoteMessageCommandHandlerService.name,
-      )
-      return null
-    }
-
     const newMessage = await channel.send('regeneration message')
 
-    const { entity, revision } = result
+    await this.commandBus.execute(
+      new UpdateQuoteMessageIdCommand({
+        quoteId,
+        messageId: newMessage.id,
+      }),
+    )
 
-    entity.updateMessageId(newMessage.id)
-    await this.writeRepo.publishEvents(entity, revision)
+    await this.commandBus.execute(
+      new WatchPendingQuoteCommand({
+        message: newMessage,
+        quoteId,
+      }),
+    )
 
-    // TODO watch message here
+    this.logger.verbose(
+      `Finished processing quote ${quoteId}`,
+      RegeneratePendingQuoteMessageCommandHandlerService.name,
+    )
   }
 }
