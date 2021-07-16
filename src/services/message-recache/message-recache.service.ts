@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common'
 import { CommandBus } from '@nestjs/cqrs'
 import { TextChannel } from 'discord.js'
 import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
-import { RegeneratePendingQuoteMessageCommand } from 'src/infra-command-handlers/commands/regenerate-pending-quote-message.command'
-import { WatchPendingQuoteCommand } from 'src/infra-command-handlers/commands/watch-pending-quote.command'
+import { RegeneratePendingQuoteMessageCommand } from 'src/infrastructure/commands/regenerate-pending-quote-message.command'
+import { WatchPendingQuoteCommand } from 'src/infrastructure/commands/watch-pending-quote.command'
 import { PendingQuoteQueryService } from 'src/read-repositories/queries/pending-quote-query/pending-quote-query.service'
 
 @Injectable()
