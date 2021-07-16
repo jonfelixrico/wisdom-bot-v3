@@ -6,9 +6,10 @@ import { AcceptQuoteCommandHandlerService } from './pending-quote/accept-quote-c
 import { ReceiveQuoteCommandHandlerService } from './quote/receive-quote-command-handler/receive-quote-command-handler.service'
 import { InteractReceiveCommandHandlerService } from './receive/interact-receive-command-handler/interact-receive-command-handler.service'
 import { UpdateQuoteMessageIdCommandHandlerService } from './pending-quote/update-quote-message-id-command-handler/update-quote-message-id-command-handler.service'
+import { DiscordModule } from 'src/discord/discord.module'
 
 @Module({
-  imports: [CqrsModule, WriteRepositoriesModule],
+  imports: [CqrsModule, WriteRepositoriesModule, DiscordModule],
   providers: [
     SubmitQuoteCommandHandlerService,
     AcceptQuoteCommandHandlerService,
