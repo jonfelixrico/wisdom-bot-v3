@@ -1,13 +1,21 @@
 import { Logger, OnApplicationBootstrap } from '@nestjs/common'
 import { Injectable } from '@nestjs/common'
 import { CommandBus } from '@nestjs/cqrs'
-import { Client, Guild, TextChannel } from 'discord.js'
+import { TextChannel } from 'discord.js'
+import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
+import { RegeneratePendingQuoteMessageCommand } from 'src/infra-command-handlers/commands/regenerate-pending-quote-message.command'
+import { WatchPendingQuoteCommand } from 'src/infra-command-handlers/commands/watch-pending-quote.command'
 import { PendingQuoteQueryService } from 'src/read-repositories/queries/pending-quote-query/pending-quote-query.service'
+
+interface IMessageData {
+  messageId: string
+  quoteId: string
+}
 
 @Injectable()
 export class MessageRecacheService implements OnApplicationBootstrap {
   constructor(
-    private client: Client,
+    private discordHelper: DiscordHelperService,
     private query: PendingQuoteQueryService,
     private commandBus: CommandBus,
     private logger: Logger,
@@ -25,51 +33,77 @@ export class MessageRecacheService implements OnApplicationBootstrap {
     this.logger.warn(message, MessageRecacheService.name)
   }
 
-  private async processChannelMessages(
-    channel: TextChannel,
-    messageDataArr: { messageId: string; quoteId: string }[],
-  ) {
-    for (const { messageId, quoteId } of messageDataArr) {
-      try {
-        const discordMessage = await channel.messages.fetch(messageId)
-      } catch (e) {
-        this
+  private async processChannelMessages({ guild, ...channel }: TextChannel) {
+    const messageMapping = await this.getProcessedMessageDataArr(channel.id)
+
+    for (const { messageId, quoteId } of messageMapping) {
+      const message = await this.discordHelper.getMessage(
+        guild.id,
+        channel.id,
+        messageId,
+      )
+      // TODO add error handling
+
+      const { commandBus } = this
+
+      if (!message) {
+        await commandBus.execute(
+          new RegeneratePendingQuoteMessageCommand({
+            quoteId,
+          }),
+        )
+        return
+      } else {
+        await commandBus.execute(
+          new WatchPendingQuoteCommand({
+            message,
+            quoteId,
+          }),
+        )
       }
     }
   }
 
-  private async processGuildChannelIds(guild: Guild, channelIds: string[]) {
+  async getProcessedMessageDataArr(channelId: string) {
+    const messageDataArr = await this.query.getPendingQuotesFromChannel(
+      channelId,
+    )
+
+    return messageDataArr
+      .sort((a, b) => a.submitDt.getTime() - b.submitDt.getTime())
+      .map<IMessageData>(({ messageId, quoteId }) => ({ messageId, quoteId }))
+  }
+
+  async processGuild(guildId: string) {
+    const channelIds = await this.query.getChannelIdsWithPendingQuotes(guildId)
     for (const channelId of channelIds) {
-      const channel = guild.channels.cache.get(channelId) as TextChannel | null
+      // We're retrieving the channel just to check if it still exists
+      const channel = await this.discordHelper.getTextChannel(
+        guildId,
+        channelId,
+      )
+      // TODO add error handling
 
       if (!channel) {
-        this.logWarn(
-          `Skipped channel ${channel.id} because it's not a text channel.`,
-        )
+        // TODO log warn that the channel is not found
         return
       }
 
-      const messageDataArr = await this.query.getPendingQuotesFromChannel(
-        channel.id,
-      )
+      // TODO permissions checking here maybe?
 
-      await this.processChannelMessages(
-        channel,
-        messageDataArr.sort(
-          (a, b) => a.submitDt.getTime() - b.submitDt.getTime(),
-        ),
-      )
+      this.processChannelMessages(channel)
     }
   }
 
   async onApplicationBootstrap() {
-    const guilds = this.client.guilds
     const guildIds = await this.query.getGuildsWithPendingQuotes()
 
     for (const guildId of guildIds) {
       try {
-        const guild = await guilds.fetch(guildId)
+        const guild = await this.discordHelper.getGuild(guildId)
+        // TODO add error handling
 
+        // Check if we have access to the guild
         if (!guild.available) {
           this.logWarn(
             `Skipped guild ${guild.id} because the bot lacks access.`,
@@ -77,11 +111,7 @@ export class MessageRecacheService implements OnApplicationBootstrap {
           return
         }
 
-        const channelIds = await this.query.getChannelIdsWithPendingQuotes(
-          guildId,
-        )
-
-        this.processGuildChannelIds(guild, channelIds)
+        this.processGuild(guildId)
       } catch (e) {
         this.logError(e)
       }
