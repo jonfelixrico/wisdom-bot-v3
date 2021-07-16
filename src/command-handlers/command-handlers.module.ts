@@ -5,6 +5,7 @@ import { WriteRepositoriesModule } from 'src/write-repositories/write-repositori
 import { AcceptQuoteCommandHandlerService } from './pending-quote/accept-quote-command-handler/accept-quote-command-handler.service'
 import { ReceiveQuoteCommandHandlerService } from './quote/receive-quote-command-handler/receive-quote-command-handler.service'
 import { InteractReceiveCommandHandlerService } from './receive/interact-receive-command-handler/interact-receive-command-handler.service'
+import { UpdateQuoteMessageIdCommandHandlerService } from './pending-quote/update-quote-message-id-command-handler/update-quote-message-id-command-handler.service'
 
 @Module({
   imports: [CqrsModule, WriteRepositoriesModule],
@@ -13,6 +14,7 @@ import { InteractReceiveCommandHandlerService } from './receive/interact-receive
     AcceptQuoteCommandHandlerService,
     ReceiveQuoteCommandHandlerService,
     InteractReceiveCommandHandlerService,
+    UpdateQuoteMessageIdCommandHandlerService,
   ],
 
   // TODO import repository
