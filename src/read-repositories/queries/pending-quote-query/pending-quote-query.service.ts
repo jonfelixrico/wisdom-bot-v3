@@ -13,7 +13,7 @@ export class PendingQuoteQueryService {
   async getChannelIdsWithPendingQuotes(guildId: string) {
     const results = await this.repo
       .createQueryBuilder('quote')
-      .select('quote.channelId')
+      .select('quote.channelId', 'channelId')
       .where('quote.guildId = :guildId', { guildId })
       .andWhere('quote.expireDt >= NOW()')
       .andWhere('quote.acceptDt IS NULL')
@@ -34,8 +34,8 @@ export class PendingQuoteQueryService {
     const results = await this.repo
       .createQueryBuilder()
       .where('channelId = :channelId', { channelId })
-      .andWhere('expiredAt >= NOW()')
-      .andWhere('approveDt IS NULL')
+      .andWhere('expireDt >= NOW()')
+      .andWhere('acceptDt IS NULL')
       .andWhere('cancelDt IS NULL')
       .getMany()
 
@@ -59,7 +59,7 @@ export class PendingQuoteQueryService {
   async getGuildsWithPendingQuotes() {
     const results = await this.repo
       .createQueryBuilder('quote')
-      .select('quote.guildId')
+      .select('quote.guildId', 'guildId')
       .andWhere('quote.expireDt >= NOW()')
       .andWhere('quote.acceptDt IS NULL')
       .andWhere('quote.cancelDt IS NULL')
