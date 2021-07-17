@@ -6,7 +6,9 @@ import { CqrsModule } from '@nestjs/cqrs'
 import { TypeormModule } from 'src/typeorm/typeorm.module'
 import { ReceiveCommandService } from './handlers/receive-command/receive-command.service'
 import { ReadRepositoriesModule } from 'src/read-repositories/read-repositories.module'
-import { ConcurCommandService } from './handlers/concur-command/concur-command.service'
+import { InteractionHelperService } from './services/interaction-helper/interaction-helper.service'
+import { UpvoteCommandService } from './handlers/upvote-command/upvote-command.service'
+import { DownvoteCommandService } from './handlers/downvote-command/downvote-command.service'
 
 @Module({
   imports: [DiscordModule, CqrsModule, TypeormModule, ReadRepositoriesModule],
@@ -14,7 +16,9 @@ import { ConcurCommandService } from './handlers/concur-command/concur-command.s
     SetupService,
     SubmitCommandService,
     ReceiveCommandService,
-    ConcurCommandService,
+    InteractionHelperService,
+    UpvoteCommandService,
+    DownvoteCommandService,
   ],
 })
 export class CommandoModule {}
