@@ -32,5 +32,7 @@ export class InteractReceiveCommandHandlerService
       `Processed InteractReceiveCommand for receive ${receiveId}.`,
       InteractReceiveCommandHandlerService.name,
     )
+
+    return entity
   }
 }
