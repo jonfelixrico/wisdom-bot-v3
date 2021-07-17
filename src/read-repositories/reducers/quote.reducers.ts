@@ -1,7 +1,7 @@
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { IPendingQuoteAcceptedPayload } from 'src/domain/events/pending-quote-accepted.event'
 import { IPendingQuoteCancelledPayload } from 'src/domain/events/pending-quote-cancelled.event'
-import { IQuoteMessageIdUpdatedPayload } from 'src/domain/events/quote-message-id-updated.event'
+import { IQuoteMessageDetailsUpdatedPayload } from 'src/domain/events/quote-message-details-updated.event'
 import { IQuoteReceivedPayload } from 'src/domain/events/quote-received.event'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
@@ -98,7 +98,7 @@ export const quoteReceived: ReadRepositoryReducer<IQuoteReceivedPayload> =
     return affected > 0
   }
 
-export const messageIdUpdated: ReadRepositoryReducer<IQuoteMessageIdUpdatedPayload> =
+export const messageIdUpdated: ReadRepositoryReducer<IQuoteMessageDetailsUpdatedPayload> =
   async ({ revision, data }, manager) => {
     const { quoteId, messageId } = data
 

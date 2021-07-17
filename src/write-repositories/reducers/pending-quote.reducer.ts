@@ -2,7 +2,7 @@ import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
 import { IPendingQuoteAcceptedPayload } from 'src/domain/events/pending-quote-accepted.event'
 import { IPendingQuoteCancelledPayload } from 'src/domain/events/pending-quote-cancelled.event'
-import { IQuoteMessageIdUpdatedPayload } from 'src/domain/events/quote-message-id-updated.event'
+import { IQuoteMessageDetailsUpdatedPayload } from 'src/domain/events/quote-message-details-updated.event'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import {
   WriteRepositoryReducer,
@@ -40,9 +40,12 @@ const quoteAccepted: WriteRepositoryReducer<
 }
 
 const messageIdUpdated: WriteRepositoryReducer<
-  IQuoteMessageIdUpdatedPayload,
+  IQuoteMessageDetailsUpdatedPayload,
   IPendingQuote
-> = ({ messageId }: IQuoteMessageIdUpdatedPayload, state: IPendingQuote) => {
+> = (
+  { messageId }: IQuoteMessageDetailsUpdatedPayload,
+  state: IPendingQuote,
+) => {
   return {
     ...state,
     messageId,
