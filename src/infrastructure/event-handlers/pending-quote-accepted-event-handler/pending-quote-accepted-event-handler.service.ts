@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common'
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs'
-import { MessageEmbed } from 'discord.js'
+import { MessageEmbed, MessageEmbedOptions } from 'discord.js'
 import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 import { PendingQuoteAcceptedEvent } from 'src/infrastructure/events/pending-quote-accepted.event'
 import { QuoteQueryService } from 'src/read-repositories/queries/quote-query/quote-query.service'
@@ -53,7 +53,7 @@ export class PendingQuoteAcceptedEventHandlerService
     await helper.deleteMessage(guildId, channelId, messageId)
     // TODO add logging that indicates if deleteMessage was successful
 
-    const embeddedMessage = new MessageEmbed({
+    const embedOptions: MessageEmbedOptions = {
       title: 'Quote accepted!',
       description: `${content} - <@${authorId}>, ${year}`,
       fields: [
@@ -62,8 +62,19 @@ export class PendingQuoteAcceptedEventHandlerService
           value: `Submitted by <@${submitterId}>`,
         },
       ],
-    })
+    }
 
-    return await channel.send(embeddedMessage)
+    const authorMemberObject = await helper.getGuildMember(guildId, authorId)
+    if (authorMemberObject) {
+      const avatarUrl = await authorMemberObject.user.displayAvatarURL({
+        format: 'png',
+      })
+
+      embedOptions.thumbnail = {
+        url: avatarUrl,
+      }
+    }
+
+    return await channel.send(new MessageEmbed(embedOptions))
   }
 }
