@@ -58,19 +58,14 @@ export class SendQuoteAcceptedMessageCommandHandlerService
       ],
     }
 
-    const authorMemberObject = await helper.getGuildMember(guildId, authorId)
-    /*
-     * We're doing a null-check here because there maybe cases that the user is no longer
-     * part of the guild by the time this command is triggered. The method call above will probably
-     * return null.
-     */
-    if (authorMemberObject) {
-      const avatarUrl = await authorMemberObject.user.displayAvatarURL({
-        format: 'png',
-      })
+    const authorAvatarUrl = await helper.getGuildMemberAvatarUrl(
+      guildId,
+      authorId,
+    )
 
+    if (authorAvatarUrl) {
       embedOptions.thumbnail = {
-        url: avatarUrl,
+        url: authorAvatarUrl,
       }
     }
 

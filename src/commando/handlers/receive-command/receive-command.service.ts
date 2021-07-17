@@ -87,17 +87,14 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
       ],
     }
 
-    const authorMemberObject = await this.helper.getGuildMember(
+    const authorAvatarUrl = await this.helper.getGuildMemberAvatarUrl(
       message.guild.id,
       authorId,
     )
 
-    if (authorMemberObject) {
-      const avatarUrl = await authorMemberObject.user.displayAvatarURL({
-        format: 'png',
-      })
+    if (authorAvatarUrl) {
       embedOptions.thumbnail = {
-        url: avatarUrl,
+        url: authorAvatarUrl,
       }
     }
 
