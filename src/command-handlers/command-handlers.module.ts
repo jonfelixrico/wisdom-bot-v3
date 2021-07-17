@@ -5,7 +5,7 @@ import { WriteRepositoriesModule } from 'src/write-repositories/write-repositori
 import { AcceptQuoteCommandHandlerService } from './pending-quote/accept-quote-command-handler/accept-quote-command-handler.service'
 import { ReceiveQuoteCommandHandlerService } from './quote/receive-quote-command-handler/receive-quote-command-handler.service'
 import { InteractReceiveCommandHandlerService } from './receive/interact-receive-command-handler/interact-receive-command-handler.service'
-import { UpdateQuoteMessageDetailsCommandHandlerService } from './pending-quote/update-quote-message-id-command-handler/update-quote-message-details-command-handler.service'
+import { UpdateQuoteMessageDetailsCommandHandlerService } from './pending-quote/update-quote-message-details-command-handler/update-quote-message-details-command-handler.service'
 import { DiscordModule } from 'src/discord/discord.module'
 
 @Module({
