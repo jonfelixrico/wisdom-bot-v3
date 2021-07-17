@@ -1,24 +1,27 @@
 import { Injectable } from '@nestjs/common'
-import { ReceiveTypeormEntity } from 'src/typeorm/entities/receive.typeorm-entity'
-import { Connection } from 'typeorm'
+import { ReceiveTypeormRepository } from 'src/typeorm/providers/receive.typeorm-repository'
 
 @Injectable()
 export class ReceiveQueryService {
-  constructor(private conn: Connection) {}
-
-  private get repository() {
-    return this.conn.getRepository(ReceiveTypeormEntity)
-  }
+  constructor(private repo: ReceiveTypeormRepository) {}
 
   async getReceiveIdFromMessageId(messageId: string): Promise<string> {
-    const { repository } = this
-
-    const receive = await repository.findOne({ messageId })
+    const receive = await this.repo.findOne({ messageId })
 
     if (!receive) {
       return null
     }
 
     return receive.id
+  }
+
+  async getQuoteIdFromReceiveId(receiveId: string): Promise<string> {
+    const receive = await this.repo.findOne({ id: receiveId })
+
+    if (!receive) {
+      return null
+    }
+
+    return receive.quoteId
   }
 }
