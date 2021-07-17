@@ -15,13 +15,28 @@ export class ReceiveQueryService {
     return receive.id
   }
 
-  async getQuoteIdFromReceiveId(receiveId: string): Promise<string> {
+  async getReceiveDisplayData(receiveId: string) {
     const receive = await this.repo.findOne({ id: receiveId })
 
     if (!receive) {
       return null
     }
 
-    return receive.quoteId
+    const quote = await receive.quote
+
+    const { userId } = receive
+    const { content, authorId, submitDt } = quote
+
+    return {
+      receive: {
+        userId,
+      },
+
+      quote: {
+        content,
+        authorId,
+        submitDt,
+      },
+    }
   }
 }
