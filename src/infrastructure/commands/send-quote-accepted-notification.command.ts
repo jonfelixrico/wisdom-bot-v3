@@ -16,4 +16,6 @@ export interface ISendQuoteAcceptedNotificationCommandPayload {
   }
 }
 
-export class SendQuoteAcceptedNotificationCommand implements ICommand {}
+export class SendQuoteAcceptedNotificationCommand implements ICommand {
+  constructor(readonly payload: ISendQuoteAcceptedNotificationCommandPayload) {}
+}
