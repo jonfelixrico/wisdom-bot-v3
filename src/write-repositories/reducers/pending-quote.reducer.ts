@@ -12,34 +12,41 @@ import {
 const quoteSubmitted: WriteRepositoryReducer<
   IQuoteSubmittedEventPayload,
   IPendingQuote
-> = (data) => ({
+> = ({ submitDt, ...data }) => ({
   ...data,
   acceptDt: null,
   cancelDt: null,
+  submitDt: new Date(submitDt),
 })
 
 const quoteCancelled: WriteRepositoryReducer<
   IPendingQuoteCancelledPayload,
   IPendingQuote
 > = ({ cancelDt }, state) => {
-  state.cancelDt = cancelDt
-  return state
+  return {
+    ...state,
+    cancelDt: new Date(cancelDt),
+  }
 }
 
 const quoteAccepted: WriteRepositoryReducer<
   IPendingQuoteAcceptedPayload,
   IPendingQuote
 > = ({ acceptDt }, state) => {
-  state.acceptDt = acceptDt
-  return state
+  return {
+    ...state,
+    acceptDt: new Date(acceptDt),
+  }
 }
 
 const messageIdUpdated: WriteRepositoryReducer<
   IQuoteMessageIdUpdatedPayload,
   IPendingQuote
 > = ({ messageId }: IQuoteMessageIdUpdatedPayload, state: IPendingQuote) => {
-  state.messageId = messageId
-  return state
+  return {
+    ...state,
+    messageId,
+  }
 }
 
 const {
