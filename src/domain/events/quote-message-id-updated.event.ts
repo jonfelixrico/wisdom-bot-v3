@@ -9,6 +9,10 @@ export interface IQuoteMessageIdUpdatedPayload extends EventPayload {
 
 export class QuoteMessageIdUpdatedEvent extends DomainEvent<IQuoteMessageIdUpdatedPayload> {
   constructor(payload: IQuoteMessageIdUpdatedPayload) {
-    super(DomainEventNames.QUOTE_MESSAGE_ID_UPDATED, payload.quoteId, payload)
+    super(
+      DomainEventNames.QUOTE_MESSAGE_DETAILS_UPDATED,
+      payload.quoteId,
+      payload,
+    )
   }
 }
