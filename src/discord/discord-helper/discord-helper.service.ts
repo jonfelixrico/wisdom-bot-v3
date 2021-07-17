@@ -22,7 +22,16 @@ export class DiscordHelperService {
   async getGuild(guildId: string): Promise<Guild | null> {
     const { guilds } = this.client
     try {
-      return await guilds.fetch(guildId)
+      const guild = await guilds.fetch(guildId)
+
+      /*
+       * From https://discord.js.org/#/docs/main/stable/class/Guild's notes
+       * "It's recommended to see if a guild is available before performing operations or reading data from it. You can check this with guild.available."
+       *
+       * Not being able to read data from a guild is critical to our use cases, so if we're not allowed to do such things to that guild, we'll consider it
+       * as not found.
+       */
+      return guild.available ? guild : null
     } catch (e) {
       if (is404Error(e)) {
         return null
@@ -107,6 +116,26 @@ export class DiscordHelperService {
     } catch (e) {
       if (is404Error(e)) {
         return false
+      }
+
+      throw e
+    }
+  }
+
+  async getGuildMember(guildId: string, userId: string) {
+    const guild = await this.getGuild(guildId)
+
+    if (!guild) {
+      return null
+    }
+
+    const { members } = guild
+
+    try {
+      return await members.fetch(userId)
+    } catch (e) {
+      if (is404Error(e)) {
+        return null
       }
 
       throw e
