@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { Message, User } from 'discord.js'
+import { Message, MessageEmbed, MessageEmbedOptions, User } from 'discord.js'
 import {
   CommandoClient,
   CommandInfo,
@@ -9,6 +9,8 @@ import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 import { QuoteQueryService } from 'src/read-repositories/queries/quote-query/quote-query.service'
 import { CommandBus } from '@nestjs/cqrs'
 import { ReceiveQuoteCommand } from 'src/domain/commands/receive-quote.command'
+import { SPACE_CHARACTER } from 'src/types/discord.constants'
+import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 
 const COMMAND_INFO: CommandInfo = {
   name: 'receive',
@@ -37,6 +39,7 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
     private quoteQuery: QuoteQueryService,
     private logger: Logger,
     private commandBus: CommandBus,
+    private helper: DiscordHelperService,
   ) {
     super(client, COMMAND_INFO)
   }
@@ -47,6 +50,8 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
   ): Promise<Message | Message[]> {
     const { channel, guild, author } = message
 
+    const response = await channel.send('Finding a quote...')
+
     const quoteId = await this.quoteQuery.getRandomQuoteId(guild.id, user?.id)
     if (!quoteId) {
       this.logger.verbose(
@@ -55,17 +60,10 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
           : `No quotes found under guild ${guild.id}.`,
         ReceiveCommandService.name,
       )
-      return channel.send('No quotes available.')
+      return await response.edit('No quotes available.')
     }
 
-    const { year, content, authorId } = await this.quoteQuery.getQuoteData(
-      quoteId,
-    )
-
-    const response = await channel.send('🤔')
-    await response.edit(`**"${content}"** - <@${authorId}>, ${year}`)
-
-    this.commandBus.execute(
+    await this.commandBus.execute(
       new ReceiveQuoteCommand({
         channelId: channel.id,
         messageId: response.id,
@@ -73,6 +71,37 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
         userId: author.id,
       }),
     )
+
+    const { year, content, authorId } = await this.quoteQuery.getQuoteData(
+      quoteId,
+    )
+
+    const embedOptions: MessageEmbedOptions = {
+      description: `${content} - <@${authorId}>, ${year}`,
+      title: 'Quote Received',
+      fields: [
+        {
+          name: SPACE_CHARACTER,
+          value: `Received by ${message.author}`,
+        },
+      ],
+    }
+
+    const authorMemberObject = await this.helper.getGuildMember(
+      message.guild.id,
+      authorId,
+    )
+
+    if (authorMemberObject) {
+      const avatarUrl = await authorMemberObject.user.displayAvatarURL({
+        format: 'png',
+      })
+      embedOptions.thumbnail = {
+        url: avatarUrl,
+      }
+    }
+
+    await response.edit(null, new MessageEmbed(embedOptions))
 
     this.logger.verbose(
       `Processed quote receive for ${quoteId}.`,
