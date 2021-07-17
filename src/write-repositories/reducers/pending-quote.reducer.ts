@@ -39,16 +39,17 @@ const quoteAccepted: WriteRepositoryReducer<
   }
 }
 
-const messageIdUpdated: WriteRepositoryReducer<
+const messageDetailsUpdated: WriteRepositoryReducer<
   IQuoteMessageDetailsUpdatedPayload,
   IPendingQuote
 > = (
-  { messageId }: IQuoteMessageDetailsUpdatedPayload,
+  { messageId, channelId }: IQuoteMessageDetailsUpdatedPayload,
   state: IPendingQuote,
 ) => {
   return {
     ...state,
     messageId,
+    channelId,
   }
 }
 
@@ -56,12 +57,12 @@ const {
   PENDING_QUOTE_ACCEPTED,
   PENDING_QUOTE_CANCELLED,
   QUOTE_SUBMITTED,
-  QUOTE_MESSAGE_DETAILS_UPDATED: QUOTE_MESSAGE_ID_UPDATED,
+  QUOTE_MESSAGE_DETAILS_UPDATED,
 } = DomainEventNames
 export const PENDING_QUOTE_REDUCERS: WriteRepositoryReducerMap<IPendingQuote> =
   {
     [PENDING_QUOTE_ACCEPTED]: quoteAccepted,
     [PENDING_QUOTE_CANCELLED]: quoteCancelled,
     [QUOTE_SUBMITTED]: quoteSubmitted,
-    [QUOTE_MESSAGE_ID_UPDATED]: messageIdUpdated,
+    [QUOTE_MESSAGE_DETAILS_UPDATED]: messageDetailsUpdated,
   }
