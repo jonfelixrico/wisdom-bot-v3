@@ -4,7 +4,7 @@ import { UpdateQuoteMessageDetailsCommand } from 'src/domain/commands/update-quo
 import { PendingQuoteWriteRepositoryService } from 'src/write-repositories/pending-quote-write-repository/pending-quote-write-repository.service'
 
 @CommandHandler(UpdateQuoteMessageDetailsCommand)
-export class UpdateQuoteMessageIdCommandHandlerService
+export class UpdateQuoteMessageDetailsCommandHandlerService
   implements ICommandHandler<UpdateQuoteMessageDetailsCommand>
 {
   constructor(
@@ -19,7 +19,7 @@ export class UpdateQuoteMessageIdCommandHandlerService
     if (!result) {
       this.logger.warn(
         `Quote ${quoteId} not found.`,
-        UpdateQuoteMessageIdCommandHandlerService.name,
+        UpdateQuoteMessageDetailsCommandHandlerService.name,
       )
       return
     }
@@ -30,7 +30,7 @@ export class UpdateQuoteMessageIdCommandHandlerService
     await this.repo.publishEvents(entity, revision)
     this.logger.verbose(
       `Updated message details of quote ${quoteId}: messageId ${messageId}, channelId ${channelId}.`,
-      UpdateQuoteMessageIdCommandHandlerService.name,
+      UpdateQuoteMessageDetailsCommandHandlerService.name,
     )
   }
 }
