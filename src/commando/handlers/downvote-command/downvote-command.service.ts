@@ -27,6 +27,6 @@ export class DownvoteCommandService extends WrappedCommand {
   }
 
   run(message: CommandoMessage): Promise<Message | Message[]> {
-    return this.helper.handleInteraction(message, 1)
+    return this.helper.handleInteraction(message, -1)
   }
 }
