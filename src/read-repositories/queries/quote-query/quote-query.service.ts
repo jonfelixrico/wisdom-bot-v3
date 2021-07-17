@@ -87,6 +87,7 @@ export class QuoteQueryService {
       channelId,
       messageId,
       submitterId,
+      submitDt,
     }
   }
 }
