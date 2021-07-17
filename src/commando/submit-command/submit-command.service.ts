@@ -25,6 +25,7 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     const channelId = message.channel.id
     const submitterId = message.author.id
 
+    // TODO pull these from a repository instead
     const expireMillis = 60 * 1000 * 2
     const approveEmoji = '🤔'
     const approveCount = 1
