@@ -141,4 +141,16 @@ export class DiscordHelperService {
       throw e
     }
   }
+
+  async getGuildMemberAvatarUrl(guildId: string, userId: string) {
+    const member = await this.getGuildMember(guildId, userId)
+
+    if (!member) {
+      return null
+    }
+
+    return await member.user.displayAvatarURL({
+      format: 'png',
+    })
+  }
 }
