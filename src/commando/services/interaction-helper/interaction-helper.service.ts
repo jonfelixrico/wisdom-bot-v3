@@ -2,8 +2,10 @@ import { Injectable, Logger } from '@nestjs/common'
 import { CommandBus } from '@nestjs/cqrs'
 import { Message } from 'discord.js'
 import { InteractReceiveCommand } from 'src/domain/commands/interact-receive.command'
+import { Receive } from 'src/domain/entities/receive.entity'
 import { DomainErrorCodes } from 'src/domain/errors/domain-error-codes.enum'
 import { DomainError } from 'src/domain/errors/domain-error.class'
+import { UpdateReceiveMessageReactionsListCommand } from 'src/infrastructure/commands/update-receive-message-reactions-list.command'
 import { ReceiveQueryService } from 'src/read-repositories/queries/receive-query/receive-query.service'
 
 @Injectable()
@@ -34,11 +36,29 @@ export class InteractionHelperService {
     const { id: userId } = message.author
 
     try {
-      await this.commandBus.execute(
+      const receive: Receive = await this.commandBus.execute(
         new InteractReceiveCommand({
           karma,
           receiveId,
           userId,
+        }),
+      )
+
+      const { interactions } = receive
+
+      this.commandBus.execute(
+        new UpdateReceiveMessageReactionsListCommand({
+          receiveId,
+          reactions: {
+            upvotes: interactions
+              .filter(({ karma }) => karma > 0)
+              .map(({ userId }) => userId)
+              .sort(),
+            downvotes: interactions
+              .filter(({ karma }) => karma < 0)
+              .map(({ userId }) => userId)
+              .sort(),
+          },
         }),
       )
     } catch (e) {
@@ -61,6 +81,7 @@ export class InteractionHelperService {
     }
 
     await message.react('👌')
+
     return message
   }
 }
