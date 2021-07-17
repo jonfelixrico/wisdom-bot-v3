@@ -26,7 +26,7 @@ export class UpdateQuoteMessageIdCommandHandlerService
 
     const { entity, revision } = result
 
-    entity.updateMessageId(messageId)
+    entity.updateMessageDetails(messageId)
     await this.repo.publishEvents(entity, revision)
     this.logger.verbose(
       `Updated the message id of quote ${quoteId} to ${messageId}.`,
