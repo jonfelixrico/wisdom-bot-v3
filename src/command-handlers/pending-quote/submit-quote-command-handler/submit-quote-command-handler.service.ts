@@ -6,7 +6,6 @@ import { SubmitQuoteCommand } from 'src/domain/commands/submit-quote.command'
 import { PendingQuote } from 'src/domain/entities/pending-quote.entity'
 import { WatchPendingQuoteCommand } from 'src/infrastructure/commands/watch-pending-quote.command'
 import { PendingQuoteWriteRepositoryService } from 'src/write-repositories/pending-quote-write-repository/pending-quote-write-repository.service'
-import { v4 } from 'uuid'
 
 @CommandHandler(SubmitQuoteCommand)
 export class SubmitQuoteCommandHandlerService
