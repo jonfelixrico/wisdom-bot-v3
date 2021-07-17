@@ -3,9 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { MessageEmbed, MessageEmbedOptions } from 'discord.js'
 import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 import { SendQuoteAcceptedMessageCommand } from 'src/infrastructure/commands/send-quote-accepted-notification.command'
-
-// TODO make an enum/constant for this once it gets referenced in the code again
-const EMPTY_STRING = '\u200B'
+import { SPACE_CHARACTER } from 'src/types/discord.constants'
 
 @CommandHandler(SendQuoteAcceptedMessageCommand)
 export class SendQuoteAcceptedMessageCommandHandlerService
@@ -54,7 +52,7 @@ export class SendQuoteAcceptedMessageCommandHandlerService
       description: `${content} - <@${authorId}>, ${year}`,
       fields: [
         {
-          name: EMPTY_STRING,
+          name: SPACE_CHARACTER,
           value: `Submitted by <@${submitterId}>`,
         },
       ],
