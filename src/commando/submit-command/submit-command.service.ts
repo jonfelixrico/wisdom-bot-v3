@@ -3,8 +3,6 @@ import { Message, User } from 'discord.js'
 import { CommandoClient, CommandoMessage } from 'discord.js-commando'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 import { CommandBus } from '@nestjs/cqrs'
-import { ReactionListenerService } from '../reaction-listener/reaction-listener.service'
-import { DeleteListenerService } from '../delete-listener/delete-listener.service'
 import { SUBMIT_COMMAND_INFO } from './submit-command-info'
 import { SubmitQuoteCommand } from 'src/domain/commands/submit-quote.command'
 
@@ -15,12 +13,7 @@ interface ISubmitCommandArgs extends IArgumentMap {
 
 @Injectable()
 export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
-  constructor(
-    client: CommandoClient,
-    private commandBus: CommandBus,
-    private reactionListener: ReactionListenerService,
-    private deleteListener: DeleteListenerService,
-  ) {
+  constructor(client: CommandoClient, private commandBus: CommandBus) {
     super(client, SUBMIT_COMMAND_INFO)
   }
 
