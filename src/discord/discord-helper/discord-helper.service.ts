@@ -101,7 +101,15 @@ export class DiscordHelperService {
     }
 
     const { messages } = channel
-    await messages.delete(messageId, reason)
-    return true
+    try {
+      await messages.delete(messageId, reason)
+      return true
+    } catch (e) {
+      if (is404Error(e)) {
+        return false
+      }
+
+      throw e
+    }
   }
 }
