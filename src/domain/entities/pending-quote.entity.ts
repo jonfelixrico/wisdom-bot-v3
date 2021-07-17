@@ -7,9 +7,14 @@ import { IQuoteToSubmit } from './quote-to-submit.interface'
 import { v4 } from 'uuid'
 import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
 import { DomainError } from '../errors/domain-error.class'
-import { QuoteMessageIdUpdatedEvent } from '../events/quote-message-id-updated.event'
+import { QuoteMessageDetailsUpdatedEvent } from '../events/quote-message-details-updated.event'
 
 const { QUOTE_APPROVED, QUOTE_CANCELLED, QUOTE_EXPIRED } = DomainErrorCodes
+
+export interface IQuoteMessageDetails {
+  messageId: string
+  channelId: string
+}
 
 export class PendingQuote extends DomainEntity implements IPendingQuote {
   quoteId: string
@@ -20,11 +25,13 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
   submitterId: string
   submitDt: Date
   guildId: string
-  channelId: string
-  messageId: string
+
   expireDt: Date
   upvoteCount: number
   upvoteEmoji: string
+
+  channelId?: string
+  messageId?: string
 
   // TODO create private flag for created
 
@@ -97,11 +104,15 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     this.apply(new PendingQuoteCancelledEvent({ quoteId, cancelDt }))
   }
 
-  updateMessageId(messageId: string) {
+  updateMessageDetails({ messageId, channelId }: IQuoteMessageDetails) {
     this.checkIfPending()
     this.messageId = messageId
+    this.channelId = channelId
+
     const { quoteId } = this
-    this.apply(new QuoteMessageIdUpdatedEvent({ quoteId, messageId }))
+    this.apply(
+      new QuoteMessageDetailsUpdatedEvent({ quoteId, messageId, channelId }),
+    )
   }
 
   /**

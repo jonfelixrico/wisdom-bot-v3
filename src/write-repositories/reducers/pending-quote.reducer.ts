@@ -2,7 +2,7 @@ import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
 import { IPendingQuoteAcceptedPayload } from 'src/domain/events/pending-quote-accepted.event'
 import { IPendingQuoteCancelledPayload } from 'src/domain/events/pending-quote-cancelled.event'
-import { IQuoteMessageIdUpdatedPayload } from 'src/domain/events/quote-message-id-updated.event'
+import { IQuoteMessageDetailsUpdatedPayload } from 'src/domain/events/quote-message-details-updated.event'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import {
   WriteRepositoryReducer,
@@ -39,13 +39,17 @@ const quoteAccepted: WriteRepositoryReducer<
   }
 }
 
-const messageIdUpdated: WriteRepositoryReducer<
-  IQuoteMessageIdUpdatedPayload,
+const messageDetailsUpdated: WriteRepositoryReducer<
+  IQuoteMessageDetailsUpdatedPayload,
   IPendingQuote
-> = ({ messageId }: IQuoteMessageIdUpdatedPayload, state: IPendingQuote) => {
+> = (
+  { messageId, channelId }: IQuoteMessageDetailsUpdatedPayload,
+  state: IPendingQuote,
+) => {
   return {
     ...state,
     messageId,
+    channelId,
   }
 }
 
@@ -53,12 +57,12 @@ const {
   PENDING_QUOTE_ACCEPTED,
   PENDING_QUOTE_CANCELLED,
   QUOTE_SUBMITTED,
-  QUOTE_MESSAGE_ID_UPDATED,
+  QUOTE_MESSAGE_DETAILS_UPDATED,
 } = DomainEventNames
 export const PENDING_QUOTE_REDUCERS: WriteRepositoryReducerMap<IPendingQuote> =
   {
     [PENDING_QUOTE_ACCEPTED]: quoteAccepted,
     [PENDING_QUOTE_CANCELLED]: quoteCancelled,
     [QUOTE_SUBMITTED]: quoteSubmitted,
-    [QUOTE_MESSAGE_ID_UPDATED]: messageIdUpdated,
+    [QUOTE_MESSAGE_DETAILS_UPDATED]: messageDetailsUpdated,
   }

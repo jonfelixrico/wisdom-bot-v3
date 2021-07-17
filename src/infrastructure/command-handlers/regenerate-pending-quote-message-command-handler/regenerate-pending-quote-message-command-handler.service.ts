@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common'
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
-import { UpdateQuoteMessageIdCommand } from 'src/domain/commands/update-quote-message-id.command'
+import { UpdateQuoteMessageDetailsCommand } from 'src/domain/commands/update-quote-message-id.command'
 import { RegeneratePendingQuoteMessageCommand } from '../../commands/regenerate-pending-quote-message.command'
 import { WatchPendingQuoteCommand } from '../../commands/watch-pending-quote.command'
 
@@ -32,9 +32,10 @@ export class RegeneratePendingQuoteMessageCommandHandlerService
     const newMessage = await channel.send('regeneration message')
 
     await this.commandBus.execute(
-      new UpdateQuoteMessageIdCommand({
+      new UpdateQuoteMessageDetailsCommand({
         quoteId,
         messageId: newMessage.id,
+        channelId: newMessage.channel.id,
       }),
     )
 
