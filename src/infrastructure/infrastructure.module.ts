@@ -5,7 +5,7 @@ import { ReadRepositoriesModule } from 'src/read-repositories/read-repositories.
 import { RegeneratePendingQuoteMessageCommandHandlerService } from './command-handlers/regenerate-pending-quote-message-command-handler/regenerate-pending-quote-message-command-handler.service'
 import { WatchPendingQuoteCommandHandlerService } from './command-handlers/watch-pending-quote-command-handler/watch-pending-quote-command-handler.service'
 import { PendingQuoteExpiredEventHandlerService } from './event-handlers/pending-quote-expired-event-handler/pending-quote-expired-event-handler.service'
-import { SendQuoteAcceptedNotificationCommandHandlerService } from './command-handlers/send-quote-accepted-notification-command-handler/send-quote-accepted-notification-command-handler.service'
+import { SendQuoteAcceptedMessageCommandHandlerService } from './command-handlers/send-quote-accepted-message-command-handler/send-quote-accepted-message-command-handler.service'
 
 @Module({
   imports: [CqrsModule, DiscordModule, ReadRepositoriesModule],
@@ -13,7 +13,7 @@ import { SendQuoteAcceptedNotificationCommandHandlerService } from './command-ha
     RegeneratePendingQuoteMessageCommandHandlerService,
     WatchPendingQuoteCommandHandlerService,
     PendingQuoteExpiredEventHandlerService,
-    SendQuoteAcceptedNotificationCommandHandlerService,
+    SendQuoteAcceptedMessageCommandHandlerService,
   ],
 })
 export class InfrastructureModule {}

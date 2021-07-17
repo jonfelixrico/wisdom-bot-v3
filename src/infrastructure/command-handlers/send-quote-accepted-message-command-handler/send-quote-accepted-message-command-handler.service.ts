@@ -8,7 +8,7 @@ import { SendQuoteAcceptedMessageCommand } from 'src/infrastructure/commands/sen
 const EMPTY_STRING = '\u200B'
 
 @CommandHandler(SendQuoteAcceptedMessageCommand)
-export class SendQuoteAcceptedNotificationCommandHandlerService
+export class SendQuoteAcceptedMessageCommandHandlerService
   implements ICommandHandler<SendQuoteAcceptedMessageCommand>
 {
   constructor(private helper: DiscordHelperService, private logger: Logger) {}
@@ -28,7 +28,7 @@ export class SendQuoteAcceptedNotificationCommandHandlerService
     if (!channel) {
       this.logger.warn(
         `Channel ${channelId} does not exist.`,
-        SendQuoteAcceptedNotificationCommandHandlerService.name,
+        SendQuoteAcceptedMessageCommandHandlerService.name,
       )
       return
     }
@@ -44,7 +44,7 @@ export class SendQuoteAcceptedNotificationCommandHandlerService
       )
       this.logger.debug(
         `Deleted message ${messageId}`,
-        SendQuoteAcceptedNotificationCommandHandlerService.name,
+        SendQuoteAcceptedMessageCommandHandlerService.name,
       )
     }
     // TODO add logging that indicates if deleteMessage was successful
