@@ -53,11 +53,22 @@ export class UpdateReceiveMessageReactionsListCommandHandlerService
   async execute({
     payload,
   }: UpdateReceiveMessageReactionsListCommand): Promise<any> {
-    const { channeId, guildId, messageId, reactions, receiveId } = payload
+    const { reactions, receiveId } = payload
+
+    const displayData = await this.receiveQuery.getReceiveDisplayData(receiveId)
+    if (!displayData) {
+      this.logger.warn(
+        `Can't pull up the display data for receive ${receiveId}.`,
+        UpdateReceiveMessageReactionsListCommandHandlerService.name,
+      )
+      return null
+    }
+
+    const { channelId, guildId, messageId } = displayData.receive
 
     // message validation
 
-    const message = await this.helper.getMessage(guildId, channeId, messageId)
+    const message = await this.helper.getMessage(guildId, channelId, messageId)
     if (!message) {
       this.logger.warn(
         `Can't find message ${messageId}.`,
@@ -70,15 +81,6 @@ export class UpdateReceiveMessageReactionsListCommandHandlerService
         UpdateReceiveMessageReactionsListCommandHandlerService.name,
       )
       return
-    }
-
-    const displayData = await this.receiveQuery.getReceiveDisplayData(receiveId)
-    if (!displayData) {
-      this.logger.warn(
-        `Can't pull up the display data for receive ${receiveId}.`,
-        UpdateReceiveMessageReactionsListCommandHandlerService.name,
-      )
-      return null
     }
 
     const { content, authorId, submitDt } = displayData.quote
