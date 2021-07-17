@@ -1,6 +1,6 @@
 import { ICommand } from '@nestjs/cqrs'
 
-export interface ISendQuoteAcceptedNotificationCommandPayload {
+export interface ISendQuoteAcceptedMessageCommandPayload {
   /*
    * This is expected to be the id of a message under `channelId`.
    * If provided, then we will attempt to delete that message.
@@ -16,6 +16,6 @@ export interface ISendQuoteAcceptedNotificationCommandPayload {
   }
 }
 
-export class SendQuoteAcceptedNotificationCommand implements ICommand {
-  constructor(readonly payload: ISendQuoteAcceptedNotificationCommandPayload) {}
+export class SendQuoteAcceptedMessageCommand implements ICommand {
+  constructor(readonly payload: ISendQuoteAcceptedMessageCommandPayload) {}
 }

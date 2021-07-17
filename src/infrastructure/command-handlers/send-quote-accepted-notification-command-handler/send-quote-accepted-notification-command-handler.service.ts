@@ -2,20 +2,18 @@ import { Logger } from '@nestjs/common'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { MessageEmbed, MessageEmbedOptions } from 'discord.js'
 import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
-import { SendQuoteAcceptedNotificationCommand } from 'src/infrastructure/commands/send-quote-accepted-notification.command'
+import { SendQuoteAcceptedMessageCommand } from 'src/infrastructure/commands/send-quote-accepted-notification.command'
 
 // TODO make an enum/constant for this once it gets referenced in the code again
 const EMPTY_STRING = '\u200B'
 
-@CommandHandler(SendQuoteAcceptedNotificationCommand)
+@CommandHandler(SendQuoteAcceptedMessageCommand)
 export class SendQuoteAcceptedNotificationCommandHandlerService
-  implements ICommandHandler<SendQuoteAcceptedNotificationCommand>
+  implements ICommandHandler<SendQuoteAcceptedMessageCommand>
 {
   constructor(private helper: DiscordHelperService, private logger: Logger) {}
 
-  async execute({
-    payload,
-  }: SendQuoteAcceptedNotificationCommand): Promise<any> {
+  async execute({ payload }: SendQuoteAcceptedMessageCommand): Promise<any> {
     const {
       quote: { content, submitterId, authorId, year },
       guildId,
