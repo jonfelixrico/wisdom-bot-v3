@@ -8,7 +8,7 @@ import {
 } from 'discord.js'
 
 function is404Error(e: Error) {
-  return e instanceof DiscordAPIError && e.code === 404
+  return e instanceof DiscordAPIError && e.httpStatus === 404
 }
 
 @Injectable()
