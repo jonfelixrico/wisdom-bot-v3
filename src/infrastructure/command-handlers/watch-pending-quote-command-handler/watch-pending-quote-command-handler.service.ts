@@ -9,7 +9,6 @@ import { Client, Message, MessageReaction, ReactionEmoji } from 'discord.js'
 import { fromEvent, merge, Subject, timer } from 'rxjs'
 import { WatchPendingQuoteCommand } from '../../commands/watch-pending-quote.command'
 import { filter, takeUntil } from 'rxjs/operators'
-import { PendingQuoteReachedExpirationEvent } from 'src/infrastructure/events/pending-quote-reached-expiration.event'
 import { RegeneratePendingQuoteMessageCommand } from 'src/infrastructure/commands/regenerate-pending-quote-message.command'
 import { AcceptPendingQuoteCommand } from 'src/domain/commands/accept-pending-quote.command'
 
@@ -63,12 +62,7 @@ export class WatchPendingQuoteCommandHandlerService
       .subscribe(() => {
         // TODO add logging about expiration
         this.stop$.next(message.id)
-        this.eventBus.publish(
-          new PendingQuoteReachedExpirationEvent({
-            message,
-            quoteId,
-          }),
-        )
+        // TODO send a command or event for handling the expired event
         this.logger.verbose(
           `Quote ${quoteId} has expired.`,
           WatchPendingQuoteCommandHandlerService.name,
