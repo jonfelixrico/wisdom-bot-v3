@@ -68,13 +68,25 @@ export class QuoteQueryService {
       return null
     }
 
-    const { authorId, content, submitDt } = quote
+    const {
+      authorId,
+      content,
+      submitDt,
+      guildId,
+      channelId,
+      messageId,
+      submitterId,
+    } = quote
 
     return {
       quoteId,
       content,
       authorId,
       year: submitDt.getFullYear(),
+      guildId,
+      channelId,
+      messageId,
+      submitterId,
     }
   }
 }
