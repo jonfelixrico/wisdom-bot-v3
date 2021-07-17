@@ -6,6 +6,7 @@ import { RegeneratePendingQuoteMessageCommandHandlerService } from './command-ha
 import { WatchPendingQuoteCommandHandlerService } from './command-handlers/watch-pending-quote-command-handler/watch-pending-quote-command-handler.service'
 import { PendingQuoteAcceptedEventHandlerService } from './event-handlers/pending-quote-accepted-event-handler/pending-quote-accepted-event-handler.service'
 import { PendingQuoteExpiredEventHandlerService } from './event-handlers/pending-quote-expired-event-handler/pending-quote-expired-event-handler.service'
+import { SendQuoteAcceptedNotificationCommandHandlerService } from './command-handlers/send-quote-accepted-notification-command-handler/send-quote-accepted-notification-command-handler.service'
 
 @Module({
   imports: [CqrsModule, DiscordModule, ReadRepositoriesModule],
@@ -14,6 +15,7 @@ import { PendingQuoteExpiredEventHandlerService } from './event-handlers/pending
     WatchPendingQuoteCommandHandlerService,
     PendingQuoteAcceptedEventHandlerService,
     PendingQuoteExpiredEventHandlerService,
+    SendQuoteAcceptedNotificationCommandHandlerService,
   ],
 })
 export class InfrastructureModule {}
