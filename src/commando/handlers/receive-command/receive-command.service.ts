@@ -63,6 +63,9 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
       return await response.edit('No quotes available.')
     }
 
+    const { year, content, authorId, receiveCount } =
+      await this.quoteQuery.getQuoteData(quoteId)
+
     await this.commandBus.execute(
       new ReceiveQuoteCommand({
         channelId: channel.id,
@@ -72,9 +75,7 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
       }),
     )
 
-    const { year, content, authorId } = await this.quoteQuery.getQuoteData(
-      quoteId,
-    )
+    const newReceiveCount = receiveCount + 1
 
     const embedOptions: MessageEmbedOptions = {
       description: [`**"${content}"**`, `-<@${authorId}>, ${year}`].join('\n'),
@@ -85,6 +86,12 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
           value: `Received by ${message.author}`,
         },
       ],
+      footer: {
+        text: `This quote has been received ${newReceiveCount} ${
+          newReceiveCount !== 1 ? 'times' : 'time'
+        }`,
+      },
+      timestamp: new Date(),
     }
 
     const authorAvatarUrl = await this.helper.getGuildMemberAvatarUrl(
