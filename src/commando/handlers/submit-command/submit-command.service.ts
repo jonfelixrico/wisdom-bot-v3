@@ -5,6 +5,7 @@ import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 import { CommandBus } from '@nestjs/cqrs'
 import { SUBMIT_COMMAND_INFO } from './submit-command-info'
 import { SubmitQuoteCommand } from 'src/domain/commands/submit-quote.command'
+import { SPACE_CHARACTER } from 'src/types/discord.constants'
 
 interface ISubmitCommandArgs extends IArgumentMap {
   author: User
@@ -38,10 +39,19 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
         `**"${quote}"**`,
         `- ${author}, ${new Date().getFullYear()}`,
       ].join('\n'),
+      fields: [
+        {
+          name: SPACE_CHARACTER,
+          value: `Submitted by ${message.author}`,
+        },
+      ],
       footer: {
         text: `This submission needs ${
           approveCount + 1
         } ${approveEmoji} reacts to get reactions on or before ${expireDt}.`,
+      },
+      thumbnail: {
+        url: await author.displayAvatarURL({ format: 'png' }),
       },
     }
 
