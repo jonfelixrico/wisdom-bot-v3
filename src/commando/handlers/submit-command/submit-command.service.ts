@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Message, User } from 'discord.js'
+import { Message, MessageEmbed, MessageEmbedOptions, User } from 'discord.js'
 import { CommandoClient, CommandoMessage } from 'discord.js-commando'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 import { CommandBus } from '@nestjs/cqrs'
@@ -32,14 +32,22 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
 
     const expireDt = new Date(Date.now() + expireMillis)
 
-    const quoteLine = `**"${quote}"** - ${author}, ${new Date().getFullYear()}`
-    const instructionsLine = `_This submission needs ${
-      approveCount + 1
-    } ${approveEmoji} reacts to get reactions on or before *${expireDt}*._`
+    const embed: MessageEmbedOptions = {
+      title: 'Quote submitted!',
+      description: [
+        `**"${quote}"**`,
+        `- ${author}, ${new Date().getFullYear()}`,
+      ].join('\n'),
+      footer: {
+        text: `This submission needs ${
+          approveCount + 1
+        } ${approveEmoji} reacts to get reactions on or before ${expireDt}.`,
+      },
+    }
 
     const response = await message.channel.send('🤔')
     const messageId = response.id
-    await response.edit([quoteLine, instructionsLine].join('\n'))
+    await response.edit(null, new MessageEmbed(embed))
 
     await this.commandBus.execute(
       new SubmitQuoteCommand({
