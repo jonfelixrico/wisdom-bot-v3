@@ -83,18 +83,27 @@ export class UpdateReceiveMessageReactionsListCommandHandlerService
       return
     }
 
-    const { content, authorId, submitDt } = displayData.quote
+    const { content, authorId, submitDt, receiveCount } = displayData.quote
     const { userId: receiverId } = displayData.receive
 
     const embed: MessageEmbedOptions = {
-      title: 'Quote accepted!',
-      description: `${content} - <@${authorId}>, ${submitDt.getFullYear()}`,
+      title: 'Quote Received',
+      description: [
+        `**"${content}"**`,
+        `<@${authorId}>, ${submitDt.getFullYear()}`,
+      ].join('\n'),
       fields: [
         {
           name: SPACE_CHARACTER,
           value: `Received by <@${receiverId}>`,
         },
       ],
+      footer: {
+        text: `This quote has been received ${receiveCount} ${
+          receiveCount !== 1 ? 'times' : 'time'
+        }`,
+      },
+      timestamp: new Date(),
     }
 
     const authorAvatarUrl = await this.helper.getGuildMemberAvatarUrl(
