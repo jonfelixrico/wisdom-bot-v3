@@ -26,6 +26,7 @@ export class ReceiveQueryService {
 
     const { userId, messageId, channelId, guildId } = receive
     const { content, authorId, submitDt } = quote
+    const receives = await quote.receives
 
     return {
       receive: {
@@ -39,6 +40,7 @@ export class ReceiveQueryService {
         content,
         authorId,
         submitDt,
+        receiveCount: receives.length,
       },
     }
   }
