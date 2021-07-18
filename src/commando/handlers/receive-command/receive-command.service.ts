@@ -77,7 +77,7 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
     )
 
     const embedOptions: MessageEmbedOptions = {
-      description: `${content} - <@${authorId}>, ${year}`,
+      description: [`**"${content}"**`, `-<@${authorId}>, ${year}`].join('\n'),
       title: 'Quote Received',
       fields: [
         {

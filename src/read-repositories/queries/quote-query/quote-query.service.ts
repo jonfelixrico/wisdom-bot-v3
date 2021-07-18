@@ -68,6 +68,8 @@ export class QuoteQueryService {
       return null
     }
 
+    const receives = await quote.receives
+
     const {
       authorId,
       content,
@@ -88,6 +90,7 @@ export class QuoteQueryService {
       messageId,
       submitterId,
       submitDt,
+      receiveCount: receives.length,
     }
   }
 }

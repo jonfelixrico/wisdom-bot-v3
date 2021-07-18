@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm'
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm'
+import { ReceiveTypeormEntity } from './receive.typeorm-entity'
 
 @Entity({
   name: 'quote',
@@ -65,4 +66,7 @@ export class QuoteTypeormEntity {
 
   @Column()
   submitDt: Date
+
+  @OneToMany(() => ReceiveTypeormEntity, ({ quote }) => quote)
+  receives: Promise<ReceiveTypeormEntity[]>
 }
