@@ -23,28 +23,20 @@ export class UpdateReceiveMessageReactionsListCommandHandlerService
   ) {
     const fields = embed.fields
 
-    // serves as our spacer
-    fields.push({
-      name: SPACE_CHARACTER,
-      value: SPACE_CHARACTER,
-    })
-
     // TODO maybe use I18n listformat here?
 
     if (upvotes.length) {
       const { length } = upvotes
-      const term = length > 1 ? 'upvotes' : 'upvote'
       fields.push({
-        name: `${length} ${term}`,
+        name: `Upvoted ${length} ${length === 1 ? 'time' : 'times'}`,
         value: upvotes.map((id) => `<@${id}>`).join(', '),
       })
     }
 
     if (downvotes.length) {
       const { length } = downvotes
-      const term = length > 1 ? 'downvotes' : 'downvote'
       fields.push({
-        name: `${length} ${term}`,
+        name: `Downvoted ${length} ${length === 1 ? 'time' : 'times'}`,
         value: downvotes.map((id) => `<@${id}>`).join(', '),
       })
     }
