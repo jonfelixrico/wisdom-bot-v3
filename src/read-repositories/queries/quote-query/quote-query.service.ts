@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
+import { ReceiveTypeormEntity } from 'src/typeorm/entities/receive.typeorm-entity'
 import { Connection } from 'typeorm'
 
 @Injectable()
@@ -68,7 +69,9 @@ export class QuoteQueryService {
       return null
     }
 
-    const receives = await quote.receives
+    const receiveCount = await this.conn
+      .getRepository(ReceiveTypeormEntity)
+      .count({ quoteId })
 
     const {
       authorId,
@@ -90,7 +93,7 @@ export class QuoteQueryService {
       messageId,
       submitterId,
       submitDt,
-      receiveCount: receives.length,
+      receiveCount,
     }
   }
 }

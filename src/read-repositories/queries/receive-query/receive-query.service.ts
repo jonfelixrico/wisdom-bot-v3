@@ -25,8 +25,9 @@ export class ReceiveQueryService {
     const quote = await receive.quote
 
     const { userId, messageId, channelId, guildId } = receive
-    const { content, authorId, submitDt } = quote
-    const receives = await quote.receives
+    const { content, authorId, submitDt, id: quoteId } = quote
+
+    const receiveCount = await this.repo.count({ quoteId })
 
     return {
       receive: {
@@ -40,7 +41,7 @@ export class ReceiveQueryService {
         content,
         authorId,
         submitDt,
-        receiveCount: receives.length,
+        receiveCount,
       },
     }
   }
