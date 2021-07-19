@@ -5,8 +5,8 @@ import { UpdateQuoteMessageDetailsCommand } from 'src/domain/commands/update-quo
 import { RegeneratePendingQuoteMessageCommand } from '../../commands/regenerate-pending-quote-message.command'
 import { WatchPendingQuoteCommand } from '../../commands/watch-pending-quote.command'
 import { PendingQuoteQueryService } from 'src/read-repositories/queries/pending-quote-query/pending-quote-query.service'
-import { SPACE_CHARACTER } from 'src/types/discord.constants'
-import { MessageEmbed, MessageEmbedOptions } from 'discord.js'
+import { MessageEmbed } from 'discord.js'
+import { submitResponseMessageFormatter } from 'src/commando/utils/submit-response-message-formatter.util'
 
 @CommandHandler(RegeneratePendingQuoteMessageCommand)
 export class RegeneratePendingQuoteMessageCommandHandlerService
@@ -36,13 +36,11 @@ export class RegeneratePendingQuoteMessageCommandHandlerService
     const {
       channelId,
       guildId,
-      submitterId,
-      content,
-      authorId,
       upvoteEmoji,
       upvoteCount,
       expireDt,
-      submitDt,
+      submitterId,
+      authorId,
     } = quoteData
 
     const channel = await this.discordHelper.getTextChannel(guildId, channelId)
@@ -53,30 +51,19 @@ export class RegeneratePendingQuoteMessageCommandHandlerService
       )
     }
 
-    const embed: MessageEmbedOptions = {
-      title: 'Quote Submitted',
-      description: [
-        `**"${content}"**`,
-        `- <@${authorId}>, ${new Date().getFullYear()}`,
-      ].join('\n'),
-      fields: [
-        {
-          name: SPACE_CHARACTER,
-          value: `Submitted by <@${submitterId}> on ${submitDt}`,
-        },
-      ],
-      footer: {
-        text: `This submission needs ${
-          upvoteCount + 1
-        } ${upvoteEmoji} reacts to get reactions on or before ${expireDt}.`,
-      },
-      thumbnail: {
-        url: await this.discordHelper.getGuildMemberAvatarUrl(
-          guildId,
-          authorId,
-        ),
-      },
-    }
+    const embed = submitResponseMessageFormatter({
+      ...quoteData,
+      reactionEmoji: upvoteEmoji,
+      reactionCount: upvoteCount,
+      authorAvatarUrl: await this.discordHelper.getGuildMemberAvatarUrl(
+        guildId,
+        authorId,
+      ),
+      submitterAvatarUrl: await this.discordHelper.getGuildMemberAvatarUrl(
+        guildId,
+        submitterId,
+      ),
+    })
 
     const newMessage = await channel.send(new MessageEmbed(embed))
     await newMessage.react(upvoteEmoji)
