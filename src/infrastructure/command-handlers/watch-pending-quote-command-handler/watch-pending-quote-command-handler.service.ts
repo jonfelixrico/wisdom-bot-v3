@@ -90,9 +90,7 @@ export class WatchPendingQuoteCommandHandlerService
       // intentionally didn't wait for this execute to finish
       this.commandBus.execute(
         new RegeneratePendingQuoteMessageCommand({
-          channelId: message.channel.id,
-          guildId: message.guild.id,
-          ...entry,
+          quoteId: entry.quoteId,
         }),
       )
 

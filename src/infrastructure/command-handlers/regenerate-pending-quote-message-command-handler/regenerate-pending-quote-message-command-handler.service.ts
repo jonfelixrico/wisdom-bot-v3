@@ -4,6 +4,9 @@ import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.
 import { UpdateQuoteMessageDetailsCommand } from 'src/domain/commands/update-quote-message-id.command'
 import { RegeneratePendingQuoteMessageCommand } from '../../commands/regenerate-pending-quote-message.command'
 import { WatchPendingQuoteCommand } from '../../commands/watch-pending-quote.command'
+import { PendingQuoteQueryService } from 'src/read-repositories/queries/pending-quote-query/pending-quote-query.service'
+import { SPACE_CHARACTER } from 'src/types/discord.constants'
+import { MessageEmbed, MessageEmbedOptions } from 'discord.js'
 
 @CommandHandler(RegeneratePendingQuoteMessageCommand)
 export class RegeneratePendingQuoteMessageCommandHandlerService
@@ -13,13 +16,34 @@ export class RegeneratePendingQuoteMessageCommandHandlerService
     private logger: Logger,
     private discordHelper: DiscordHelperService,
     private commandBus: CommandBus,
+    private query: PendingQuoteQueryService,
   ) {}
 
   async execute({
     payload,
   }: RegeneratePendingQuoteMessageCommand): Promise<any> {
-    const { quoteId, upvoteEmoji, upvoteCount, expireDt, guildId, channelId } =
-      payload
+    const { quoteId } = payload
+
+    const quoteData = await this.query.getPendingQuote(quoteId)
+    if (!quoteData) {
+      this.logger.warn(
+        `Quote ${quoteId} not found.`,
+        RegeneratePendingQuoteMessageCommandHandlerService.name,
+      )
+      return
+    }
+
+    const {
+      channelId,
+      guildId,
+      submitterId,
+      content,
+      authorId,
+      upvoteEmoji,
+      upvoteCount,
+      expireDt,
+      submitDt,
+    } = quoteData
 
     const channel = await this.discordHelper.getTextChannel(guildId, channelId)
     if (!channel) {
@@ -29,7 +53,33 @@ export class RegeneratePendingQuoteMessageCommandHandlerService
       )
     }
 
-    const newMessage = await channel.send('regeneration message')
+    const embed: MessageEmbedOptions = {
+      title: 'Quote Submitted',
+      description: [
+        `**"${content}"**`,
+        `- <@${authorId}>, ${new Date().getFullYear()}`,
+      ].join('\n'),
+      fields: [
+        {
+          name: SPACE_CHARACTER,
+          value: `Submitted by <@${submitterId}> on ${submitDt}`,
+        },
+      ],
+      footer: {
+        text: `This submission needs ${
+          upvoteCount + 1
+        } ${upvoteEmoji} reacts to get reactions on or before ${expireDt}.`,
+      },
+      thumbnail: {
+        url: await this.discordHelper.getGuildMemberAvatarUrl(
+          guildId,
+          authorId,
+        ),
+      },
+    }
+
+    const newMessage = await channel.send(new MessageEmbed(embed))
+    await newMessage.react(upvoteEmoji)
 
     await this.commandBus.execute(
       new UpdateQuoteMessageDetailsCommand({

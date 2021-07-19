@@ -83,11 +83,6 @@ export class MessageRecacheService {
         await commandBus.execute(
           new RegeneratePendingQuoteMessageCommand({
             quoteId,
-            upvoteCount,
-            upvoteEmoji,
-            expireDt,
-            channelId: channel.id,
-            guildId: guild.id,
           }),
         )
         return
