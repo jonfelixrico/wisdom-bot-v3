@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Message, MessageEmbed, MessageEmbedOptions, User } from 'discord.js'
+import { Message, MessageEmbed, User } from 'discord.js'
 import { CommandoClient, CommandoMessage } from 'discord.js-commando'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 import { CommandBus } from '@nestjs/cqrs'
@@ -34,7 +34,7 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     const expireDt = new Date(Date.now() + expireMillis)
     const submitDt = new Date()
 
-    const embed: MessageEmbedOptions = submitResponseMessageFormatter({
+    const embed = submitResponseMessageFormatter({
       content: quote,
       submitterId: submitter.id,
       submitterAvatarUrl: await submitter.displayAvatarURL({
