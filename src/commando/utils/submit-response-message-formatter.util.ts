@@ -1,5 +1,12 @@
 import { MessageEmbedOptions } from 'discord.js'
 import { SPACE_CHARACTER } from 'src/types/discord.constants'
+import { DateTime } from 'luxon'
+
+function convertDateToString(date: Date) {
+  return DateTime.fromJSDate(date)
+    .setZone('Asia/Manila')
+    .toLocaleString(DateTime.DATETIME_FULL)
+}
 
 interface IResponseData {
   content: string
@@ -28,18 +35,27 @@ export function submitResponseMessageFormatter({
     title: 'Quote Submitted',
     description: [
       `**"${content}"**`,
-      `- <@${authorId}>, ${new Date().getFullYear()}`,
+      `- <@${authorId}>, ${submitDt.getFullYear()}`,
     ].join('\n'),
     fields: [
       {
         name: SPACE_CHARACTER,
         value: [
-          `Submitted by <@${submitterId}> on ${submitDt}`,
-          `This submission needs ${reactionCount} ${reactionEmoji} reacts to get reactions on or before ${expireDt}.`,
+          `Submitted by <@${submitterId}> on ${convertDateToString(submitDt)}`,
+          `This submission needs ${reactionCount} ${reactionEmoji} reacts to get reactions on or before ${convertDateToString(
+            expireDt,
+          )}.`,
         ].join('\n\n'),
       },
     ],
-    timestamp: submitDt,
+    footer: {
+      /*
+       * We're using `footer` instead of `timestamp` because the latter adjusts with the Discord client device's
+       * timezone (device of a discord user). We don't want that because it'll be inconsistent with our other date-related
+       * strings if ever they did change timezones.
+       */
+      text: `Submitted on ${convertDateToString(submitDt)}`,
+    },
   }
 
   if (authorAvatarUrl) {
