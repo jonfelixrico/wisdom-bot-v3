@@ -43,17 +43,18 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
       fields: [
         {
           name: SPACE_CHARACTER,
-          value: `Submitted by ${message.author} on ${submitDt}`,
+          value: [
+            `Submitted by ${message.author} on ${submitDt}`,
+            `_This submission needs ${
+              approveCount + 1
+            } ${approveEmoji} reacts to get reactions on or before ${expireDt}._`,
+          ].join('\n\n'),
         },
       ],
-      footer: {
-        text: `This submission needs ${
-          approveCount + 1
-        } ${approveEmoji} reacts to get reactions on or before ${expireDt}.`,
-      },
       thumbnail: {
         url: await author.displayAvatarURL({ format: 'png' }),
       },
+      timestamp: submitDt,
     }
 
     const response = await message.channel.send('🤔')
