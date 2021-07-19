@@ -25,7 +25,7 @@ export function submitResponseMessageFormatter({
   submitterAvatarUrl,
 }: IResponseData) {
   const embed: MessageEmbedOptions = {
-    title: 'Quote submitted!',
+    title: 'Quote Submitted',
     description: [
       `**"${content}"**`,
       `- <@${authorId}>, ${new Date().getFullYear()}`,
@@ -35,7 +35,7 @@ export function submitResponseMessageFormatter({
         name: SPACE_CHARACTER,
         value: [
           `Submitted by <@${submitterId}> on ${submitDt}`,
-          `_This submission needs ${reactionCount} ${reactionEmoji} reacts to get reactions on or before ${expireDt}._`,
+          `This submission needs ${reactionCount} ${reactionEmoji} reacts to get reactions on or before ${expireDt}.`,
         ].join('\n\n'),
       },
     ],
