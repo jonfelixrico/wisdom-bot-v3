@@ -5,7 +5,6 @@ import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 import { CommandBus } from '@nestjs/cqrs'
 import { SUBMIT_COMMAND_INFO } from './submit-command-info'
 import { SubmitQuoteCommand } from 'src/domain/commands/submit-quote.command'
-import { SPACE_CHARACTER } from 'src/types/discord.constants'
 import { submitResponseMessageFormatter } from './../../utils/submit-response-message-formatter.util'
 
 interface ISubmitCommandArgs extends IArgumentMap {
