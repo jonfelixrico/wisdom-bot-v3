@@ -6,6 +6,7 @@ import { CommandBus } from '@nestjs/cqrs'
 import { SUBMIT_COMMAND_INFO } from './submit-command-info'
 import { SubmitQuoteCommand } from 'src/domain/commands/submit-quote.command'
 import { SPACE_CHARACTER } from 'src/types/discord.constants'
+import { submitResponseMessageFormatter } from './../../utils/submit-response-message-formatter.util'
 
 interface ISubmitCommandArgs extends IArgumentMap {
   author: User
@@ -24,7 +25,7 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
   ): Promise<Message | Message[]> {
     const guildId = message.guild.id
     const channelId = message.channel.id
-    const submitterId = message.author.id
+    const submitter = message.author
 
     // TODO pull these from a repository instead
     const expireMillis = 60 * 1000 * 2
@@ -34,28 +35,19 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     const expireDt = new Date(Date.now() + expireMillis)
     const submitDt = new Date()
 
-    const embed: MessageEmbedOptions = {
-      title: 'Quote submitted!',
-      description: [
-        `**"${quote}"**`,
-        `- ${author}, ${new Date().getFullYear()}`,
-      ].join('\n'),
-      fields: [
-        {
-          name: SPACE_CHARACTER,
-          value: [
-            `Submitted by ${message.author} on ${submitDt}`,
-            `_This submission needs ${
-              approveCount + 1
-            } ${approveEmoji} reacts to get reactions on or before ${expireDt}._`,
-          ].join('\n\n'),
-        },
-      ],
-      thumbnail: {
-        url: await author.displayAvatarURL({ format: 'png' }),
-      },
-      timestamp: submitDt,
-    }
+    const embed: MessageEmbedOptions = submitResponseMessageFormatter({
+      content: quote,
+      submitterId: submitter.id,
+      submitterAvatarUrl: await submitter.displayAvatarURL({
+        format: 'png',
+      }),
+      authorId: author.id,
+      authorAvatarUrl: await author.displayAvatarURL({ format: 'png' }),
+      expireDt,
+      reactionCount: approveCount + 1,
+      reactionEmoji: approveEmoji,
+      submitDt,
+    })
 
     const response = await message.channel.send('🤔')
     const messageId = response.id
@@ -64,7 +56,7 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     await this.commandBus.execute(
       new SubmitQuoteCommand({
         authorId: author.id,
-        submitterId,
+        submitterId: submitter.id,
         channelId,
         content: quote,
         messageId,
