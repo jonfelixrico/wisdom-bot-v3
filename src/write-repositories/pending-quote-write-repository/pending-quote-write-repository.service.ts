@@ -1,74 +1,62 @@
 import { Injectable } from '@nestjs/common'
-import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { PendingQuote } from 'src/domain/entities/pending-quote.entity'
 import {
-  ReadStreamService,
-  Reducer,
-} from 'src/write-repositories/read-stream/read-stream.service'
-import {
+  ErrorType,
   EventStoreDBClient,
   ExpectedRevision,
-  ResolvedEvent,
+  JSONRecordedEvent,
 } from '@eventstore/db-client'
-import { IPendingQuoteCancelledPayload } from 'src/domain/events/pending-quote-cancelled.event'
-import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
-import { EsdbRepository } from '../abstract/esdb-repository.abstract'
+import {
+  EsdbRepository,
+  IEsdbRepositoryEntity,
+} from '../abstract/esdb-repository.abstract'
 import { convertDomainEventToJsonEvent } from '../utils/convert-domain-event-to-json-event.util'
+import { DomainEventNames } from 'src/domain/domain-event-names.enum'
+import { PENDING_QUOTE_REDUCERS } from '../reducers/pending-quote.reducer'
+import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function quoteSubmitted(state: IPendingQuote, data: IPendingQuote) {
-  return data
-}
-
-function quoteCancelled(
-  state: IPendingQuote,
-  { cancelDt }: IPendingQuoteCancelledPayload,
-) {
-  state.cancelDt = cancelDt
-  return state
-}
-
-const { PENDING_QUOTE_ACCEPTED, PENDING_QUOTE_CANCELLED, QUOTE_SUBMITTED } =
-  DomainEventNames
-
-const ReducerMapping = {
-  [PENDING_QUOTE_CANCELLED]: quoteCancelled,
-  [QUOTE_SUBMITTED]: quoteSubmitted,
-}
-
-export const pendingQuoteReducer: Reducer<IPendingQuote> = (
-  state: IPendingQuote,
-  { event }: ResolvedEvent,
-  next,
-  { stop },
-) => {
-  const { type, data } = event
-  if (type === PENDING_QUOTE_ACCEPTED) {
-    stop(null)
-    return
-  }
-
-  next(ReducerMapping[type](state, data))
-}
+// TODO follow the reducers of the read repository
 
 @Injectable()
 export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQuote> {
-  constructor(
-    private readStream: ReadStreamService,
-    private client: EventStoreDBClient,
-  ) {
+  constructor(private client: EventStoreDBClient) {
     super()
   }
 
-  async findById(id: string) {
-    const { state, revision } = await this.readStream.readStreamFromBeginning(
-      id,
-      pendingQuoteReducer,
-    )
+  async findById(id: string): Promise<IEsdbRepositoryEntity<PendingQuote>> {
+    try {
+      const resolvedEvents = await this.client.readStream(id)
+      const events = resolvedEvents.map(
+        ({ event }) => event as JSONRecordedEvent,
+      )
 
-    return {
-      entity: new PendingQuote(state),
-      revision,
+      if (
+        events.some(
+          ({ type }) =>
+            type === DomainEventNames.PENDING_QUOTE_ACCEPTED ||
+            type === DomainEventNames.PENDING_QUOTE_CANCELLED,
+        )
+      ) {
+        return null
+      }
+
+      const asObject = events.reduce<IPendingQuote>(
+        (state, { data, type }) => PENDING_QUOTE_REDUCERS[type](data, state),
+        null,
+      )
+
+      const [lastEvent] = events.reverse()
+
+      return {
+        entity: new PendingQuote(asObject),
+        revision: lastEvent.revision,
+      }
+    } catch (e) {
+      if (e.type === ErrorType.STREAM_NOT_FOUND) {
+        return null
+      }
+
+      throw e
     }
   }
 

@@ -6,8 +6,8 @@ export interface IQuoteToSubmit {
   guildId: string
 
   // for tracking
-  channelId: string
-  messageId: string
+  channelId?: string
+  messageId?: string
 
   // for approval/expiration
   expireDt: Date

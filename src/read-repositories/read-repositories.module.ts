@@ -8,6 +8,8 @@ import { EventRelayService } from './services/event-relay/event-relay.service'
 import { EventListenerService } from './services/event-listener/event-listener.service'
 import { QuoteQueryService } from './queries/quote-query/quote-query.service'
 import { ReceiveQueryService } from './queries/receive-query/receive-query.service'
+import { PendingQuoteQueryService } from './queries/pending-quote-query/pending-quote-query.service'
+import { CqrsModule } from '@nestjs/cqrs'
 
 @Module({
   providers: [
@@ -18,8 +20,9 @@ import { ReceiveQueryService } from './queries/receive-query/receive-query.servi
     EventListenerService,
     QuoteQueryService,
     ReceiveQueryService,
+    PendingQuoteQueryService,
   ],
-  imports: [TypeormModule, EventStoreModule],
-  exports: [QuoteQueryService, ReceiveQueryService],
+  imports: [TypeormModule, EventStoreModule, CqrsModule],
+  exports: [QuoteQueryService, ReceiveQueryService, PendingQuoteQueryService],
 })
 export class ReadRepositoriesModule {}

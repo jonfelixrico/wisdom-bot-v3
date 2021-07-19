@@ -21,11 +21,12 @@ const received: WriteRepositoryReducer<IQuoteReceivedPayload, IQuoteEntity> = (
 const submitted: WriteRepositoryReducer<
   IQuoteSubmittedEventPayload,
   IQuoteEntity
-> = (data) => {
+> = ({ submitDt, ...data }) => {
   return {
     ...data,
     receives: [],
     acceptDt: null,
+    submitDt: new Date(submitDt),
   }
 }
 
@@ -35,7 +36,7 @@ const accepted: WriteRepositoryReducer<
 > = ({ acceptDt }, state) => {
   return {
     ...state,
-    acceptDt,
+    acceptDt: new Date(acceptDt),
   }
 }
 

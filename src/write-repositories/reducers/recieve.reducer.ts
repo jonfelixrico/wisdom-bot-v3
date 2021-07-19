@@ -19,10 +19,16 @@ const create: WriteRepositoryReducer<IReceiveCreatedPayload, IReceiveEntity> = (
 const interact: WriteRepositoryReducer<
   IReceiveInteractedPayload,
   IReceiveEntity
-> = ({ receiveId, interactionId, userId }, { interactions, ...state }) => {
+> = (
+  { receiveId, interactionId, userId, karma },
+  { interactions, ...state },
+) => {
   return {
     ...state,
-    interactions: [...interactions, { receiveId, interactionId, userId }],
+    interactions: [
+      ...interactions,
+      { receiveId, interactionId, userId, karma },
+    ],
   }
 }
 

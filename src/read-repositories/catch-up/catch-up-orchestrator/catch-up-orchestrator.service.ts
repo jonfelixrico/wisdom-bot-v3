@@ -1,5 +1,7 @@
 import { Logger } from '@nestjs/common'
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common'
+import { EventBus } from '@nestjs/cqrs'
+import { CatchUpFinishedEvent } from 'src/read-repositories/catch-up-finsihed.event'
 
 export interface ICatchUpService {
   catchUp: () => Promise<void>
@@ -14,7 +16,7 @@ interface IRegisteredService {
 export class CatchUpOrchestratorService implements OnApplicationBootstrap {
   private services: IRegisteredService[] = []
 
-  constructor(private logger: Logger) {}
+  constructor(private logger: Logger, private eventBus: EventBus) {}
 
   register(service: ICatchUpService, sequence: number) {
     this.services.push({
@@ -45,5 +47,7 @@ export class CatchUpOrchestratorService implements OnApplicationBootstrap {
         )
       }
     }
+
+    this.eventBus.publish(new CatchUpFinishedEvent())
   }
 }

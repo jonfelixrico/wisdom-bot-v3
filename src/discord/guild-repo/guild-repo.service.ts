@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Client, Guild, GuildChannel, TextChannel } from 'discord.js'
 
+// TODO for deprecation
 @Injectable()
 export class GuildRepoService {
   constructor(private client: Client) {}

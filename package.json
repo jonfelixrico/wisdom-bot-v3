@@ -18,8 +18,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "esdb:create": "docker run --name esdb-node --restart unless-stopped -d -p 2113:2113 -p 1113:1113 eventstore/eventstore:latest --insecure --run-projections=All --enable-external-tcp --enable-atom-pub-over-http"
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@eventstore/db-client": "^1.2.1",
@@ -30,6 +29,7 @@
     "@nestjs/platform-express": "^7.6.15",
     "discord.js": "^12.5.3",
     "discord.js-commando": "^0.12.3",
+    "luxon": "^2.0.1",
     "mysql2": "^2.2.5",
     "nest-winston": "^1.5.0",
     "random": "^3.0.6",
@@ -47,6 +47,7 @@
     "@nestjs/testing": "^7.6.15",
     "@types/express": "^4.17.11",
     "@types/jest": "^26.0.22",
+    "@types/luxon": "^1.27.1",
     "@types/node": "^14.14.36",
     "@types/sprintf-js": "^1.1.2",
     "@types/supertest": "^2.0.10",

@@ -10,6 +10,7 @@ const { INTERACTION_DUPLICATE_USER, INTERACTION_INVALID_KARMA } =
 interface IInteraction {
   readonly interactionId: string
   readonly userId: string
+  readonly karma: number
 }
 
 export interface IReceiveEntity {
@@ -64,6 +65,7 @@ export class Receive extends DomainEntity implements IReceiveEntity {
     interactions.push({
       interactionId,
       userId,
+      karma,
     })
 
     const { receiveId } = this

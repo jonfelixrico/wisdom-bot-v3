@@ -14,33 +14,15 @@ import {
   JSONRecordedEvent,
 } from '@eventstore/db-client'
 import { Connection } from 'typeorm'
-import {
-  pendingQuoteAccepted,
-  quoteReceived,
-  pendingQuoteCancelled,
-  quoteSubmitted,
-} from 'src/read-repositories/reducers/quote.reducers'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 import { Logger } from '@nestjs/common'
-import { ReducerMap } from 'src/read-repositories/types/reducer-map.type'
 import { EventRelayService } from 'src/read-repositories/services/event-relay/event-relay.service'
+import { QUOTE_REDUCERS } from 'src/read-repositories/reducers/quote.reducers'
 
 interface DataType extends IQuoteSubmittedEventPayload, Record<string, any> {}
 type EventType = JSONEventType<DomainEventNames, DataType>
 
-const {
-  QUOTE_SUBMITTED,
-  QUOTE_RECEIVED,
-  PENDING_QUOTE_ACCEPTED,
-  PENDING_QUOTE_CANCELLED,
-} = DomainEventNames
-
-const REDUCER_MAPPING: ReducerMap = {
-  [QUOTE_RECEIVED]: quoteReceived,
-  [QUOTE_SUBMITTED]: quoteSubmitted,
-  [PENDING_QUOTE_ACCEPTED]: pendingQuoteAccepted,
-  [PENDING_QUOTE_CANCELLED]: pendingQuoteCancelled,
-}
+const { QUOTE_SUBMITTED } = DomainEventNames
 
 @Injectable()
 export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
@@ -86,7 +68,7 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
         }
 
         for (const { event } of events) {
-          await REDUCER_MAPPING[event.type](event, manager)
+          await QUOTE_REDUCERS[event.type](event, manager)
         }
 
         this.logger.verbose(
