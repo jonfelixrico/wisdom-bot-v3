@@ -90,6 +90,8 @@ export class PendingQuoteQueryService {
       submitDt,
       upvoteCount,
       upvoteEmoji,
+      submitterId,
+      authorId,
     } = result
 
     return {
@@ -102,6 +104,8 @@ export class PendingQuoteQueryService {
       upvoteEmoji,
       quoteId,
       expireDt,
+      submitterId,
+      authorId,
     }
   }
 }
