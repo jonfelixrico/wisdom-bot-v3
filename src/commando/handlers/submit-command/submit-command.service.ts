@@ -32,6 +32,7 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     const approveCount = 1
 
     const expireDt = new Date(Date.now() + expireMillis)
+    const submitDt = new Date()
 
     const embed: MessageEmbedOptions = {
       title: 'Quote submitted!',
@@ -42,7 +43,7 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
       fields: [
         {
           name: SPACE_CHARACTER,
-          value: `Submitted by ${message.author}`,
+          value: `Submitted by ${message.author} on ${submitDt}`,
         },
       ],
       footer: {
@@ -70,7 +71,9 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
         expireDt,
         upvoteCount: approveCount,
         upvoteEmoji: approveEmoji,
-        submitDt: new Date(),
+        // TODO might have to remove this since submitDt should be encapsulated within the entity
+        // business rules state that we shouldn't be able to set the submitDt of the quote
+        submitDt,
       }),
     )
 
