@@ -9,6 +9,7 @@ import { ReadRepositoriesModule } from 'src/read-repositories/read-repositories.
 import { InteractionHelperService } from './services/interaction-helper/interaction-helper.service'
 import { UpvoteCommandService } from './handlers/upvote-command/upvote-command.service'
 import { DownvoteCommandService } from './handlers/downvote-command/downvote-command.service'
+import { UserStatsCommandService } from './handlers/user-stats-command/user-stats-command.service'
 
 @Module({
   imports: [DiscordModule, CqrsModule, TypeormModule, ReadRepositoriesModule],
@@ -19,6 +20,7 @@ import { DownvoteCommandService } from './handlers/downvote-command/downvote-com
     InteractionHelperService,
     UpvoteCommandService,
     DownvoteCommandService,
+    UserStatsCommandService,
   ],
 })
 export class CommandoModule {}
