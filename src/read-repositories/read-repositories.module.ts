@@ -27,6 +27,12 @@ import { GuildStatsQueryService } from './queries/guild-stats-query/guild-stats-
     GuildStatsQueryService,
   ],
   imports: [TypeormModule, EventStoreModule, CqrsModule],
-  exports: [QuoteQueryService, ReceiveQueryService, PendingQuoteQueryService],
+  exports: [
+    QuoteQueryService,
+    ReceiveQueryService,
+    PendingQuoteQueryService,
+    UserStatsQueryService,
+    GuildStatsQueryService,
+  ],
 })
 export class ReadRepositoriesModule {}
