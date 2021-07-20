@@ -42,7 +42,10 @@ export class EventListenerService implements OnModuleInit {
         return
       }
 
-      const isProcessed = reducerFn(event as JSONRecordedEvent, runner.manager)
+      const isProcessed = await reducerFn(
+        event as JSONRecordedEvent,
+        runner.manager,
+      )
       if (!isProcessed) {
         this.logger.verbose(
           `Ignored revision ${revision} (${type}) from stream ${streamId}`,
