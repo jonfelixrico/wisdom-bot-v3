@@ -13,11 +13,12 @@ import {
 const submitted: WriteRepositoryReducer<
   IQuoteSubmittedEventPayload,
   IPendingQuote
-> = ({ submitDt, ...data }) => ({
+> = ({ submitDt, expireDt, ...data }) => ({
   ...data,
   acceptDt: null,
   cancelDt: null,
   submitDt: new Date(submitDt),
+  expireDt: new Date(expireDt),
 })
 
 const cancelled: WriteRepositoryReducer<
@@ -60,7 +61,7 @@ const expirationAcknowledged: WriteRepositoryReducer<
 > = ({ expireAckDt }, state) => {
   return {
     ...state,
-    expireAckDt,
+    expireAckDt: new Date(expireAckDt),
   }
 }
 
