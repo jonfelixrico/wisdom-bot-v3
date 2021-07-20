@@ -3,9 +3,10 @@ import { IQuoteToSubmit } from './quote-to-submit.interface'
 export interface IPendingQuote extends IQuoteToSubmit {
   quoteId: string
 
-  acceptDt: Date
-  cancelDt: Date
-  submitDt: Date
+  // Optional because these are nullable.
+  acceptDt?: Date
+  cancelDt?: Date
+  expireAckDt?: Date
 
-  expireAckDt: Date
+  submitDt: Date
 }
