@@ -12,14 +12,14 @@ export class PendingQuoteQueryService {
    */
   async getChannelIdsWithPendingQuotes(guildId: string) {
     const results = await this.repo
-      .createQueryBuilder('quote')
-      .select('quote.channelId', 'channelId')
-      .where('quote.guildId = :guildId', { guildId })
-      .andWhere('quote.expireDt >= :now', { now: new Date() })
-      .andWhere('quote.acceptDt IS NULL')
-      .andWhere('quote.cancelDt IS NULL')
-      .groupBy('quote.channelId')
-      .having('COUNT(quote.channelId)')
+      .createQueryBuilder()
+      .select('channelId', 'channelId')
+      .where('guildId = :guildId', { guildId })
+      .andWhere('expireAckDt IS NULL')
+      .andWhere('acceptDt IS NULL')
+      .andWhere('cancelDt IS NULL')
+      .groupBy('channelId')
+      .having('COUNT(channelId) > 0')
       .getRawMany<{ channelId: string }>()
 
     return results.map(({ channelId }) => channelId)
@@ -34,7 +34,7 @@ export class PendingQuoteQueryService {
     const results = await this.repo
       .createQueryBuilder()
       .where('channelId = :channelId', { channelId })
-      .andWhere('expireDt >= :now', { now: new Date() })
+      .andWhere('expireAckDt IS NULL')
       .andWhere('acceptDt IS NULL')
       .andWhere('cancelDt IS NULL')
       .getMany()
@@ -58,13 +58,13 @@ export class PendingQuoteQueryService {
    */
   async getGuildsWithPendingQuotes() {
     const results = await this.repo
-      .createQueryBuilder('quote')
-      .select('quote.guildId', 'guildId')
-      .where('quote.expireDt >= :now', { now: new Date() })
-      .andWhere('quote.acceptDt IS NULL')
-      .andWhere('quote.cancelDt IS NULL')
-      .groupBy('quote.guildId')
-      .having('COUNT(quote.guildId)')
+      .createQueryBuilder()
+      .select('guildId', 'guildId')
+      .where('expireAckDt IS NULL')
+      .andWhere('acceptDt IS NULL')
+      .andWhere('cancelDt IS NULL')
+      .groupBy('guildId')
+      .having('COUNT(guildId) > 0')
       .getRawMany<{ guildId: string }>()
 
     return results.map(({ guildId }) => guildId)
@@ -77,8 +77,8 @@ export class PendingQuoteQueryService {
       return null
     }
 
-    const { expireDt, acceptDt, cancelDt } = result
-    if (new Date() > expireDt || acceptDt || cancelDt) {
+    const { expireAckDt, acceptDt, cancelDt } = result
+    if (expireAckDt || acceptDt || cancelDt) {
       return null
     }
 
@@ -92,6 +92,7 @@ export class PendingQuoteQueryService {
       upvoteEmoji,
       submitterId,
       authorId,
+      expireDt,
     } = result
 
     return {
