@@ -5,7 +5,7 @@ import { EventPayload } from './event-payload.type'
 export interface IPendingQuoteExpirationAcknowledgedEventPayload
   extends EventPayload {
   readonly quoteId: string
-  readonly expireAckDate: Date
+  readonly expireAckDt: Date
 }
 
 export class PendingQuoteExpirationAcknowledgedEvent extends DomainEvent<IPendingQuoteExpirationAcknowledgedEventPayload> {

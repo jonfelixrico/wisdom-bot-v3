@@ -143,7 +143,7 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     this.apply(
       new PendingQuoteExpirationAcknowledgedEvent({
         quoteId,
-        expireAckDate: now,
+        expireAckDt: now,
       }),
     )
   }
