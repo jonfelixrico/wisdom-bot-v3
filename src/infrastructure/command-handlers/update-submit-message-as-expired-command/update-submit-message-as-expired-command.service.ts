@@ -47,7 +47,9 @@ export class UpdateSubmitMessageAsExpiredCommandService
     } = payload
 
     const embed: MessageEmbedOptions = {
-      title: 'Quote Expired',
+      author: {
+        name: 'Quote Expired',
+      },
       description: [
         `**"${content}"**`,
         `- <@${authorId}>, ${submitDt.getFullYear()}`,
@@ -90,7 +92,7 @@ export class UpdateSubmitMessageAsExpiredCommandService
     }
 
     if (submitterAvatarUrl) {
-      embed.author = { iconURL: submitterAvatarUrl }
+      embed.author.icon_url = submitterAvatarUrl
     }
 
     await message.edit(null, new MessageEmbed(embed))

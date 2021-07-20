@@ -32,7 +32,9 @@ export function submitResponseMessageFormatter({
   submitterAvatarUrl,
 }: IResponseData) {
   const embed: MessageEmbedOptions = {
-    title: 'Quote Submitted',
+    author: {
+      name: 'Quote Submitted',
+    },
     description: [
       `**"${content}"**`,
       `- <@${authorId}>, ${submitDt.getFullYear()}`,
@@ -63,7 +65,7 @@ export function submitResponseMessageFormatter({
   }
 
   if (submitterAvatarUrl) {
-    embed.author = { iconURL: submitterAvatarUrl }
+    embed.author.icon_url = submitterAvatarUrl
   }
 
   return embed
