@@ -10,6 +10,7 @@ import { InteractionHelperService } from './services/interaction-helper/interact
 import { UpvoteCommandService } from './handlers/upvote-command/upvote-command.service'
 import { DownvoteCommandService } from './handlers/downvote-command/downvote-command.service'
 import { UserStatsCommandService } from './handlers/user-stats-command/user-stats-command.service'
+import { GuildStatsCommandService } from './handlers/guild-stats-command/guild-stats-command.service'
 
 @Module({
   imports: [DiscordModule, CqrsModule, TypeormModule, ReadRepositoriesModule],
@@ -21,6 +22,7 @@ import { UserStatsCommandService } from './handlers/user-stats-command/user-stat
     UpvoteCommandService,
     DownvoteCommandService,
     UserStatsCommandService,
+    GuildStatsCommandService,
   ],
 })
 export class CommandoModule {}
