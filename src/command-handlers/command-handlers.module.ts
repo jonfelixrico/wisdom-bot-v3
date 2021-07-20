@@ -7,6 +7,7 @@ import { ReceiveQuoteCommandHandlerService } from './quote/receive-quote-command
 import { InteractReceiveCommandHandlerService } from './receive/interact-receive-command-handler/interact-receive-command-handler.service'
 import { UpdateQuoteMessageDetailsCommandHandlerService } from './pending-quote/update-quote-message-details-command-handler/update-quote-message-details-command-handler.service'
 import { DiscordModule } from 'src/discord/discord.module'
+import { AcknowledgeQuoteExpirationCommandHandlerService } from './pending-quote/acknowledge-quote-expiration-command-handler/acknowledge-quote-expiration-command-handler.service'
 
 @Module({
   imports: [CqrsModule, WriteRepositoriesModule, DiscordModule],
@@ -16,6 +17,7 @@ import { DiscordModule } from 'src/discord/discord.module'
     ReceiveQuoteCommandHandlerService,
     InteractReceiveCommandHandlerService,
     UpdateQuoteMessageDetailsCommandHandlerService,
+    AcknowledgeQuoteExpirationCommandHandlerService,
   ],
 
   // TODO import repository
