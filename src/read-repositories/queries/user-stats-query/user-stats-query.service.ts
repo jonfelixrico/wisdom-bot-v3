@@ -16,6 +16,7 @@ export class UserStatsQueryService {
       .createQueryBuilder()
       .where('guildId = :guildId', { guildId })
       .andWhere('submitterId = :userId', { userId })
+      .andWhere('acceptDt IS NOT NULL')
       .getCount()
 
     const receivedQuoteCount = await this.receiveRepo
@@ -42,6 +43,7 @@ export class UserStatsQueryService {
       .createQueryBuilder()
       .where('guildId = :guildId', { guildId })
       .andWhere('authorId = :userId', { userId })
+      .andWhere('acceptDt IS NOT NULL')
       .getCount()
 
     const quoteReceivesCount = await this.receiveRepo
