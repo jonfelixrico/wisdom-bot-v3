@@ -1,11 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import {
-  EmbedFieldData,
-  Message,
-  MessageEmbed,
-  MessageEmbedOptions,
-  User,
-} from 'discord.js'
+import { Message, MessageEmbed, MessageEmbedOptions, User } from 'discord.js'
 import {
   CommandoMessage,
   CommandoClient,
@@ -58,12 +52,11 @@ export class UserStatsCommandService extends WrappedCommand<IUserStatsCommandArg
     } = await this.query.getStats(message.guild.id, targetUser.id)
 
     const toDisplay = [
-      ['Quotes authored', quotesAuthored],
-      ['Times authored quotes got received', receivesReceived],
-      ['No. of interactions of authored quotes', interactionsReceived],
-      ['Quotes submitted', quotesSubmitted],
-      ['Quotes received', receivesGiven],
-      ['Reactions given', interactionsGiven],
+      `Author of **${quotesAuthored}** quotes; received **${receivesReceived}** times`,
+      `Received **${interactionsReceived}** reactions to authored quotes`,
+      `Submitted **${quotesSubmitted}** quotes`,
+      `Received **${receivesGiven}** pieces of wisdom`,
+      `Reacted **${interactionsGiven}** times to quotes`,
     ]
 
     const embed: MessageEmbedOptions = {
@@ -72,29 +65,12 @@ export class UserStatsCommandService extends WrappedCommand<IUserStatsCommandArg
         icon_url: await targetUser.displayAvatarURL({ format: 'png' }),
       },
       description: `${targetUser}'s wisdom stats`,
-      fields: toDisplay
-        .map<[EmbedFieldData, EmbedFieldData, EmbedFieldData]>(
-          ([title, value]) => {
-            return [
-              {
-                name: SPACE_CHARACTER,
-                value: `**${title}:**`,
-                inline: true,
-              },
-              {
-                name: SPACE_CHARACTER,
-                value: SPACE_CHARACTER,
-                inline: true,
-              },
-              {
-                name: SPACE_CHARACTER,
-                value,
-                inline: true,
-              },
-            ]
-          },
-        )
-        .flat(),
+      fields: toDisplay.map((value) => {
+        return {
+          name: SPACE_CHARACTER,
+          value,
+        }
+      }),
     }
 
     return await message.channel.send(new MessageEmbed(embed))
