@@ -16,7 +16,7 @@ const COMMAND_INFO: CommandInfo = {
   name: 'receive',
   group: 'commands',
   memberName: 'receive',
-  description: 'Receive a random command.',
+  description: 'Receive a random quote.',
   argsPromptLimit: 0,
   args: [
     {

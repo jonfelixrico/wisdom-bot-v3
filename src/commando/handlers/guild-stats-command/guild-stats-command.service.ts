@@ -9,10 +9,10 @@ import { GuildStatsQueryService } from 'src/read-repositories/queries/guild-stat
 import { WrappedCommand } from '../wrapped-command.class'
 
 const COMMAND_INFO: CommandInfo = {
-  name: 'guild',
+  name: 'server',
   group: 'commands',
-  memberName: 'guild-stats',
-  description: 'Receive a random command.',
+  memberName: 'server-stats',
+  description: 'Show the stats of the server.',
   argsPromptLimit: 0,
   args: [
     {

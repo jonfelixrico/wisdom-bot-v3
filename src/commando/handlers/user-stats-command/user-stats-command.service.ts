@@ -19,7 +19,7 @@ const COMMAND_INFO: CommandInfo = {
   name: 'stats',
   group: 'commands',
   memberName: 'user-stats',
-  description: 'Receive a random command.',
+  description: 'Show the wisdom stats of a specific user.',
   argsPromptLimit: 0,
   args: [
     {
