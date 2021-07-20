@@ -10,6 +10,10 @@ export interface IPendingQuoteExpirationAcknowledgedEventPayload
 
 export class PendingQuoteExpirationAcknowledgedEvent extends DomainEvent<IPendingQuoteExpirationAcknowledgedEventPayload> {
   constructor(payload: IPendingQuoteExpirationAcknowledgedEventPayload) {
-    super(DomainEventNames.QUOTE_RECEIVED, payload.quoteId, payload)
+    super(
+      DomainEventNames.PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED,
+      payload.quoteId,
+      payload,
+    )
   }
 }
