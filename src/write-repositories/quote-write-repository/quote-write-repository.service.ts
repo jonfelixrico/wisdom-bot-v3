@@ -17,6 +17,7 @@ import { QuoteReceivedEvent } from 'src/domain/events/quote-received.event'
 import { ReceiveCreatedEvent } from 'src/domain/events/receive-created.event'
 import { convertDomainEventToJsonEvent } from './../utils/convert-domain-event-to-json-event.util'
 import { writeRepositoryReducerDispatcherFactory } from '../reducers/write-repository-reducer-dispatcher.util'
+import { DomainEvent } from 'src/domain/abstracts/domain-event.abstract'
 
 @Injectable()
 export class QuoteWriteRepositoryService extends EsdbRepository<Quote> {
@@ -63,13 +64,11 @@ export class QuoteWriteRepositoryService extends EsdbRepository<Quote> {
     }
   }
 
-  async publishEvents(
-    entity: Quote,
-    expectedRevision: ExpectedRevision,
-  ): Promise<void> {
+  async publishEvents({ events }: Quote, expectedRevision: ExpectedRevision) {
     let nextRev: ExpectedRevision = expectedRevision
+    const publishedEvents: DomainEvent[] = []
 
-    for (const event of entity.events) {
+    for (const event of events) {
       const streamName = event.aggregateId
 
       if (event instanceof QuoteReceivedEvent) {
@@ -82,6 +81,7 @@ export class QuoteWriteRepositoryService extends EsdbRepository<Quote> {
         )
 
         nextRev = nextExpectedRevision
+        publishedEvents.push(event)
       } else if (event instanceof ReceiveCreatedEvent) {
         await this.client.appendToStream(
           streamName,
@@ -91,9 +91,12 @@ export class QuoteWriteRepositoryService extends EsdbRepository<Quote> {
             expectedRevision: NO_STREAM,
           },
         )
+        publishedEvents.push(event)
       } else {
         // TODO do checking if all events received here are for the quote event only
       }
     }
+
+    return publishedEvents
   }
 }

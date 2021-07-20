@@ -46,10 +46,7 @@ export class ReceiveWriteRepositoryService extends EsdbRepository<Receive> {
     }
   }
 
-  async publishEvents(
-    { events }: Receive,
-    expectedRevision: ExpectedRevision,
-  ): Promise<void> {
+  async publishEvents({ events }: Receive, expectedRevision: ExpectedRevision) {
     const [firstEvent] = events
     await this.client.appendToStream(
       firstEvent.aggregateId,
@@ -58,5 +55,6 @@ export class ReceiveWriteRepositoryService extends EsdbRepository<Receive> {
         expectedRevision,
       },
     )
+    return events
   }
 }
