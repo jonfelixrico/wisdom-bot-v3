@@ -10,6 +10,8 @@ import { QuoteQueryService } from './queries/quote-query/quote-query.service'
 import { ReceiveQueryService } from './queries/receive-query/receive-query.service'
 import { PendingQuoteQueryService } from './queries/pending-quote-query/pending-quote-query.service'
 import { CqrsModule } from '@nestjs/cqrs'
+import { UserStatsQueryService } from './queries/user-stats-query/user-stats-query.service'
+import { GuildStatsQueryService } from './queries/guild-stats-query/guild-stats-query.service'
 
 @Module({
   providers: [
@@ -21,8 +23,16 @@ import { CqrsModule } from '@nestjs/cqrs'
     QuoteQueryService,
     ReceiveQueryService,
     PendingQuoteQueryService,
+    UserStatsQueryService,
+    GuildStatsQueryService,
   ],
   imports: [TypeormModule, EventStoreModule, CqrsModule],
-  exports: [QuoteQueryService, ReceiveQueryService, PendingQuoteQueryService],
+  exports: [
+    QuoteQueryService,
+    ReceiveQueryService,
+    PendingQuoteQueryService,
+    UserStatsQueryService,
+    GuildStatsQueryService,
+  ],
 })
 export class ReadRepositoriesModule {}

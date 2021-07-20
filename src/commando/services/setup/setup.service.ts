@@ -7,6 +7,9 @@ export class SetupService {
     client.commandPrefix = '~wisdom'
     client.registry.registerDefaultTypes()
     client.registry.registerDefaultGroups()
-    client.registry.registerDefaultCommands()
+    client.registry.registerDefaultCommands({
+      help: true,
+      ping: true,
+    })
   }
 }

@@ -14,6 +14,7 @@ const COMMAND_INFO: CommandInfo = {
   description: 'Upvote a received quote.',
   memberName: 'upvote',
   group: 'commands',
+  guildOnly: true,
 }
 
 @Injectable()

@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common'
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common'
 import { EventBus } from '@nestjs/cqrs'
-import { CatchUpFinishedEvent } from 'src/read-repositories/catch-up-finsihed.event'
+import { CatchUpFinishedEvent } from 'src/read-repositories/catch-up-finished.event'
 
 export interface ICatchUpService {
   catchUp: () => Promise<void>
