@@ -24,8 +24,6 @@ export interface IQuoteMessageDetails {
 
 export class PendingQuote extends DomainEntity implements IPendingQuote {
   quoteId: string
-  acceptDt: Date
-  cancelDt: Date
   content: string
   authorId: string
   submitterId: string
@@ -38,7 +36,11 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
 
   channelId?: string
   messageId?: string
-  expireAckDt: Date
+
+  // These are pending quote status flags
+  acceptDt?: Date
+  cancelDt?: Date
+  expireAckDt?: Date
 
   // TODO create private flag for created
 
