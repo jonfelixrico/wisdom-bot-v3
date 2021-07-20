@@ -41,7 +41,7 @@ export function submitResponseMessageFormatter({
       {
         name: SPACE_CHARACTER,
         value: [
-          `Submitted by <@${submitterId}> on ${convertDateToString(submitDt)}`,
+          `Submitted by <@${submitterId}>`,
           `This submission needs ${reactionCount} ${reactionEmoji} reacts to get reactions on or before ${convertDateToString(
             expireDt,
           )}.`,
