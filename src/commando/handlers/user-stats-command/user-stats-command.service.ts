@@ -29,6 +29,7 @@ const COMMAND_INFO: CommandInfo = {
       default: () => null,
     },
   ],
+  guildOnly: true,
 }
 
 export interface IUserStatsCommandArgs extends IArgumentMap {

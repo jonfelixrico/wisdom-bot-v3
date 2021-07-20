@@ -20,4 +20,5 @@ export const SUBMIT_COMMAND_INFO: CommandInfo = {
     },
   ],
   argsPromptLimit: 0,
+  guildOnly: true,
 }

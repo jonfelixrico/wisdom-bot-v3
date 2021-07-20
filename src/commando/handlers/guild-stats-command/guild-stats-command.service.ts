@@ -22,6 +22,7 @@ const COMMAND_INFO: CommandInfo = {
       default: () => null,
     },
   ],
+  guildOnly: true,
 }
 
 @Injectable()
