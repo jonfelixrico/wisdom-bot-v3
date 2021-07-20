@@ -79,7 +79,7 @@ export class MessageRecacheService {
             quoteId,
           }),
         )
-        return
+        continue
       }
 
       const message = await this.discordHelper.getMessage(
@@ -94,7 +94,6 @@ export class MessageRecacheService {
             quoteId,
           }),
         )
-        return
       } else {
         await commandBus.execute(
           new WatchPendingQuoteCommand({
