@@ -84,7 +84,7 @@ export class UpdateReceiveMessageReactionsListCommandHandlerService
       },
       description: [
         `**"${content}"**`,
-        `<@${authorId}>, ${submitDt.getFullYear()}`,
+        `- <@${authorId}>, ${submitDt.getFullYear()}`,
       ].join('\n'),
       fields: [
         {

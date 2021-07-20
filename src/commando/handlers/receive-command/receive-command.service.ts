@@ -78,7 +78,7 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
     const newReceiveCount = receiveCount + 1
 
     const embed: MessageEmbedOptions = {
-      description: [`**"${content}"**`, `-<@${authorId}>, ${year}`].join('\n'),
+      description: [`**"${content}"**`, `- <@${authorId}>, ${year}`].join('\n'),
       author: {
         name: 'Quote Received',
       },
