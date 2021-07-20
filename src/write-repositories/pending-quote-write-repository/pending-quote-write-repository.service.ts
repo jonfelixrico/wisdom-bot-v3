@@ -83,7 +83,5 @@ export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQu
         expectedRevision,
       },
     )
-
-    return events
   }
 }
