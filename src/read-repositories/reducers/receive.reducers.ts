@@ -38,6 +38,14 @@ const receiveInteracted: ReadRepositoryReducer<IReceiveInteractedPayload> =
   async ({ revision, data }, manager) => {
     const { interactionDt, interactionId, karma, receiveId, userId } = data
 
+    const receive = await manager.findOne(ReceiveTypeormEntity, {
+      id: receiveId,
+    })
+
+    if (!receive) {
+      return false
+    }
+
     const { affected } = await manager
       .createQueryBuilder()
       .update(ReceiveTypeormEntity)
@@ -58,6 +66,7 @@ const receiveInteracted: ReadRepositoryReducer<IReceiveInteractedPayload> =
       karma,
       userId,
       receiveId,
+      guildId: receive.guildId,
     })
 
     return true

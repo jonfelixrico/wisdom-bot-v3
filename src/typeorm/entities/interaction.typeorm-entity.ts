@@ -26,4 +26,8 @@ export class InteractionTypeormEntity {
 
   @Column({ type: 'integer' })
   karma: number
+
+  // This is here to boost the performance of retrieving interactions from a certain guild
+  @Column()
+  guildId: string
 }
