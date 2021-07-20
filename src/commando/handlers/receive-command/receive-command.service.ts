@@ -77,9 +77,11 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
 
     const newReceiveCount = receiveCount + 1
 
-    const embedOptions: MessageEmbedOptions = {
+    const embed: MessageEmbedOptions = {
       description: [`**"${content}"**`, `-<@${authorId}>, ${year}`].join('\n'),
-      title: 'Quote Received',
+      author: {
+        name: 'Quote Received',
+      },
       fields: [
         {
           name: SPACE_CHARACTER,
@@ -99,13 +101,19 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
       authorId,
     )
 
+    const receiverAvatarUrl = await author.displayAvatarURL({ format: 'png' })
+
     if (authorAvatarUrl) {
-      embedOptions.thumbnail = {
+      embed.thumbnail = {
         url: authorAvatarUrl,
       }
     }
 
-    await response.edit(null, new MessageEmbed(embedOptions))
+    if (receiverAvatarUrl) {
+      embed.author.icon_url = receiverAvatarUrl
+    }
+
+    await response.edit(null, new MessageEmbed(embed))
 
     this.logger.verbose(
       `Processed quote receive for ${quoteId}.`,

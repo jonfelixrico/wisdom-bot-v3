@@ -79,7 +79,9 @@ export class UpdateReceiveMessageReactionsListCommandHandlerService
     const { userId: receiverId } = displayData.receive
 
     const embed: MessageEmbedOptions = {
-      title: 'Quote Received',
+      author: {
+        name: 'Quote Received',
+      },
       description: [
         `**"${content}"**`,
         `<@${authorId}>, ${submitDt.getFullYear()}`,
@@ -103,10 +105,19 @@ export class UpdateReceiveMessageReactionsListCommandHandlerService
       authorId,
     )
 
+    const receiverAvatarUrl = await this.helper.getGuildMemberAvatarUrl(
+      guildId,
+      receiverId,
+    )
+
     if (authorAvatarUrl) {
       embed.thumbnail = {
         url: authorAvatarUrl,
       }
+    }
+
+    if (receiverAvatarUrl) {
+      embed.author.icon_url = receiverAvatarUrl
     }
 
     const { upvotes, downvotes } = reactions
