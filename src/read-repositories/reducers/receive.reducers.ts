@@ -5,6 +5,7 @@ import { InteractionTypeormEntity } from 'src/typeorm/entities/interaction.typeo
 import { ReceiveTypeormEntity } from 'src/typeorm/entities/receive.typeorm-entity'
 import { ReadRepositoryReducer } from '../types/read-repository-reducer.type'
 import { ReducerMap } from 'src/read-repositories/types/reducer-map.type'
+import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 
 const receiveCreated: ReadRepositoryReducer<IReceiveCreatedPayload> = async (
   { data, revision },
@@ -20,6 +21,14 @@ const receiveCreated: ReadRepositoryReducer<IReceiveCreatedPayload> = async (
     guildId,
   } = data
 
+  const quote = await manager.findOne(QuoteTypeormEntity, {
+    id: quoteId,
+  })
+
+  if (!quote) {
+    return false
+  }
+
   await manager.insert(ReceiveTypeormEntity, {
     id: receiveId,
     channelId,
@@ -29,6 +38,7 @@ const receiveCreated: ReadRepositoryReducer<IReceiveCreatedPayload> = async (
     receiveDt,
     userId,
     revision,
+    parentQuoteAuthorId: quote.authorId,
   })
 
   return true
@@ -67,6 +77,7 @@ const receiveInteracted: ReadRepositoryReducer<IReceiveInteractedPayload> =
       userId,
       receiveId,
       guildId: receive.guildId,
+      parentQuoteAuthorId: receive.parentQuoteAuthorId,
     })
 
     return true

@@ -30,4 +30,8 @@ export class InteractionTypeormEntity {
   // This is here to boost the performance of retrieving interactions from a certain guild
   @Column()
   guildId: string
+
+  // This is here to avoid joining tables when retrieving the total number of interactions of an author
+  @Column()
+  parentQuoteAuthorId: string
 }
