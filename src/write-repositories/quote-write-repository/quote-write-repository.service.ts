@@ -42,10 +42,10 @@ export class QuoteWriteRepositoryService extends EsdbRepository<Quote> {
         return null
       }
 
-      const asObject = events.reduce<IQuoteEntity>(
-        (state, { data, type }) => QUOTE_REDUCERS[type](data, state),
-        null,
-      )
+      const asObject = events.reduce<IQuoteEntity>((state, { data, type }) => {
+        const reducer = QUOTE_REDUCERS[type]
+        return reducer ? reducer(data, state) : state
+      }, null)
 
       const [lastEvent] = events.reverse()
 

@@ -15,7 +15,17 @@ import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { PENDING_QUOTE_REDUCERS } from '../reducers/pending-quote.reducer'
 import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
 
-// TODO follow the reducers of the read repository
+const {
+  PENDING_QUOTE_ACCEPTED,
+  PENDING_QUOTE_CANCELLED,
+  PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED,
+} = DomainEventNames
+
+const DISQUALIFIER_EVENTS = new Set<string>([
+  PENDING_QUOTE_ACCEPTED,
+  PENDING_QUOTE_CANCELLED,
+  PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED,
+])
 
 @Injectable()
 export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQuote> {
@@ -30,20 +40,19 @@ export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQu
         ({ event }) => event as JSONRecordedEvent,
       )
 
-      if (
-        events.some(
-          ({ type }) =>
-            type === DomainEventNames.PENDING_QUOTE_ACCEPTED ||
-            type === DomainEventNames.PENDING_QUOTE_CANCELLED,
-        )
-      ) {
+      if (events.some(({ type }) => DISQUALIFIER_EVENTS.has(type))) {
         return null
       }
 
-      const asObject = events.reduce<IPendingQuote>(
-        (state, { data, type }) => PENDING_QUOTE_REDUCERS[type](data, state),
-        null,
-      )
+      const asObject = events.reduce<IPendingQuote>((state, { data, type }) => {
+        const reducer = PENDING_QUOTE_REDUCERS[type]
+        return reducer ? reducer(data, state) : state
+      }, null)
+
+      // There may be some expired objects that didn't have the EXPIRATION_ACKNOWLEDGED event
+      if (asObject.expireDt < new Date()) {
+        return null
+      }
 
       const [lastEvent] = events.reverse()
 
