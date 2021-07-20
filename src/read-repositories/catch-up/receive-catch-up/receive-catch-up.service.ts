@@ -1,10 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { StreamReaderService } from 'src/event-store/stream-reader/stream-reader.service'
-import {
-  receiveCreated,
-  receiveInteracted,
-} from 'src/read-repositories/reducers/receive.reducers'
+import { RECEIVE_REDUCERS } from 'src/read-repositories/reducers/receive.reducers'
 import {
   CatchUpOrchestratorService,
   ICatchUpService,
@@ -18,18 +15,12 @@ import {
 } from '@eventstore/db-client'
 import { IReceiveCreatedPayload } from 'src/domain/events/receive-created.event'
 import { ReceiveTypeormEntity } from 'src/typeorm/entities/receive.typeorm-entity'
-import { ReducerMap } from 'src/read-repositories/types/reducer-map.type'
 import { EventRelayService } from 'src/read-repositories/services/event-relay/event-relay.service'
+
+const { RECEIVE_CREATED } = DomainEventNames
 
 interface DataType extends IReceiveCreatedPayload, Record<string, any> {}
 type EventType = JSONEventType<DomainEventNames, DataType>
-
-const { RECEIVE_CREATED, RECEIVE_INTERACTED } = DomainEventNames
-
-const REDUCER_MAPPING: ReducerMap = {
-  [RECEIVE_CREATED]: receiveCreated,
-  [RECEIVE_INTERACTED]: receiveInteracted,
-}
 
 @Injectable()
 export class ReceiveCatchUpService implements OnModuleInit, ICatchUpService {
@@ -74,7 +65,7 @@ export class ReceiveCatchUpService implements OnModuleInit, ICatchUpService {
         }
 
         for (const { event } of events) {
-          await REDUCER_MAPPING[event.type](event, manager)
+          await RECEIVE_REDUCERS[event.type](event, manager)
         }
 
         this.logger.verbose(

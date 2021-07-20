@@ -8,8 +8,14 @@ import { v4 } from 'uuid'
 import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
 import { DomainError } from '../errors/domain-error.class'
 import { QuoteMessageDetailsUpdatedEvent } from '../events/quote-message-details-updated.event'
+import { PendingQuoteExpirationAcknowledgedEvent } from '../events/pending-quote-expiration-acknowledged.event'
 
-const { QUOTE_APPROVED, QUOTE_CANCELLED, QUOTE_EXPIRED } = DomainErrorCodes
+const {
+  QUOTE_APPROVED,
+  QUOTE_CANCELLED,
+  QUOTE_EXPIRED,
+  QUOTE_INVALID_EXPIRATION_ACK,
+} = DomainErrorCodes
 
 export interface IQuoteMessageDetails {
   messageId: string
@@ -18,8 +24,6 @@ export interface IQuoteMessageDetails {
 
 export class PendingQuote extends DomainEntity implements IPendingQuote {
   quoteId: string
-  acceptDt: Date
-  cancelDt: Date
   content: string
   authorId: string
   submitterId: string
@@ -32,6 +36,11 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
 
   channelId?: string
   messageId?: string
+
+  // These are pending quote status flags
+  acceptDt?: Date
+  cancelDt?: Date
+  expireAckDt?: Date
 
   // TODO create private flag for created
 
@@ -116,6 +125,30 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
   }
 
   /**
+   * Populates the `expireAckDate` flag. Will throw an error if the expiration date
+   * has not yet lapsed, or if the quote has already been cancelled or approved.
+   */
+  acknowledgeExpiration() {
+    const { quoteId, expireDt, acceptDt, cancelDt } = this
+    const now = new Date()
+
+    if (now <= expireDt) {
+      throw new DomainError(QUOTE_INVALID_EXPIRATION_ACK)
+    } else if (!!acceptDt) {
+      throw new DomainError(QUOTE_APPROVED)
+    } else if (!!cancelDt) {
+      throw new DomainError(QUOTE_CANCELLED)
+    }
+
+    this.apply(
+      new PendingQuoteExpirationAcknowledgedEvent({
+        quoteId,
+        expireAckDt: now,
+      }),
+    )
+  }
+
+  /**
    * Creates a quote.
    * @param quote Data required to create a quote.
    */
@@ -132,6 +165,7 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
       quoteId,
       acceptDt: null,
       cancelDt: null,
+      expireAckDt: null,
     })
 
     entity.apply(submitEvent)

@@ -32,7 +32,9 @@ export function submitResponseMessageFormatter({
   submitterAvatarUrl,
 }: IResponseData) {
   const embed: MessageEmbedOptions = {
-    title: 'Quote Submitted',
+    author: {
+      name: 'Quote Submitted',
+    },
     description: [
       `**"${content}"**`,
       `- <@${authorId}>, ${submitDt.getFullYear()}`,
@@ -41,7 +43,7 @@ export function submitResponseMessageFormatter({
       {
         name: SPACE_CHARACTER,
         value: [
-          `Submitted by <@${submitterId}> on ${convertDateToString(submitDt)}`,
+          `Submitted by <@${submitterId}>`,
           `This submission needs ${reactionCount} ${reactionEmoji} reacts to get reactions on or before ${convertDateToString(
             expireDt,
           )}.`,
@@ -63,7 +65,7 @@ export function submitResponseMessageFormatter({
   }
 
   if (submitterAvatarUrl) {
-    embed.author = { iconURL: submitterAvatarUrl }
+    embed.author.icon_url = submitterAvatarUrl
   }
 
   return embed

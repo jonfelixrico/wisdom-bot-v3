@@ -12,6 +12,7 @@ import {
   EsdbRepository,
   IEsdbRepositoryEntity,
 } from '../abstract/esdb-repository.abstract'
+import { writeRepositoryReducerDispatcherFactory } from '../reducers/write-repository-reducer-dispatcher.util'
 
 @Injectable()
 export class ReceiveWriteRepositoryService extends EsdbRepository<Receive> {
@@ -27,7 +28,7 @@ export class ReceiveWriteRepositoryService extends EsdbRepository<Receive> {
       )
 
       const asObject = events.reduce<IReceiveEntity>(
-        (state, { data, type }) => RECEIVE_REDUCERS[type](data, state),
+        writeRepositoryReducerDispatcherFactory(RECEIVE_REDUCERS),
         null,
       )
 

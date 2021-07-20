@@ -47,15 +47,18 @@ export class SendQuoteAcceptedMessageCommandHandlerService
     }
     // TODO add logging that indicates if deleteMessage was successful
 
-    const embedOptions: MessageEmbedOptions = {
-      title: 'Quote accepted!',
-      description: `${content} - <@${authorId}>, ${year}`,
+    const embed: MessageEmbedOptions = {
+      author: {
+        name: 'Quote Accepted',
+      },
+      description: [`**"${content}"**`, `- <@${authorId}>, ${year}`].join('\n'),
       fields: [
         {
           name: SPACE_CHARACTER,
           value: `Submitted by <@${submitterId}>`,
         },
       ],
+      // TODO add submit date in the footer to appear consistent
     }
 
     const authorAvatarUrl = await helper.getGuildMemberAvatarUrl(
@@ -63,12 +66,21 @@ export class SendQuoteAcceptedMessageCommandHandlerService
       authorId,
     )
 
+    const submitterAvatarUrl = await helper.getGuildMemberAvatarUrl(
+      guildId,
+      submitterId,
+    )
+
     if (authorAvatarUrl) {
-      embedOptions.thumbnail = {
+      embed.thumbnail = {
         url: authorAvatarUrl,
       }
     }
 
-    return await channel.send(new MessageEmbed(embedOptions))
+    if (submitterAvatarUrl) {
+      embed.author.icon_url = submitterAvatarUrl
+    }
+
+    return await channel.send(new MessageEmbed(embed))
   }
 }

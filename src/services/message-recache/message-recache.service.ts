@@ -6,6 +6,7 @@ import { RegeneratePendingQuoteMessageCommand } from 'src/infrastructure/command
 import { WatchPendingQuoteCommand } from 'src/infrastructure/commands/watch-pending-quote.command'
 import { CatchUpFinishedEvent } from 'src/read-repositories/catch-up-finsihed.event'
 import { PendingQuoteQueryService } from 'src/read-repositories/queries/pending-quote-query/pending-quote-query.service'
+import { AcknowledgePendingQuoteExpirationCommand } from 'src/domain/commands/acknowledge-pending-quote-expiration.command'
 
 @Injectable()
 export class MessageRecacheService {
@@ -62,6 +63,7 @@ export class MessageRecacheService {
 
   private async processChannelMessages({ guild, ...channel }: TextChannel) {
     const messageData = await this.query.getPendingQuotesFromChannel(channel.id)
+    const { commandBus } = this
 
     for (const {
       messageId,
@@ -70,14 +72,21 @@ export class MessageRecacheService {
       upvoteEmoji,
       expireDt,
     } of messageData) {
+      // if quote is already expired, we need to flag it
+      if (expireDt < new Date()) {
+        await commandBus.execute(
+          new AcknowledgePendingQuoteExpirationCommand({
+            quoteId,
+          }),
+        )
+        continue
+      }
+
       const message = await this.discordHelper.getMessage(
         guild.id,
         channel.id,
         messageId,
       )
-      // TODO add error handling
-
-      const { commandBus } = this
 
       if (!message) {
         await commandBus.execute(
@@ -85,7 +94,6 @@ export class MessageRecacheService {
             quoteId,
           }),
         )
-        return
       } else {
         await commandBus.execute(
           new WatchPendingQuoteCommand({

@@ -11,6 +11,7 @@ import { WatchPendingQuoteCommand } from '../../commands/watch-pending-quote.com
 import { filter, takeUntil } from 'rxjs/operators'
 import { RegeneratePendingQuoteMessageCommand } from 'src/infrastructure/commands/regenerate-pending-quote-message.command'
 import { AcceptPendingQuoteCommand } from 'src/domain/commands/accept-pending-quote.command'
+import { AcknowledgePendingQuoteExpirationCommand } from 'src/domain/commands/acknowledge-pending-quote-expiration.command'
 
 interface IWatchedMessages {
   [messageId: string]: {
@@ -59,13 +60,17 @@ export class WatchPendingQuoteCommandHandlerService
           ),
         ),
       )
-      .subscribe(() => {
-        // TODO add logging about expiration
-        this.stop$.next(message.id)
-        // TODO send a command or event for handling the expired event
+      .subscribe(async () => {
         this.logger.verbose(
-          `Quote ${quoteId} has expired.`,
+          `Quote ${quoteId} has lapsed its expiration date.`,
           WatchPendingQuoteCommandHandlerService.name,
+        )
+
+        this.stop$.next(message.id)
+        await this.commandBus.execute(
+          new AcknowledgePendingQuoteExpirationCommand({
+            quoteId,
+          }),
         )
       })
   }

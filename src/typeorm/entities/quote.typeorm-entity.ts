@@ -65,4 +65,7 @@ export class QuoteTypeormEntity {
 
   @Column()
   submitDt: Date
+
+  @Column({ nullable: true })
+  expireAckDt: Date
 }

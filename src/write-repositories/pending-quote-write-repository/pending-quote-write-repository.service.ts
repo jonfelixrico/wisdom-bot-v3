@@ -14,8 +14,19 @@ import { convertDomainEventToJsonEvent } from '../utils/convert-domain-event-to-
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { PENDING_QUOTE_REDUCERS } from '../reducers/pending-quote.reducer'
 import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
+import { writeRepositoryReducerDispatcherFactory } from '../reducers/write-repository-reducer-dispatcher.util'
 
-// TODO follow the reducers of the read repository
+const {
+  PENDING_QUOTE_ACCEPTED,
+  PENDING_QUOTE_CANCELLED,
+  PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED,
+} = DomainEventNames
+
+const DISQUALIFIER_EVENTS = new Set<string>([
+  PENDING_QUOTE_ACCEPTED,
+  PENDING_QUOTE_CANCELLED,
+  PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED,
+])
 
 @Injectable()
 export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQuote> {
@@ -30,18 +41,12 @@ export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQu
         ({ event }) => event as JSONRecordedEvent,
       )
 
-      if (
-        events.some(
-          ({ type }) =>
-            type === DomainEventNames.PENDING_QUOTE_ACCEPTED ||
-            type === DomainEventNames.PENDING_QUOTE_CANCELLED,
-        )
-      ) {
+      if (events.some(({ type }) => DISQUALIFIER_EVENTS.has(type))) {
         return null
       }
 
       const asObject = events.reduce<IPendingQuote>(
-        (state, { data, type }) => PENDING_QUOTE_REDUCERS[type](data, state),
+        writeRepositoryReducerDispatcherFactory(PENDING_QUOTE_REDUCERS),
         null,
       )
 
