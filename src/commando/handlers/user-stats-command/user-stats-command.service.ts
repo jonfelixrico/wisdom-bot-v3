@@ -6,7 +6,6 @@ import {
   CommandInfo,
 } from 'discord.js-commando'
 import { UserStatsQueryService } from 'src/read-repositories/queries/user-stats-query/user-stats-query.service'
-import { SPACE_CHARACTER } from 'src/types/discord.constants'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 
 const COMMAND_INFO: CommandInfo = {
@@ -51,26 +50,21 @@ export class UserStatsCommandService extends WrappedCommand<IUserStatsCommandArg
       receivesReceived,
     } = await this.query.getStats(message.guild.id, targetUser.id)
 
-    const toDisplay = [
-      `Author of **${quotesAuthored}** quotes; received **${receivesReceived}** times`,
-      `Received **${interactionsReceived}** reactions to authored quotes`,
-      `Submitted **${quotesSubmitted}** quotes`,
-      `Received **${receivesGiven}** pieces of wisdom`,
-      `Reacted **${interactionsGiven}** times to quotes`,
-    ]
-
     const embed: MessageEmbedOptions = {
       author: {
         name: 'User Stats',
         icon_url: await targetUser.displayAvatarURL({ format: 'png' }),
       },
-      description: `${targetUser}'s wisdom stats`,
-      fields: toDisplay.map((value) => {
-        return {
-          name: SPACE_CHARACTER,
-          value,
-        }
-      }),
+      description: [
+        '',
+        `Wisdom stats for ${targetUser}`,
+        '',
+        `Author of **${quotesAuthored}** quotes; received **${receivesReceived}** times`,
+        `Received **${interactionsReceived}** reactions to authored quotes`,
+        `Submitted **${quotesSubmitted}** quotes`,
+        `Received **${receivesGiven}** pieces of wisdom`,
+        `Reacted **${interactionsGiven}** times to quotes`,
+      ].join('\n'),
     }
 
     return await message.channel.send(new MessageEmbed(embed))

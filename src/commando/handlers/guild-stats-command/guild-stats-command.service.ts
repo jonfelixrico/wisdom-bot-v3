@@ -38,7 +38,7 @@ export class GuildStatsCommandService extends WrappedCommand {
 
     const embed: MessageEmbedOptions = {
       author: {
-        name: `Wisdom information for guild ${guild.name}`,
+        name: `Wisdom stats for ${guild.name}`,
         icon_url: guild.iconURL({ format: 'png' }),
       },
       description: [
