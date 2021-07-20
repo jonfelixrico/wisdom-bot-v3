@@ -48,9 +48,8 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
       submitDt,
     })
 
-    const response = await message.channel.send('🤔')
+    const response = await message.channel.send(new MessageEmbed(embed))
     const messageId = response.id
-    await response.edit(null, new MessageEmbed(embed))
 
     await this.commandBus.execute(
       new SubmitQuoteCommand({
