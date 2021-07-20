@@ -6,6 +6,7 @@ import { RegeneratePendingQuoteMessageCommandHandlerService } from './command-ha
 import { WatchPendingQuoteCommandHandlerService } from './command-handlers/watch-pending-quote-command-handler/watch-pending-quote-command-handler.service'
 import { SendQuoteAcceptedMessageCommandHandlerService } from './command-handlers/send-quote-accepted-message-command-handler/send-quote-accepted-message-command-handler.service'
 import { UpdateReceiveMessageReactionsListCommandHandlerService } from './command-handlers/update-receive-message-reactions-list-command-handler/update-receive-message-reactions-list-command-handler.service'
+import { UpdateSubmitMessageAsExpiredCommandService } from './command-handlers/update-submit-message-as-expired-command/update-submit-message-as-expired-command.service'
 
 @Module({
   imports: [CqrsModule, DiscordModule, ReadRepositoriesModule],
@@ -14,6 +15,7 @@ import { UpdateReceiveMessageReactionsListCommandHandlerService } from './comman
     WatchPendingQuoteCommandHandlerService,
     SendQuoteAcceptedMessageCommandHandlerService,
     UpdateReceiveMessageReactionsListCommandHandlerService,
+    UpdateSubmitMessageAsExpiredCommandService,
   ],
 })
 export class InfrastructureModule {}
