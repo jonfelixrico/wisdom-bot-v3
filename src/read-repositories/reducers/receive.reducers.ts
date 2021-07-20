@@ -6,33 +6,35 @@ import { ReceiveTypeormEntity } from 'src/typeorm/entities/receive.typeorm-entit
 import { ReadRepositoryReducer } from '../types/read-repository-reducer.type'
 import { ReducerMap } from 'src/read-repositories/types/reducer-map.type'
 
-export const receiveCreated: ReadRepositoryReducer<IReceiveCreatedPayload> =
-  async ({ data, revision }, manager) => {
-    const {
-      channelId,
-      messageId,
-      quoteId,
-      receiveDt,
-      receiveId,
-      userId,
-      guildId,
-    } = data
+const receiveCreated: ReadRepositoryReducer<IReceiveCreatedPayload> = async (
+  { data, revision },
+  manager,
+) => {
+  const {
+    channelId,
+    messageId,
+    quoteId,
+    receiveDt,
+    receiveId,
+    userId,
+    guildId,
+  } = data
 
-    await manager.insert(ReceiveTypeormEntity, {
-      id: receiveId,
-      channelId,
-      messageId,
-      guildId,
-      quoteId,
-      receiveDt,
-      userId,
-      revision,
-    })
+  await manager.insert(ReceiveTypeormEntity, {
+    id: receiveId,
+    channelId,
+    messageId,
+    guildId,
+    quoteId,
+    receiveDt,
+    userId,
+    revision,
+  })
 
-    return true
-  }
+  return true
+}
 
-export const receiveInteracted: ReadRepositoryReducer<IReceiveInteractedPayload> =
+const receiveInteracted: ReadRepositoryReducer<IReceiveInteractedPayload> =
   async ({ revision, data }, manager) => {
     const { interactionDt, interactionId, karma, receiveId, userId } = data
 
