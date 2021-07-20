@@ -16,6 +16,7 @@ import {
 import { QuoteReceivedEvent } from 'src/domain/events/quote-received.event'
 import { ReceiveCreatedEvent } from 'src/domain/events/receive-created.event'
 import { convertDomainEventToJsonEvent } from './../utils/convert-domain-event-to-json-event.util'
+import { writeRepositoryReducerDispatcherFactory } from '../reducers/write-repository-reducer-dispatcher.util'
 
 @Injectable()
 export class QuoteWriteRepositoryService extends EsdbRepository<Quote> {
@@ -42,10 +43,10 @@ export class QuoteWriteRepositoryService extends EsdbRepository<Quote> {
         return null
       }
 
-      const asObject = events.reduce<IQuoteEntity>((state, { data, type }) => {
-        const reducer = QUOTE_REDUCERS[type]
-        return reducer ? reducer(data, state) : state
-      }, null)
+      const asObject = events.reduce<IQuoteEntity>(
+        writeRepositoryReducerDispatcherFactory(QUOTE_REDUCERS),
+        null,
+      )
 
       const [lastEvent] = events.reverse()
 

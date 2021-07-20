@@ -14,6 +14,7 @@ import { convertDomainEventToJsonEvent } from '../utils/convert-domain-event-to-
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { PENDING_QUOTE_REDUCERS } from '../reducers/pending-quote.reducer'
 import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
+import { writeRepositoryReducerDispatcherFactory } from '../reducers/write-repository-reducer-dispatcher.util'
 
 const {
   PENDING_QUOTE_ACCEPTED,
@@ -44,10 +45,10 @@ export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQu
         return null
       }
 
-      const asObject = events.reduce<IPendingQuote>((state, { data, type }) => {
-        const reducer = PENDING_QUOTE_REDUCERS[type]
-        return reducer ? reducer(data, state) : state
-      }, null)
+      const asObject = events.reduce<IPendingQuote>(
+        writeRepositoryReducerDispatcherFactory(PENDING_QUOTE_REDUCERS),
+        null,
+      )
 
       // There may be some expired objects that didn't have the EXPIRATION_ACKNOWLEDGED event
       if (asObject.expireDt < new Date()) {
