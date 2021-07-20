@@ -50,11 +50,6 @@ export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQu
         null,
       )
 
-      // There may be some expired objects that didn't have the EXPIRATION_ACKNOWLEDGED event
-      if (asObject.expireDt < new Date()) {
-        return null
-      }
-
       const [lastEvent] = events.reverse()
 
       return {
