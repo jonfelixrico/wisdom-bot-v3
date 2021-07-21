@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { CommandBus } from '@nestjs/cqrs'
 import { Message } from 'discord.js'
-import { InteractReceiveCommand } from 'src/domain/commands/interact-receive.command'
+import { ReactionToReceiveCommand } from 'src/domain/commands/react-to-receive.command'
 import { Receive } from 'src/domain/entities/receive.entity'
 import { DomainErrorCodes } from 'src/domain/errors/domain-error-codes.enum'
 import { DomainError } from 'src/domain/errors/domain-error.class'
@@ -37,7 +37,7 @@ export class InteractionHelperService {
 
     try {
       const receive: Receive = await this.commandBus.execute(
-        new InteractReceiveCommand({
+        new ReactionToReceiveCommand({
           karma,
           receiveId,
           userId,
