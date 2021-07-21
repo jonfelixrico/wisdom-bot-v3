@@ -6,6 +6,7 @@ import { ReceiveWriteRepositoryService } from './receive-write-repository/receiv
 import { PendingQuoteWriteRepository } from './abstract/pending-quote-write-repository.abstract'
 import { QuoteWriteRepository } from './abstract/quote-write-repository.abstract'
 import { ReceiveWriteRepository } from './abstract/receive-write-repository.abstract'
+import { DomainEventPublisherService } from './domain-event-publisher/domain-event-publisher.service'
 
 const providersToExport: Provider[] = [
   {
@@ -23,7 +24,7 @@ const providersToExport: Provider[] = [
 ]
 
 @Module({
-  providers: [...providersToExport],
+  providers: [...providersToExport, DomainEventPublisherService],
   imports: [EventStoreModule],
   exports: providersToExport,
 })
