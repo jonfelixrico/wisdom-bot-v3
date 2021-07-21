@@ -12,10 +12,6 @@ export interface IReceiveInteractedPayload extends EventPayload {
 
 export class ReceiveInteractedEvent extends DomainEvent<IReceiveInteractedPayload> {
   constructor(interaction: IReceiveInteractedPayload) {
-    super(
-      DomainEventNames.RECEIVE_INTERACTED,
-      interaction.receiveId,
-      interaction,
-    )
+    super(DomainEventNames.RECEIVE_REACTED, interaction.receiveId, interaction)
   }
 }

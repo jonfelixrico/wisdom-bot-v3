@@ -32,8 +32,8 @@ const interact: WriteRepositoryReducer<
   }
 }
 
-const { RECEIVE_CREATED, RECEIVE_INTERACTED } = DomainEventNames
+const { RECEIVE_CREATED, RECEIVE_REACTED } = DomainEventNames
 export const RECEIVE_REDUCERS: WriteRepositoryReducerMap<IReceiveEntity> = {
   [RECEIVE_CREATED]: create,
-  [RECEIVE_INTERACTED]: interact,
+  [RECEIVE_REACTED]: interact,
 }

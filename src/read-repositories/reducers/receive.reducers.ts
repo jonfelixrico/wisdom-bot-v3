@@ -83,8 +83,8 @@ const receiveInteracted: ReadRepositoryReducer<IReceiveInteractedPayload> =
     return true
   }
 
-const { RECEIVE_CREATED, RECEIVE_INTERACTED } = DomainEventNames
+const { RECEIVE_CREATED, RECEIVE_REACTED } = DomainEventNames
 export const RECEIVE_REDUCERS: ReducerMap = Object.freeze({
   [RECEIVE_CREATED]: receiveCreated,
-  [RECEIVE_INTERACTED]: receiveInteracted,
+  [RECEIVE_REACTED]: receiveInteracted,
 })
