@@ -5,8 +5,8 @@ import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.
 import { RegeneratePendingQuoteMessageCommand } from 'src/infrastructure/commands/regenerate-pending-quote-message.command'
 import { WatchPendingQuoteCommand } from 'src/infrastructure/commands/watch-pending-quote.command'
 import { CatchUpFinishedEvent } from 'src/read-model-catch-up/catch-up-finished.event'
-import { PendingQuoteQueryService } from 'src/read-model-catch-up/queries/pending-quote-query/pending-quote-query.service'
 import { AcknowledgePendingQuoteExpirationCommand } from 'src/domain/commands/acknowledge-pending-quote-expiration.command'
+import { PendingQuoteQueryService } from 'src/read-model-query/pending-quote-query/pending-quote-query.service'
 
 @Injectable()
 export class MessageRecacheService {

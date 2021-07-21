@@ -6,11 +6,11 @@ import {
   CommandoMessage,
 } from 'discord.js-commando'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
-import { QuoteQueryService } from 'src/read-model-catch-up/queries/quote-query/quote-query.service'
 import { CommandBus } from '@nestjs/cqrs'
 import { ReceiveQuoteCommand } from 'src/domain/commands/receive-quote.command'
 import { SPACE_CHARACTER } from 'src/types/discord.constants'
 import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
+import { QuoteQueryService } from 'src/read-model-query/quote-query/quote-query.service'
 
 const COMMAND_INFO: CommandInfo = {
   name: 'receive',
