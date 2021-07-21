@@ -19,49 +19,49 @@ export class UserStatsQueryService {
       .andWhere('acceptDt IS NOT NULL')
       .getCount()
 
-    const receivedQuoteCount = await this.receiveRepo
+    const receiveCount = await this.receiveRepo
       .createQueryBuilder()
       .where('guildId = :guildId', { guildId })
       .andWhere('userId = :userId', { userId })
       .getCount()
 
-    const interactionQuoteCount = await this.reactionRepo
+    const reactionCount = await this.reactionRepo
       .createQueryBuilder()
       .where('guildId = :guildId', { guildId })
       .andWhere('userId = :userId', { userId })
       .getCount()
 
     return {
-      receivesGiven: receivedQuoteCount,
-      interactionsGiven: interactionQuoteCount,
+      receiveCount,
+      reactionCount,
       quotesSubmitted: submittedQuotesCount,
     }
   }
 
   private async incomingStats(guildId: string, userId: string) {
-    const authoredQuotesCount = await this.quoteRepo
+    const authoredQuotes = await this.quoteRepo
       .createQueryBuilder()
       .where('guildId = :guildId', { guildId })
       .andWhere('authorId = :userId', { userId })
       .andWhere('acceptDt IS NOT NULL')
       .getCount()
 
-    const quoteReceivesCount = await this.receiveRepo
+    const timesReceived = await this.receiveRepo
       .createQueryBuilder()
       .where('guildId = :guildId', { guildId })
       .andWhere('parentQuoteAuthorId = :userId', { userId })
       .getCount()
 
-    const quoteInteractionsCount = await this.reactionRepo
+    const timesReactedTo = await this.reactionRepo
       .createQueryBuilder()
       .where('guildId = :guildId', { guildId })
       .andWhere('parentQuoteAuthorId = :userId', { userId })
       .getCount()
 
     return {
-      receivesReceived: quoteReceivesCount,
-      quotesAuthored: authoredQuotesCount,
-      interactionsReceived: quoteInteractionsCount,
+      timesReceived,
+      authoredQuotes,
+      timesReactedTo,
     }
   }
 

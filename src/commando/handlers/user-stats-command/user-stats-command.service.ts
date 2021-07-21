@@ -42,12 +42,12 @@ export class UserStatsCommandService extends WrappedCommand<IUserStatsCommandArg
     const targetUser = user ?? message.author
 
     const {
-      interactionsGiven,
-      interactionsReceived,
-      quotesAuthored,
+      reactionCount,
+      timesReactedTo,
+      authoredQuotes,
       quotesSubmitted,
-      receivesGiven,
-      receivesReceived,
+      receiveCount,
+      timesReceived,
     } = await this.query.getStats(message.guild.id, targetUser.id)
 
     const embed: MessageEmbedOptions = {
@@ -59,11 +59,11 @@ export class UserStatsCommandService extends WrappedCommand<IUserStatsCommandArg
         '',
         `Wisdom stats for ${targetUser}`,
         '',
-        `Author of **${quotesAuthored}** quotes; received **${receivesReceived}** times`,
-        `Received **${interactionsReceived}** reactions to authored quotes`,
+        `Author of **${authoredQuotes}** quotes; received **${timesReceived}** times`,
+        `Received **${timesReactedTo}** reactions to authored quotes`,
         `Submitted **${quotesSubmitted}** quotes`,
-        `Received **${receivesGiven}** pieces of wisdom`,
-        `Reacted **${interactionsGiven}** times to quotes`,
+        `Received **${receiveCount}** pieces of wisdom`,
+        `Reacted **${reactionCount}** times to quotes`,
       ].join('\n'),
     }
 
