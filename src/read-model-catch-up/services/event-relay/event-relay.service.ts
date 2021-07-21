@@ -42,7 +42,7 @@ export class EventRelayService
    * @param fromRevision
    * @returns Null if no event matches the query, the actual RecordedEvent instance if otherwise.
    */
-  private async queryEvent(
+  async queryEvent(
     streamName: string,
     fromRevision: ReadRevision,
   ): Promise<RecordedEvent> {
