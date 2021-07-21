@@ -13,7 +13,7 @@ import { convertDomainEventToJsonEvent } from './../utils/convert-domain-event-t
 export class DomainEventPublisherService {
   constructor(private client: EventStoreDBClient, private eventBus: EventBus) {}
 
-  async publishEvent(
+  async publishEvents(
     events: DomainEvent[] | DomainEvent,
     expectedRevision: ExpectedRevision,
   ) {
