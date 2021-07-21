@@ -44,14 +44,10 @@ const accepted: WriteRepositoryReducer<
 const messageDetailsUpdated: WriteRepositoryReducer<
   IQuoteMessageDetailsUpdatedPayload,
   IPendingQuote
-> = (
-  { messageId, channelId }: IQuoteMessageDetailsUpdatedPayload,
-  state: IPendingQuote,
-) => {
+> = (payload: IQuoteMessageDetailsUpdatedPayload, state: IPendingQuote) => {
   return {
     ...state,
-    messageId,
-    channelId,
+    ...payload,
   }
 }
 

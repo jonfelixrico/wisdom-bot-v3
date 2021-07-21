@@ -109,14 +109,14 @@ const received: ReadRepositoryReducer<IQuoteReceivedPayload> = async (
 
 const messageDetailsUpdated: ReadRepositoryReducer<IQuoteMessageDetailsUpdatedPayload> =
   async ({ revision, data }, manager) => {
-    const { quoteId, messageId, channelId } = data
+    const { quoteId, ...changes } = data
 
     const { affected } = await manager.update(
       QuoteTypeormEntity,
       {
         id: quoteId,
       },
-      { messageId, revision, channelId },
+      { revision, ...changes },
     )
 
     return affected > 0

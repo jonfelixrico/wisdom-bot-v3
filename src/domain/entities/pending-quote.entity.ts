@@ -42,8 +42,8 @@ export interface IPendingQuote {
 }
 
 export interface IQuoteMessageDetails {
-  messageId: string
-  channelId: string
+  messageId?: string
+  channelId?: string
 }
 
 export class PendingQuote extends DomainEntity implements IPendingQuote {
@@ -139,8 +139,9 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
 
   updateMessageDetails({ messageId, channelId }: IQuoteMessageDetails) {
     this.checkIfPending()
-    this.messageId = messageId
-    this.channelId = channelId
+
+    this.messageId = messageId ?? this.messageId
+    this.channelId = channelId ?? this.channelId
 
     const { quoteId } = this
     this.apply(
