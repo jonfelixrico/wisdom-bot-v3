@@ -16,7 +16,7 @@ export class ReactionHelperService {
     private query: ReceiveQueryService,
   ) {}
 
-  async handleInteraction(message: Message, karma: number) {
+  async handleReaction(message: Message, karma: number) {
     const { channel, reference } = message
 
     if (!reference) {

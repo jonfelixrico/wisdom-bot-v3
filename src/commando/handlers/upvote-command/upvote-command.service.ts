@@ -28,6 +28,6 @@ export class UpvoteCommandService extends WrappedCommand {
   }
 
   run(message: CommandoMessage): Promise<Message | Message[]> {
-    return this.helper.handleInteraction(message, 1)
+    return this.helper.handleReaction(message, 1)
   }
 }
