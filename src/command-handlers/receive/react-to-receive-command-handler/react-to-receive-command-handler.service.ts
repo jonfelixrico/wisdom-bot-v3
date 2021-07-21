@@ -4,7 +4,7 @@ import { ReactToReceiveCommand } from 'src/domain/commands/react-to-receive.comm
 import { ReceiveWriteRepositoryService } from 'src/write-repositories/receive-write-repository/receive-write-repository.service'
 
 @CommandHandler(ReactToReceiveCommand)
-export class InteractReceiveCommandHandlerService
+export class ReactToReceiveCommandHandlerService
   implements ICommandHandler<ReactToReceiveCommand>
 {
   constructor(
@@ -19,7 +19,7 @@ export class InteractReceiveCommandHandlerService
     if (!receive) {
       this.logger.verbose(
         `Did not process InteractReceiveCommand for receive ${receiveId} not found.`,
-        InteractReceiveCommandHandlerService.name,
+        ReactToReceiveCommandHandlerService.name,
       )
       return null
     }
@@ -30,7 +30,7 @@ export class InteractReceiveCommandHandlerService
     this.repo.publishEvents(entity, revision)
     this.logger.verbose(
       `Processed InteractReceiveCommand for receive ${receiveId}.`,
-      InteractReceiveCommandHandlerService.name,
+      ReactToReceiveCommandHandlerService.name,
     )
 
     return entity
