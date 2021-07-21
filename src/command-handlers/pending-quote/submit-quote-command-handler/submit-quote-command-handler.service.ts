@@ -5,7 +5,7 @@ import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.
 import { SubmitQuoteCommand } from 'src/domain/commands/submit-quote.command'
 import { PendingQuote } from 'src/domain/entities/pending-quote.entity'
 import { WatchPendingQuoteCommand } from 'src/infrastructure/commands/watch-pending-quote.command'
-import { PendingQuoteWriteRepositoryService } from 'src/write-repositories/pending-quote-write-repository/pending-quote-write-repository.service'
+import { PendingQuoteWriteRepository } from 'src/write-repositories/abstract/pending-quote-write-repository.abstract'
 
 @CommandHandler(SubmitQuoteCommand)
 export class SubmitQuoteCommandHandlerService
@@ -13,7 +13,7 @@ export class SubmitQuoteCommandHandlerService
 {
   constructor(
     private logger: Logger,
-    private repo: PendingQuoteWriteRepositoryService,
+    private repo: PendingQuoteWriteRepository,
     private discordHelper: DiscordHelperService,
     private commandBus: CommandBus,
   ) {}

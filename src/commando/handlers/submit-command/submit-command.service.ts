@@ -26,12 +26,6 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     const channelId = message.channel.id
     const submitter = message.author
 
-    // TODO pull these from a repository instead
-    const expireMillis = 60 * 1000 * 2
-    const approveEmoji = '🤔'
-    const approveCount = 1
-
-    const expireDt = new Date(Date.now() + expireMillis)
     const submitDt = new Date()
 
     const embed = submitResponseMessageFormatter({

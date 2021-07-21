@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common'
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { AcceptPendingQuoteCommand } from 'src/domain/commands/accept-pending-quote.command'
 import { SendQuoteAcceptedMessageCommand } from 'src/infrastructure/commands/send-quote-accepted-notification.command'
-import { PendingQuoteWriteRepositoryService } from 'src/write-repositories/pending-quote-write-repository/pending-quote-write-repository.service'
+import { PendingQuoteWriteRepository } from 'src/write-repositories/abstract/pending-quote-write-repository.abstract'
 
 @CommandHandler(AcceptPendingQuoteCommand)
 export class AcceptQuoteCommandHandlerService
@@ -10,7 +10,7 @@ export class AcceptQuoteCommandHandlerService
 {
   constructor(
     private logger: Logger,
-    private repo: PendingQuoteWriteRepositoryService,
+    private repo: PendingQuoteWriteRepository,
     private commandBus: CommandBus,
   ) {}
 
