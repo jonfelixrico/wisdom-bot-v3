@@ -6,7 +6,7 @@ export interface IReactToReceiveCommandPayload {
   readonly karma: number
 }
 
-export class ReactionToReceiveCommand
+export class ReactToReceiveCommand
   implements ICommand<IReactToReceiveCommandPayload>
 {
   constructor(readonly payload: IReactToReceiveCommandPayload) {}
