@@ -5,7 +5,6 @@ export interface ISubmitQuoteCommandPayload {
   content: string
   authorId: string
   submitterId: string
-  submitDt: Date
 
   // for tracking
   channelId?: string
