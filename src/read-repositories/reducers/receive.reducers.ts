@@ -7,7 +7,7 @@ import { ReadRepositoryReducer } from '../types/read-repository-reducer.type'
 import { ReducerMap } from 'src/read-repositories/types/reducer-map.type'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 
-const receiveCreated: ReadRepositoryReducer<IReceiveCreatedPayload> = async (
+const created: ReadRepositoryReducer<IReceiveCreatedPayload> = async (
   { data, revision },
   manager,
 ) => {
@@ -44,7 +44,7 @@ const receiveCreated: ReadRepositoryReducer<IReceiveCreatedPayload> = async (
   return true
 }
 
-const receiveInteracted: ReadRepositoryReducer<IReceiveReactedPayload> = async (
+const reacted: ReadRepositoryReducer<IReceiveReactedPayload> = async (
   { revision, data },
   manager,
 ) => {
@@ -87,6 +87,6 @@ const receiveInteracted: ReadRepositoryReducer<IReceiveReactedPayload> = async (
 
 const { RECEIVE_CREATED, RECEIVE_REACTED } = DomainEventNames
 export const RECEIVE_REDUCERS: ReducerMap = Object.freeze({
-  [RECEIVE_CREATED]: receiveCreated,
-  [RECEIVE_REACTED]: receiveInteracted,
+  [RECEIVE_CREATED]: created,
+  [RECEIVE_REACTED]: reacted,
 })
