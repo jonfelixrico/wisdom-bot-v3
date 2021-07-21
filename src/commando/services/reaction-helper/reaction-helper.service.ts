@@ -76,7 +76,7 @@ export class ReactionHelperService {
         )
       }
 
-      // the dupe user interact is the only error we'll handle. for the rest, they are uncaught exceptions
+      // the dupe user reaction is the only error we'll handle. for the rest, they are uncaught exceptions
       throw e
     }
 
