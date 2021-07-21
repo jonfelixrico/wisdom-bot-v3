@@ -7,6 +7,7 @@ import { ReceiveCatchUpService } from './catch-up/receive-catch-up/receive-catch
 import { EventRelayService } from './services/event-relay/event-relay.service'
 import { EventListenerService } from './services/event-listener/event-listener.service'
 import { CqrsModule } from '@nestjs/cqrs'
+import { EventSyncNotifierService } from './services/event-sync-notifier/event-sync-notifier.service'
 
 @Module({
   providers: [
@@ -15,6 +16,7 @@ import { CqrsModule } from '@nestjs/cqrs'
     ReceiveCatchUpService,
     EventRelayService,
     EventListenerService,
+    EventSyncNotifierService,
   ],
   imports: [TypeormModule, EventStoreModule, CqrsModule],
 })
