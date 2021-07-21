@@ -25,7 +25,7 @@ export class InteractReceiveCommandHandlerService
     }
 
     const { entity, revision } = receive
-    entity.interact({ karma, userId })
+    entity.react({ karma, userId })
 
     this.repo.publishEvents(entity, revision)
     this.logger.verbose(

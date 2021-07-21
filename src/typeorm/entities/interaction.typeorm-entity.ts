@@ -2,9 +2,9 @@ import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm'
 import { ReceiveTypeormEntity } from './receive.typeorm-entity'
 
 @Entity({
-  name: 'interaction',
+  name: 'reaction',
 })
-export class InteractionTypeormEntity {
+export class ReactionTypeormEntity {
   @PrimaryColumn('uuid')
   id: string
 
@@ -19,7 +19,7 @@ export class InteractionTypeormEntity {
   receive: Promise<ReceiveTypeormEntity>
 
   @Column()
-  interactionDt: Date
+  reactionDt: Date
 
   @Column()
   userId: string

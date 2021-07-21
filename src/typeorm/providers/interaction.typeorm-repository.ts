@@ -1,4 +1,4 @@
 import { Repository } from 'typeorm'
-import { InteractionTypeormEntity } from '../entities/interaction.typeorm-entity'
+import { ReactionTypeormEntity } from '../entities/interaction.typeorm-entity'
 
-export class InteractionTypeormRepository extends Repository<InteractionTypeormEntity> {}
+export class InteractionTypeormRepository extends Repository<ReactionTypeormEntity> {}

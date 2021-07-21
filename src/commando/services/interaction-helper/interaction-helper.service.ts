@@ -44,17 +44,17 @@ export class InteractionHelperService {
         }),
       )
 
-      const { interactions } = receive
+      const { reactions } = receive
 
       this.commandBus.execute(
         new UpdateReceiveMessageReactionsListCommand({
           receiveId,
           reactions: {
-            upvotes: interactions
+            upvotes: reactions
               .filter(({ karma }) => karma > 0)
               .map(({ userId }) => userId)
               .sort(),
-            downvotes: interactions
+            downvotes: reactions
               .filter(({ karma }) => karma < 0)
               .map(({ userId }) => userId)
               .sort(),

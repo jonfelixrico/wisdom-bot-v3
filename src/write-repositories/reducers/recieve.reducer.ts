@@ -1,7 +1,7 @@
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { IReceiveEntity } from 'src/domain/entities/receive.entity'
 import { IReceiveCreatedPayload } from 'src/domain/events/receive-created.event'
-import { IReceiveInteractedPayload } from 'src/domain/events/receive-interacted.event'
+import { IReceiveReactedPayload } from 'src/domain/events/receive-interacted.event'
 import {
   WriteRepositoryReducer,
   WriteRepositoryReducerMap,
@@ -12,25 +12,17 @@ const create: WriteRepositoryReducer<IReceiveCreatedPayload, IReceiveEntity> = (
 ) => {
   return {
     ...data,
-    interactions: [],
+    reactions: [],
   }
 }
 
-const interact: WriteRepositoryReducer<
-  IReceiveInteractedPayload,
-  IReceiveEntity
-> = (
-  { receiveId, interactionId, userId, karma },
-  { interactions, ...state },
-) => {
-  return {
-    ...state,
-    interactions: [
-      ...interactions,
-      { receiveId, interactionId, userId, karma },
-    ],
+const interact: WriteRepositoryReducer<IReceiveReactedPayload, IReceiveEntity> =
+  ({ receiveId, reactionId, userId, karma }, { reactions, ...state }) => {
+    return {
+      ...state,
+      reactions: [...reactions, { receiveId, reactionId, userId, karma }],
+    }
   }
-}
 
 const { RECEIVE_CREATED, RECEIVE_REACTED } = DomainEventNames
 export const RECEIVE_REDUCERS: WriteRepositoryReducerMap<IReceiveEntity> = {
