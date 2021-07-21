@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { ReactionTypeormRepository } from 'src/typeorm/providers/interaction.typeorm-repository'
+import { ReactionTypeormRepository } from 'src/typeorm/providers/reaction.typeorm-repository'
 import { QuoteTypeormRepository } from 'src/typeorm/providers/quote.typeorm-repository'
 import { ReceiveTypeormRepository } from 'src/typeorm/providers/receive.typeorm-repository'
 
