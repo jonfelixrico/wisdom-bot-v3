@@ -23,7 +23,7 @@ export class GuildStatsQueryService {
       .where('guildId = :guildId', { guildId })
       .getCount()
 
-    const interactions = await this.reactionRepo
+    const reactions = await this.reactionRepo
       .createQueryBuilder()
       .where('guildId = :guildId', { guildId })
       .getCount()
@@ -31,7 +31,7 @@ export class GuildStatsQueryService {
     return {
       quotes,
       receives,
-      interactions,
+      reactions,
     }
   }
 }

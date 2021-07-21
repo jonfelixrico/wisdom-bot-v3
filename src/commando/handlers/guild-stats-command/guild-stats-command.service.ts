@@ -32,9 +32,7 @@ export class GuildStatsCommandService extends WrappedCommand {
   }
 
   async run({ guild, channel }: CommandoMessage): Promise<Message | Message[]> {
-    const { interactions, quotes, receives } = await this.query.getStats(
-      guild.id,
-    )
+    const { reactions, quotes, receives } = await this.query.getStats(guild.id)
 
     const embed: MessageEmbedOptions = {
       author: {
@@ -45,8 +43,8 @@ export class GuildStatsCommandService extends WrappedCommand {
         '', // padding
         `**${quotes}** ${quotes === 1 ? 'quote' : 'quotes'} submitted`,
         `**${receives}** ${receives === 1 ? 'quote' : 'quotes'} received`,
-        `**${interactions}** ${
-          interactions === 1 ? 'reaction' : 'reactions'
+        `**${reactions}** ${
+          reactions === 1 ? 'reaction' : 'reactions'
         } to quotes`,
       ].join('\n'),
     }
