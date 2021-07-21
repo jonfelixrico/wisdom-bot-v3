@@ -65,9 +65,6 @@ export class EventListenerService implements OnModuleInit {
         EventListenerService.name,
       )
 
-      // We'll do this so that if ever we missed an event because this is still processing, we can catch up gradually
-      this.eventRelay.queryEvent(streamId, revision + 1n)
-
       // This is a way to let downstream listeners that an event has been consumed by the read model
       this.eventBus.publish(new EventConsumedEvent(streamId, revision))
     } catch (e) {
