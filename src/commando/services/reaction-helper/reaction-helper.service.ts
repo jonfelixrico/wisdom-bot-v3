@@ -6,7 +6,7 @@ import { Receive } from 'src/domain/entities/receive.entity'
 import { DomainErrorCodes } from 'src/domain/errors/domain-error-codes.enum'
 import { DomainError } from 'src/domain/errors/domain-error.class'
 import { UpdateReceiveMessageReactionsListCommand } from 'src/infrastructure/commands/update-receive-message-reactions-list.command'
-import { ReceiveQueryService } from 'src/read-model-catch-up/queries/receive-query/receive-query.service'
+import { ReceiveQueryService } from 'src/read-model-query/receive-query/receive-query.service'
 
 @Injectable()
 export class ReactionHelperService {
