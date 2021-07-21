@@ -31,6 +31,7 @@ export class SubmitQuoteCommandHandlerService
         entity: Guild.register({
           guildId,
           quoteSettings: {
+            // TODO edit these for production, or maybe retrieve it from syspars?
             upvoteCount: 1,
             upvoteEmoji: '🤔',
             // 7 days
