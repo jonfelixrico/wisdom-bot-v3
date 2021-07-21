@@ -11,6 +11,7 @@ import { ReadModelCatchUpModule } from './read-model-catch-up/read-model-catch-u
 import { ServicesModule } from './services/services.module'
 import { InfrastructureModule } from './infrastructure/infrastructure.module'
 import { ReadModelQueryModule } from './read-model-query/read-model-query.module'
+import { EventHandlersModule } from './event-handlers/event-handlers.module'
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ReadModelQueryModule } from './read-model-query/read-model-query.module
     InfrastructureModule,
     InfrastructureModule,
     ReadModelQueryModule,
+    EventHandlersModule,
   ],
 })
 export class AppModule {}
