@@ -10,6 +10,7 @@ import { WriteRepositoriesModule } from './write-repositories/write-repositories
 import { ReadModelCatchUpModule } from './read-model-catch-up/read-model-catch-up.module'
 import { ServicesModule } from './services/services.module'
 import { InfrastructureModule } from './infrastructure/infrastructure.module'
+import { ReadModelQueryModule } from './read-model-query/read-model-query.module'
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { InfrastructureModule } from './infrastructure/infrastructure.module'
     ServicesModule,
     InfrastructureModule,
     InfrastructureModule,
+    ReadModelQueryModule,
   ],
 })
 export class AppModule {}

@@ -6,12 +6,7 @@ import { EventStoreModule } from 'src/event-store/event-store.module'
 import { ReceiveCatchUpService } from './catch-up/receive-catch-up/receive-catch-up.service'
 import { EventRelayService } from './services/event-relay/event-relay.service'
 import { EventListenerService } from './services/event-listener/event-listener.service'
-import { QuoteQueryService } from './queries/quote-query/quote-query.service'
-import { ReceiveQueryService } from './queries/receive-query/receive-query.service'
-import { PendingQuoteQueryService } from './queries/pending-quote-query/pending-quote-query.service'
 import { CqrsModule } from '@nestjs/cqrs'
-import { UserStatsQueryService } from './queries/user-stats-query/user-stats-query.service'
-import { GuildStatsQueryService } from './queries/guild-stats-query/guild-stats-query.service'
 
 @Module({
   providers: [
@@ -20,19 +15,7 @@ import { GuildStatsQueryService } from './queries/guild-stats-query/guild-stats-
     ReceiveCatchUpService,
     EventRelayService,
     EventListenerService,
-    QuoteQueryService,
-    ReceiveQueryService,
-    PendingQuoteQueryService,
-    UserStatsQueryService,
-    GuildStatsQueryService,
   ],
   imports: [TypeormModule, EventStoreModule, CqrsModule],
-  exports: [
-    QuoteQueryService,
-    ReceiveQueryService,
-    PendingQuoteQueryService,
-    UserStatsQueryService,
-    GuildStatsQueryService,
-  ],
 })
 export class ReadModelCatchUpModule {}
