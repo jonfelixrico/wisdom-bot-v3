@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { InteractionTypeormRepository } from 'src/typeorm/providers/interaction.typeorm-repository'
+import { ReactionTypeormRepository } from 'src/typeorm/providers/reaction.typeorm-repository'
 import { QuoteTypeormRepository } from 'src/typeorm/providers/quote.typeorm-repository'
 import { ReceiveTypeormRepository } from 'src/typeorm/providers/receive.typeorm-repository'
 
@@ -8,7 +8,7 @@ export class GuildStatsQueryService {
   constructor(
     private quoteRepo: QuoteTypeormRepository,
     private receiveRepo: ReceiveTypeormRepository,
-    private interactionRepo: InteractionTypeormRepository,
+    private reactionRepo: ReactionTypeormRepository,
   ) {}
 
   async getStats(guildId: string) {
@@ -23,7 +23,7 @@ export class GuildStatsQueryService {
       .where('guildId = :guildId', { guildId })
       .getCount()
 
-    const interactions = await this.interactionRepo
+    const reactions = await this.reactionRepo
       .createQueryBuilder()
       .where('guildId = :guildId', { guildId })
       .getCount()
@@ -31,7 +31,7 @@ export class GuildStatsQueryService {
     return {
       quotes,
       receives,
-      interactions,
+      reactions,
     }
   }
 }

@@ -6,7 +6,7 @@ import { CqrsModule } from '@nestjs/cqrs'
 import { TypeormModule } from 'src/typeorm/typeorm.module'
 import { ReceiveCommandService } from './handlers/receive-command/receive-command.service'
 import { ReadRepositoriesModule } from 'src/read-repositories/read-repositories.module'
-import { InteractionHelperService } from './services/interaction-helper/interaction-helper.service'
+import { ReactionHelperService } from './services/reaction-helper/reaction-helper.service'
 import { UpvoteCommandService } from './handlers/upvote-command/upvote-command.service'
 import { DownvoteCommandService } from './handlers/downvote-command/downvote-command.service'
 import { UserStatsCommandService } from './handlers/user-stats-command/user-stats-command.service'
@@ -18,7 +18,7 @@ import { GuildStatsCommandService } from './handlers/guild-stats-command/guild-s
     SetupService,
     SubmitCommandService,
     ReceiveCommandService,
-    InteractionHelperService,
+    ReactionHelperService,
     UpvoteCommandService,
     DownvoteCommandService,
     UserStatsCommandService,

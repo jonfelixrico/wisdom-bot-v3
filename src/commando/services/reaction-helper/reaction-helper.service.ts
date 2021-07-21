@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { CommandBus } from '@nestjs/cqrs'
 import { Message } from 'discord.js'
-import { InteractReceiveCommand } from 'src/domain/commands/interact-receive.command'
+import { ReactToReceiveCommand } from 'src/domain/commands/react-to-receive.command'
 import { Receive } from 'src/domain/entities/receive.entity'
 import { DomainErrorCodes } from 'src/domain/errors/domain-error-codes.enum'
 import { DomainError } from 'src/domain/errors/domain-error.class'
@@ -9,14 +9,14 @@ import { UpdateReceiveMessageReactionsListCommand } from 'src/infrastructure/com
 import { ReceiveQueryService } from 'src/read-repositories/queries/receive-query/receive-query.service'
 
 @Injectable()
-export class InteractionHelperService {
+export class ReactionHelperService {
   constructor(
     private logger: Logger,
     private commandBus: CommandBus,
     private query: ReceiveQueryService,
   ) {}
 
-  async handleInteraction(message: Message, karma: number) {
+  async handleReaction(message: Message, karma: number) {
     const { channel, reference } = message
 
     if (!reference) {
@@ -37,24 +37,24 @@ export class InteractionHelperService {
 
     try {
       const receive: Receive = await this.commandBus.execute(
-        new InteractReceiveCommand({
+        new ReactToReceiveCommand({
           karma,
           receiveId,
           userId,
         }),
       )
 
-      const { interactions } = receive
+      const { reactions } = receive
 
       this.commandBus.execute(
         new UpdateReceiveMessageReactionsListCommand({
           receiveId,
           reactions: {
-            upvotes: interactions
+            upvotes: reactions
               .filter(({ karma }) => karma > 0)
               .map(({ userId }) => userId)
               .sort(),
-            downvotes: interactions
+            downvotes: reactions
               .filter(({ karma }) => karma < 0)
               .map(({ userId }) => userId)
               .sort(),
@@ -64,11 +64,11 @@ export class InteractionHelperService {
     } catch (e) {
       if (
         e instanceof DomainError &&
-        e.code === DomainErrorCodes.INTERACTION_DUPLICATE_USER
+        e.code === DomainErrorCodes.REACTION_DUPLICATE_USER
       ) {
         this.logger.log(
           `User ${userId} has already reacted to receive ${receiveId}.`,
-          InteractionHelperService.name,
+          ReactionHelperService.name,
         )
 
         return message.channel.send(
@@ -76,7 +76,7 @@ export class InteractionHelperService {
         )
       }
 
-      // the dupe user interact is the only error we'll handle. for the rest, they are uncaught exceptions
+      // the dupe user reaction is the only error we'll handle. for the rest, they are uncaught exceptions
       throw e
     }
 

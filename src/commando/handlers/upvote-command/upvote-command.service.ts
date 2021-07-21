@@ -5,7 +5,7 @@ import {
   CommandoClient,
   CommandoMessage,
 } from 'discord.js-commando'
-import { InteractionHelperService } from 'src/commando/services/interaction-helper/interaction-helper.service'
+import { ReactionHelperService } from 'src/commando/services/reaction-helper/reaction-helper.service'
 import { WrappedCommand } from '../wrapped-command.class'
 
 const COMMAND_INFO: CommandInfo = {
@@ -22,12 +22,12 @@ export class UpvoteCommandService extends WrappedCommand {
   constructor(
     client: CommandoClient,
     private logger: Logger,
-    private helper: InteractionHelperService,
+    private helper: ReactionHelperService,
   ) {
     super(client, COMMAND_INFO)
   }
 
   run(message: CommandoMessage): Promise<Message | Message[]> {
-    return this.helper.handleInteraction(message, 1)
+    return this.helper.handleReaction(message, 1)
   }
 }

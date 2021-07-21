@@ -4,8 +4,8 @@ import { ReceiveTypeormEntity } from '../entities/receive.typeorm-entity'
 import { QuoteTypeormRepository } from './quote.typeorm-repository'
 import { ReceiveTypeormRepository } from './receive.typeorm-repository'
 import { generateTypeormRepositoryProvider } from './typeorm-provider-factory.util'
-import { InteractionTypeormEntity } from './../entities/interaction.typeorm-entity'
-import { InteractionTypeormRepository } from './interaction.typeorm-repository'
+import { ReactionTypeormEntity } from '../entities/reaction.typeorm-entity'
+import { ReactionTypeormRepository } from './reaction.typeorm-repository'
 
 export const typeormRepositoryProviders: Provider[] = [
   generateTypeormRepositoryProvider<QuoteTypeormEntity, QuoteTypeormRepository>(
@@ -19,7 +19,7 @@ export const typeormRepositoryProviders: Provider[] = [
   ),
 
   generateTypeormRepositoryProvider(
-    InteractionTypeormEntity,
-    InteractionTypeormRepository,
+    ReactionTypeormEntity,
+    ReactionTypeormRepository,
   ),
 ]
