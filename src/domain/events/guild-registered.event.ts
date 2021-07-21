@@ -1,6 +1,6 @@
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { DomainEvent } from '../abstracts/domain-event.abstract'
-import { IGuildEntity } from '../entities/guild.interface'
+import { IGuildEntity } from '../entities/guild.interfaces'
 import { EventPayload } from './event-payload.type'
 
 export interface IGuildRegisteredEventPayload

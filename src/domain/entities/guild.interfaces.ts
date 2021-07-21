@@ -1,6 +1,8 @@
 export interface IQuoteSettings {
-  upvoteCount: string
+  upvoteCount: number
   upvoteEmoji: string
+  // time millis; determines how long to wait until a quote is marked as expired
+  upvoteWindow: number
 }
 
 export interface ISettings {
