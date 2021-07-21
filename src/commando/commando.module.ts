@@ -5,7 +5,7 @@ import { SetupService } from './services/setup/setup.service'
 import { CqrsModule } from '@nestjs/cqrs'
 import { TypeormModule } from 'src/typeorm/typeorm.module'
 import { ReceiveCommandService } from './handlers/receive-command/receive-command.service'
-import { ReadRepositoriesModule } from 'src/read-repositories/read-repositories.module'
+import { ReadModelCatchUpModule } from 'src/read-model-catch-up/read-model-catch-up.module'
 import { ReactionHelperService } from './services/reaction-helper/reaction-helper.service'
 import { UpvoteCommandService } from './handlers/upvote-command/upvote-command.service'
 import { DownvoteCommandService } from './handlers/downvote-command/downvote-command.service'
@@ -13,7 +13,7 @@ import { UserStatsCommandService } from './handlers/user-stats-command/user-stat
 import { GuildStatsCommandService } from './handlers/guild-stats-command/guild-stats-command.service'
 
 @Module({
-  imports: [DiscordModule, CqrsModule, TypeormModule, ReadRepositoriesModule],
+  imports: [DiscordModule, CqrsModule, TypeormModule, ReadModelCatchUpModule],
   providers: [
     SetupService,
     SubmitCommandService,

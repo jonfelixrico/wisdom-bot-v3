@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { MessageEmbed, MessageEmbedOptions } from 'discord.js'
 import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 import { UpdateReceiveMessageReactionsListCommand } from 'src/infrastructure/commands/update-receive-message-reactions-list.command'
-import { ReceiveQueryService } from 'src/read-repositories/queries/receive-query/receive-query.service'
+import { ReceiveQueryService } from 'src/read-model-catch-up/queries/receive-query/receive-query.service'
 import { SPACE_CHARACTER } from 'src/types/discord.constants'
 
 @CommandHandler(UpdateReceiveMessageReactionsListCommand)

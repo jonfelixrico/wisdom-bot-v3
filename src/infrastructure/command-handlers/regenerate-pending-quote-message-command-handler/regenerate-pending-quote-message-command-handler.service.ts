@@ -4,7 +4,7 @@ import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.
 import { UpdateQuoteMessageDetailsCommand } from 'src/domain/commands/update-quote-message-id.command'
 import { RegeneratePendingQuoteMessageCommand } from '../../commands/regenerate-pending-quote-message.command'
 import { WatchPendingQuoteCommand } from '../../commands/watch-pending-quote.command'
-import { PendingQuoteQueryService } from 'src/read-repositories/queries/pending-quote-query/pending-quote-query.service'
+import { PendingQuoteQueryService } from 'src/read-model-catch-up/queries/pending-quote-query/pending-quote-query.service'
 import { MessageEmbed } from 'discord.js'
 import { submitResponseMessageFormatter } from 'src/commando/utils/submit-response-message-formatter.util'
 

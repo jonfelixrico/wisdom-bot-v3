@@ -35,4 +35,4 @@ import { GuildStatsQueryService } from './queries/guild-stats-query/guild-stats-
     GuildStatsQueryService,
   ],
 })
-export class ReadRepositoriesModule {}
+export class ReadModelCatchUpModule {}

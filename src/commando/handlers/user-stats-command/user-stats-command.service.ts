@@ -5,7 +5,7 @@ import {
   CommandoClient,
   CommandInfo,
 } from 'discord.js-commando'
-import { UserStatsQueryService } from 'src/read-repositories/queries/user-stats-query/user-stats-query.service'
+import { UserStatsQueryService } from 'src/read-model-catch-up/queries/user-stats-query/user-stats-query.service'
 import { IArgumentMap, WrappedCommand } from '../wrapped-command.class'
 
 const COMMAND_INFO: CommandInfo = {

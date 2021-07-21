@@ -2,7 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { EventRelayService } from '../event-relay/event-relay.service'
 import { JSONRecordedEvent, RecordedEvent } from '@eventstore/db-client'
 import { Connection } from 'typeorm'
-import { REDUCER_MAP } from './../../reducers/index'
+import { REDUCER_MAP } from '../../reducers/index'
 
 @Injectable()
 export class EventListenerService implements OnModuleInit {

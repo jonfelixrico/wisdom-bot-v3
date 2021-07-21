@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 import { CqrsModule } from '@nestjs/cqrs'
 import { DiscordModule } from 'src/discord/discord.module'
-import { ReadRepositoriesModule } from 'src/read-repositories/read-repositories.module'
+import { ReadModelCatchUpModule } from 'src/read-model-catch-up/read-model-catch-up.module'
 import { RegeneratePendingQuoteMessageCommandHandlerService } from './command-handlers/regenerate-pending-quote-message-command-handler/regenerate-pending-quote-message-command-handler.service'
 import { WatchPendingQuoteCommandHandlerService } from './command-handlers/watch-pending-quote-command-handler/watch-pending-quote-command-handler.service'
 import { SendQuoteAcceptedMessageCommandHandlerService } from './command-handlers/send-quote-accepted-message-command-handler/send-quote-accepted-message-command-handler.service'
@@ -9,7 +9,7 @@ import { UpdateReceiveMessageReactionsListCommandHandlerService } from './comman
 import { UpdateSubmitMessageAsExpiredCommandService } from './command-handlers/update-submit-message-as-expired-command/update-submit-message-as-expired-command.service'
 
 @Module({
-  imports: [CqrsModule, DiscordModule, ReadRepositoriesModule],
+  imports: [CqrsModule, DiscordModule, ReadModelCatchUpModule],
   providers: [
     RegeneratePendingQuoteMessageCommandHandlerService,
     WatchPendingQuoteCommandHandlerService,

@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { StreamReaderService } from 'src/event-store/stream-reader/stream-reader.service'
-import { RECEIVE_REDUCERS } from 'src/read-repositories/reducers/receive.reducers'
+import { RECEIVE_REDUCERS } from 'src/read-model-catch-up/reducers/receive.reducers'
 import {
   CatchUpOrchestratorService,
   ICatchUpService,
@@ -15,7 +15,7 @@ import {
 } from '@eventstore/db-client'
 import { IReceiveCreatedPayload } from 'src/domain/events/receive-created.event'
 import { ReceiveTypeormEntity } from 'src/typeorm/entities/receive.typeorm-entity'
-import { EventRelayService } from 'src/read-repositories/services/event-relay/event-relay.service'
+import { EventRelayService } from 'src/read-model-catch-up/services/event-relay/event-relay.service'
 
 const { RECEIVE_CREATED } = DomainEventNames
 

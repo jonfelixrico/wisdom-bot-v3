@@ -5,7 +5,7 @@ import {
   CommandoClient,
   CommandInfo,
 } from 'discord.js-commando'
-import { GuildStatsQueryService } from 'src/read-repositories/queries/guild-stats-query/guild-stats-query.service'
+import { GuildStatsQueryService } from 'src/read-model-catch-up/queries/guild-stats-query/guild-stats-query.service'
 import { WrappedCommand } from '../wrapped-command.class'
 
 const COMMAND_INFO: CommandInfo = {

@@ -16,8 +16,8 @@ import {
 import { Connection } from 'typeorm'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 import { Logger } from '@nestjs/common'
-import { EventRelayService } from 'src/read-repositories/services/event-relay/event-relay.service'
-import { QUOTE_REDUCERS } from 'src/read-repositories/reducers/quote.reducers'
+import { EventRelayService } from 'src/read-model-catch-up/services/event-relay/event-relay.service'
+import { QUOTE_REDUCERS } from 'src/read-model-catch-up/reducers/quote.reducers'
 
 interface DataType extends IQuoteSubmittedEventPayload, Record<string, any> {}
 type EventType = JSONEventType<DomainEventNames, DataType>
