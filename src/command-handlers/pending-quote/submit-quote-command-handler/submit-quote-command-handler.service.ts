@@ -1,7 +1,6 @@
 import { NO_STREAM } from '@eventstore/db-client'
 import { Logger } from '@nestjs/common'
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { submitResponseMessageFormatter } from 'src/commando/utils/submit-response-message-formatter.util'
 import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 import { SubmitQuoteCommand } from 'src/domain/commands/submit-quote.command'
 import { Guild } from 'src/domain/entities/guild.entity'
@@ -45,25 +44,6 @@ export class SubmitQuoteCommandHandlerService
         revision: null,
       }
     }
-
-    // TODO FIX THIS SHIT
-
-    const embed = submitResponseMessageFormatter({
-      content: quote,
-      submitterId: submitter.id,
-      submitterAvatarUrl: await submitter.displayAvatarURL({
-        format: 'png',
-      }),
-      authorId: author.id,
-      authorAvatarUrl: await author.displayAvatarURL({ format: 'png' }),
-      expireDt,
-      reactionCount: approveCount + 1,
-      reactionEmoji: approveEmoji,
-      submitDt,
-    })
-
-    const response = await message.channel.send(new MessageEmbed(embed))
-    const messageId = response.id
 
     const submitted = guild.entity.submitQuote(payload)
     const { quoteId } = submitted
