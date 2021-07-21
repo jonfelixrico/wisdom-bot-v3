@@ -2,7 +2,20 @@ import { DomainEntity } from '../abstracts/domain-entity.abstract'
 import { GuildQuoteSettingsUpdatedEvent } from '../events/guild-quote-settings-updated.event'
 import { GuildRegisteredEvent } from '../events/guild-registered.event'
 import { GuildSettingsUpdatedEvent } from '../events/guild-settings-updated.event'
-import { IGuildEntity, IQuoteSettings, ISettings } from './guild.interface'
+import { IGuildEntity, IQuoteSettings, ISettings } from './guild.interfaces'
+import { v4 } from 'uuid'
+import { QuoteSubmittedEvent } from '../events/quote-submitted.event'
+
+export interface ISubmittedQuote {
+  content: string
+  authorId: string
+  submitterId: string
+  submitDt: Date
+
+  // for tracking
+  channelId?: string
+  messageId?: string
+}
 
 export class Guild extends DomainEntity implements IGuildEntity {
   guildId: string
@@ -34,6 +47,25 @@ export class Guild extends DomainEntity implements IGuildEntity {
       new GuildQuoteSettingsUpdatedEvent({
         ...settings,
         guildId: this.guildId,
+      }),
+    )
+  }
+
+  submitQuote(quote: ISubmittedQuote) {
+    const { guildId, quoteSettings } = this
+    const { upvoteCount, upvoteEmoji, upvoteWindow } = quoteSettings
+
+    const quoteId = v4()
+    const expireDt = new Date(quote.submitDt.getTime() + upvoteWindow)
+
+    this.apply(
+      new QuoteSubmittedEvent({
+        quoteId,
+        upvoteEmoji,
+        upvoteCount,
+        guildId,
+        ...quote,
+        expireDt,
       }),
     )
   }
