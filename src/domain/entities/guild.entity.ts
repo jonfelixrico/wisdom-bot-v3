@@ -10,7 +10,6 @@ export interface ISubmittedQuote {
   content: string
   authorId: string
   submitterId: string
-  submitDt: Date
 
   // for tracking
   channelId?: string
@@ -56,15 +55,17 @@ export class Guild extends DomainEntity implements IGuildEntity {
     const { upvoteCount, upvoteEmoji, upvoteWindow } = quoteSettings
 
     const quoteId = v4()
-    const expireDt = new Date(quote.submitDt.getTime() + upvoteWindow)
+    const submitDt = new Date()
+    const expireDt = new Date(submitDt.getTime() + upvoteWindow)
 
     this.apply(
       new QuoteSubmittedEvent({
+        ...quote,
         quoteId,
         upvoteEmoji,
         upvoteCount,
         guildId,
-        ...quote,
+        submitDt,
         expireDt,
       }),
     )
