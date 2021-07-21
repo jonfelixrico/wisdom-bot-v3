@@ -5,7 +5,7 @@ import {
   CommandoClient,
   CommandoMessage,
 } from 'discord.js-commando'
-import { InteractionHelperService } from 'src/commando/services/interaction-helper/interaction-helper.service'
+import { ReactionHelperService } from 'src/commando/services/reaction-helper/reaction-helper.service'
 import { WrappedCommand } from '../wrapped-command.class'
 
 const COMMAND_INFO: CommandInfo = {
@@ -22,7 +22,7 @@ export class DownvoteCommandService extends WrappedCommand {
   constructor(
     client: CommandoClient,
     private logger: Logger,
-    private helper: InteractionHelperService,
+    private helper: ReactionHelperService,
   ) {
     super(client, COMMAND_INFO)
   }

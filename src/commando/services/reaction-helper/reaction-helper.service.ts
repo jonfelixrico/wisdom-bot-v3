@@ -9,7 +9,7 @@ import { UpdateReceiveMessageReactionsListCommand } from 'src/infrastructure/com
 import { ReceiveQueryService } from 'src/read-repositories/queries/receive-query/receive-query.service'
 
 @Injectable()
-export class InteractionHelperService {
+export class ReactionHelperService {
   constructor(
     private logger: Logger,
     private commandBus: CommandBus,
@@ -68,7 +68,7 @@ export class InteractionHelperService {
       ) {
         this.logger.log(
           `User ${userId} has already reacted to receive ${receiveId}.`,
-          InteractionHelperService.name,
+          ReactionHelperService.name,
         )
 
         return message.channel.send(
