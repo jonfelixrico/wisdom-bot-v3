@@ -2,7 +2,6 @@ import { DomainEntity } from '../abstracts/domain-entity.abstract'
 import { PendingQuoteAcceptedEvent } from '../events/pending-quote-accepted.event'
 import { PendingQuoteCancelledEvent } from '../events/pending-quote-cancelled.event'
 import { QuoteSubmittedEvent } from '../events/quote-submitted.event'
-import { IPendingQuote } from './pending-quote.interface'
 import { IQuoteToSubmit } from './quote-to-submit.interface'
 import { v4 } from 'uuid'
 import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
@@ -16,6 +15,31 @@ const {
   QUOTE_EXPIRED,
   QUOTE_INVALID_EXPIRATION_ACK,
 } = DomainErrorCodes
+
+export interface IPendingQuote {
+  quoteId: string
+
+  // Optional because these are nullable.
+  acceptDt?: Date
+  cancelDt?: Date
+  expireAckDt?: Date
+
+  submitDt: Date
+
+  content: string
+  authorId: string
+  submitterId: string
+  guildId: string
+
+  // for tracking
+  channelId?: string
+  messageId?: string
+
+  // for approval/expiration
+  expireDt: Date
+  upvoteCount: number
+  upvoteEmoji: string
+}
 
 export interface IQuoteMessageDetails {
   messageId: string
