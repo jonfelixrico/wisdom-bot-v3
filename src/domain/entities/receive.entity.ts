@@ -4,10 +4,7 @@ import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
 import { DomainError } from '../errors/domain-error.class'
 import { ReceiveReactedEvent } from '../events/receive-reacted.event'
 
-const {
-  REACTION_DUPLICATE_USER: INTERACTION_DUPLICATE_USER,
-  REACTION_INVALID_KARMA: INTERACTION_INVALID_KARMA,
-} = DomainErrorCodes
+const { REACTION_DUPLICATE_USER, REACTION_INVALID_KARMA } = DomainErrorCodes
 
 interface IReaction {
   readonly reactionId: string
@@ -25,7 +22,7 @@ export interface IReceiveEntity {
   reactions: IReaction[]
 }
 
-interface IReceiveInteractInput {
+interface IReceiveReactionInput {
   readonly userId: string
   readonly karma: number
 }
@@ -53,12 +50,12 @@ export class Receive extends DomainEntity implements IReceiveEntity {
     this.receiveId = receiveId
   }
 
-  react({ karma = 1, userId }: IReceiveInteractInput) {
+  react({ karma = 1, userId }: IReceiveReactionInput) {
     const { reactions } = this
     if (karma === 0) {
-      throw new DomainError(INTERACTION_INVALID_KARMA)
+      throw new DomainError(REACTION_INVALID_KARMA)
     } else if (reactions.some((reaction) => reaction.userId === userId)) {
-      throw new DomainError(INTERACTION_DUPLICATE_USER)
+      throw new DomainError(REACTION_DUPLICATE_USER)
     }
 
     const reactionDt = new Date()
