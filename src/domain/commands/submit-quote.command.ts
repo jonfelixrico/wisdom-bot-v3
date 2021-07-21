@@ -1,7 +1,16 @@
 import { ICommand } from '../command.interface'
-import { IQuoteToSubmit } from '../entities/quote-to-submit.interface'
 
-export type ISubmitQuoteCommandPayload = IQuoteToSubmit
+export interface ISubmitQuoteCommandPayload {
+  guildId: string
+  content: string
+  authorId: string
+  submitterId: string
+  submitDt: Date
+
+  // for tracking
+  channelId?: string
+  messageId?: string
+}
 
 export class SubmitQuoteCommand
   implements ICommand<ISubmitQuoteCommandPayload>
