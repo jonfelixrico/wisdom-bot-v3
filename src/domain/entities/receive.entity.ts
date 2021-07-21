@@ -2,7 +2,7 @@ import { v4 } from 'uuid'
 import { DomainEntity } from '../abstracts/domain-entity.abstract'
 import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
 import { DomainError } from '../errors/domain-error.class'
-import { ReceiveReactedEvent } from '../events/receive-interacted.event'
+import { ReceiveReactedEvent } from '../events/receive-reacted.event'
 
 const {
   REACTION_DUPLICATE_USER: INTERACTION_DUPLICATE_USER,

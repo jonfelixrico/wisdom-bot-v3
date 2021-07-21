@@ -1,7 +1,7 @@
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { IReceiveEntity } from 'src/domain/entities/receive.entity'
 import { IReceiveCreatedPayload } from 'src/domain/events/receive-created.event'
-import { IReceiveReactedPayload } from 'src/domain/events/receive-interacted.event'
+import { IReceiveReactedPayload } from 'src/domain/events/receive-reacted.event'
 import {
   WriteRepositoryReducer,
   WriteRepositoryReducerMap,
