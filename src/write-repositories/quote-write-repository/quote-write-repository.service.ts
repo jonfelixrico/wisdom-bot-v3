@@ -15,12 +15,15 @@ import {
 } from '../abstract/esdb-repository.abstract'
 import { QuoteReceivedEvent } from 'src/domain/events/quote-received.event'
 import { ReceiveCreatedEvent } from 'src/domain/events/receive-created.event'
-import { convertDomainEventToJsonEvent } from './../utils/convert-domain-event-to-json-event.util'
 import { writeRepositoryReducerDispatcherFactory } from '../reducers/write-repository-reducer-dispatcher.util'
+import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
 
 @Injectable()
 export class QuoteWriteRepositoryService extends EsdbRepository<Quote> {
-  constructor(private client: EventStoreDBClient) {
+  constructor(
+    private client: EventStoreDBClient,
+    private pub: DomainEventPublisherService,
+  ) {
     super()
   }
 
@@ -70,27 +73,15 @@ export class QuoteWriteRepositoryService extends EsdbRepository<Quote> {
     let nextRev: ExpectedRevision = expectedRevision
 
     for (const event of entity.events) {
-      const streamName = event.aggregateId
-
       if (event instanceof QuoteReceivedEvent) {
-        const { nextExpectedRevision } = await this.client.appendToStream(
-          streamName,
-          convertDomainEventToJsonEvent(event),
-          {
-            expectedRevision: nextRev,
-          },
+        const { nextExpectedRevision } = await this.pub.publishEvents(
+          event,
+          nextRev,
         )
 
         nextRev = nextExpectedRevision
       } else if (event instanceof ReceiveCreatedEvent) {
-        await this.client.appendToStream(
-          streamName,
-          convertDomainEventToJsonEvent(event),
-          {
-            // We're statically expecting NO_STREAM here because this event is the root event for receive streams
-            expectedRevision: NO_STREAM,
-          },
-        )
+        await this.pub.publishEvents(event, NO_STREAM)
       } else {
         // TODO do checking if all events received here are for the quote event only
       }

@@ -7,16 +7,19 @@ import {
 import { Injectable } from '@nestjs/common'
 import { IReceiveEntity, Receive } from 'src/domain/entities/receive.entity'
 import { RECEIVE_REDUCERS } from '../reducers/recieve.reducer'
-import { convertDomainEventToJsonEvent } from '../utils/convert-domain-event-to-json-event.util'
 import {
   EsdbRepository,
   IEsdbRepositoryEntity,
 } from '../abstract/esdb-repository.abstract'
 import { writeRepositoryReducerDispatcherFactory } from '../reducers/write-repository-reducer-dispatcher.util'
+import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
 
 @Injectable()
 export class ReceiveWriteRepositoryService extends EsdbRepository<Receive> {
-  constructor(private client: EventStoreDBClient) {
+  constructor(
+    private client: EventStoreDBClient,
+    private pub: DomainEventPublisherService,
+  ) {
     super()
   }
 
@@ -50,13 +53,6 @@ export class ReceiveWriteRepositoryService extends EsdbRepository<Receive> {
     { events }: Receive,
     expectedRevision: ExpectedRevision,
   ): Promise<void> {
-    const [firstEvent] = events
-    await this.client.appendToStream(
-      firstEvent.aggregateId,
-      events.map(convertDomainEventToJsonEvent),
-      {
-        expectedRevision,
-      },
-    )
+    await this.pub.publishEvents(events, expectedRevision)
   }
 }

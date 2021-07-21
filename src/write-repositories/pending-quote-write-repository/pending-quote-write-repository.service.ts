@@ -10,11 +10,11 @@ import {
   EsdbRepository,
   IEsdbRepositoryEntity,
 } from '../abstract/esdb-repository.abstract'
-import { convertDomainEventToJsonEvent } from '../utils/convert-domain-event-to-json-event.util'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { PENDING_QUOTE_REDUCERS } from '../reducers/pending-quote.reducer'
 import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
 import { writeRepositoryReducerDispatcherFactory } from '../reducers/write-repository-reducer-dispatcher.util'
+import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
 
 const {
   PENDING_QUOTE_ACCEPTED,
@@ -30,7 +30,10 @@ const DISQUALIFIER_EVENTS = new Set<string>([
 
 @Injectable()
 export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQuote> {
-  constructor(private client: EventStoreDBClient) {
+  constructor(
+    private client: EventStoreDBClient,
+    private pub: DomainEventPublisherService,
+  ) {
     super()
   }
 
@@ -69,14 +72,6 @@ export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQu
     { events }: PendingQuote,
     expectedRevision: ExpectedRevision,
   ) {
-    const [firstEvent] = events
-    this.client.appendToStream(
-      // We're going to trust that all aggregateIds here are the same
-      firstEvent.aggregateId,
-      events.map(convertDomainEventToJsonEvent),
-      {
-        expectedRevision,
-      },
-    )
+    await this.pub.publishEvents(events, expectedRevision)
   }
 }
