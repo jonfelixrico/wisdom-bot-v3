@@ -4,8 +4,10 @@ import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
 import { DomainError } from '../errors/domain-error.class'
 import { ReceiveInteractedEvent } from '../events/receive-interacted.event'
 
-const { INTERACTION_DUPLICATE_USER, INTERACTION_INVALID_KARMA } =
-  DomainErrorCodes
+const {
+  REACTION_DUPLICATE_USER: INTERACTION_DUPLICATE_USER,
+  REACTION_INVALID_KARMA: INTERACTION_INVALID_KARMA,
+} = DomainErrorCodes
 
 interface IInteraction {
   readonly interactionId: string

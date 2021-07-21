@@ -64,7 +64,7 @@ export class InteractionHelperService {
     } catch (e) {
       if (
         e instanceof DomainError &&
-        e.code === DomainErrorCodes.INTERACTION_DUPLICATE_USER
+        e.code === DomainErrorCodes.REACTION_DUPLICATE_USER
       ) {
         this.logger.log(
           `User ${userId} has already reacted to receive ${receiveId}.`,
