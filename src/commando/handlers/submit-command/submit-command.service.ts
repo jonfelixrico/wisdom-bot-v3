@@ -25,16 +25,19 @@ export class SubmitCommandService extends WrappedCommand<ISubmitCommandArgs> {
     const channelId = message.channel.id
     const submitter = message.author
 
+    const response = await message.channel.send('Processing submission...')
+
     await this.commandBus.execute(
       new SubmitQuoteCommand({
         authorId: author.id,
         submitterId: submitter.id,
         channelId,
+        messageId: response.id,
         content: quote,
         guildId,
       }),
     )
 
-    return message
+    return response
   }
 }
