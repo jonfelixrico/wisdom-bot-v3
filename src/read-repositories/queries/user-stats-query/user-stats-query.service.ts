@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { InteractionTypeormRepository } from 'src/typeorm/providers/interaction.typeorm-repository'
+import { ReactionTypeormRepository } from 'src/typeorm/providers/interaction.typeorm-repository'
 import { QuoteTypeormRepository } from 'src/typeorm/providers/quote.typeorm-repository'
 import { ReceiveTypeormRepository } from 'src/typeorm/providers/receive.typeorm-repository'
 
@@ -8,7 +8,7 @@ export class UserStatsQueryService {
   constructor(
     private quoteRepo: QuoteTypeormRepository,
     private receiveRepo: ReceiveTypeormRepository,
-    private interactionRepo: InteractionTypeormRepository,
+    private reactionRepo: ReactionTypeormRepository,
   ) {}
 
   private async outgoingStats(guildId: string, userId: string) {
@@ -25,7 +25,7 @@ export class UserStatsQueryService {
       .andWhere('userId = :userId', { userId })
       .getCount()
 
-    const interactionQuoteCount = await this.interactionRepo
+    const interactionQuoteCount = await this.reactionRepo
       .createQueryBuilder()
       .where('guildId = :guildId', { guildId })
       .andWhere('userId = :userId', { userId })
@@ -52,7 +52,7 @@ export class UserStatsQueryService {
       .andWhere('parentQuoteAuthorId = :userId', { userId })
       .getCount()
 
-    const quoteInteractionsCount = await this.interactionRepo
+    const quoteInteractionsCount = await this.reactionRepo
       .createQueryBuilder()
       .where('guildId = :guildId', { guildId })
       .andWhere('parentQuoteAuthorId = :userId', { userId })
