@@ -18,7 +18,7 @@ export class ReactToReceiveCommandHandlerService
     const receive = await this.repo.findById(receiveId)
     if (!receive) {
       this.logger.verbose(
-        `Did not process InteractReceiveCommand for receive ${receiveId} not found.`,
+        `Did not process ReactToReceiveCommand for receive ${receiveId} not found.`,
         ReactToReceiveCommandHandlerService.name,
       )
       return null
@@ -29,7 +29,7 @@ export class ReactToReceiveCommandHandlerService
 
     this.repo.publishEvents(entity, revision)
     this.logger.verbose(
-      `Processed InteractReceiveCommand for receive ${receiveId}.`,
+      `Processed ReactToReceiveCommand for receive ${receiveId}.`,
       ReactToReceiveCommandHandlerService.name,
     )
 
