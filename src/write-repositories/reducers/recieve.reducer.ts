@@ -16,16 +16,18 @@ const create: WriteRepositoryReducer<IReceiveCreatedPayload, IReceiveEntity> = (
   }
 }
 
-const interact: WriteRepositoryReducer<IReceiveReactedPayload, IReceiveEntity> =
-  ({ receiveId, reactionId, userId, karma }, { reactions, ...state }) => {
-    return {
-      ...state,
-      reactions: [...reactions, { receiveId, reactionId, userId, karma }],
-    }
+const react: WriteRepositoryReducer<IReceiveReactedPayload, IReceiveEntity> = (
+  { receiveId, reactionId, userId, karma },
+  { reactions, ...state },
+) => {
+  return {
+    ...state,
+    reactions: [...reactions, { receiveId, reactionId, userId, karma }],
   }
+}
 
 const { RECEIVE_CREATED, RECEIVE_REACTED } = DomainEventNames
 export const RECEIVE_REDUCERS: WriteRepositoryReducerMap<IReceiveEntity> = {
   [RECEIVE_CREATED]: create,
-  [RECEIVE_REACTED]: interact,
+  [RECEIVE_REACTED]: react,
 }
