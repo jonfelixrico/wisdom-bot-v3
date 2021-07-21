@@ -5,6 +5,7 @@ import { GuildSettingsUpdatedEvent } from '../events/guild-settings-updated.even
 import { IGuildEntity, IQuoteSettings, ISettings } from './guild.interfaces'
 import { v4 } from 'uuid'
 import { QuoteSubmittedEvent } from '../events/quote-submitted.event'
+import { PendingQuote } from './pending-quote.entity'
 
 export interface ISubmittedQuote {
   content: string
@@ -58,17 +59,20 @@ export class Guild extends DomainEntity implements IGuildEntity {
     const submitDt = new Date()
     const expireDt = new Date(submitDt.getTime() + upvoteWindow)
 
-    this.apply(
-      new QuoteSubmittedEvent({
-        ...quote,
-        quoteId,
-        upvoteEmoji,
-        upvoteCount,
-        guildId,
-        submitDt,
-        expireDt,
-      }),
-    )
+    const newQuote = {
+      ...quote,
+      quoteId,
+      upvoteEmoji,
+      upvoteCount,
+      guildId,
+      submitDt,
+      expireDt,
+    }
+
+    const entity = new PendingQuote(newQuote)
+    entity.apply(new QuoteSubmittedEvent(newQuote))
+
+    return entity
   }
 
   static register(entity: IGuildEntity) {
