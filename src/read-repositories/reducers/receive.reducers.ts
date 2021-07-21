@@ -1,7 +1,7 @@
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { IReceiveCreatedPayload } from 'src/domain/events/receive-created.event'
 import { IReceiveReactedPayload } from 'src/domain/events/receive-interacted.event'
-import { ReactionTypeormEntity } from 'src/typeorm/entities/interaction.typeorm-entity'
+import { ReactionTypeormEntity } from 'src/typeorm/entities/reaction.typeorm-entity'
 import { ReceiveTypeormEntity } from 'src/typeorm/entities/receive.typeorm-entity'
 import { ReadRepositoryReducer } from '../types/read-repository-reducer.type'
 import { ReducerMap } from 'src/read-repositories/types/reducer-map.type'
