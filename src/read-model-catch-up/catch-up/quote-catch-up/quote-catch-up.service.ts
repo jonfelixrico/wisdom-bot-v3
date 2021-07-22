@@ -63,6 +63,7 @@ export class QuoteCatchUpService implements OnModuleInit, ICatchUpService {
             QuoteCatchUpService.name,
           )
 
+          // TODO need to decide about what to do with queryEvent
           this.relay.queryEvent(streamId, fromRevision + 1n)
           return
         }

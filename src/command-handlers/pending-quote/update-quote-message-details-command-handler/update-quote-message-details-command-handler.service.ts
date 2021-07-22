@@ -1,14 +1,13 @@
 import { Logger } from '@nestjs/common'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { UpdateQuoteMessageDetailsCommand } from 'src/domain/commands/update-quote-message-id.command'
-import { PendingQuoteWriteRepositoryService } from 'src/write-repositories/pending-quote-write-repository/pending-quote-write-repository.service'
-
+import { PendingQuoteWriteRepository } from 'src/write-repositories/abstract/pending-quote-write-repository.abstract'
 @CommandHandler(UpdateQuoteMessageDetailsCommand)
 export class UpdateQuoteMessageDetailsCommandHandlerService
   implements ICommandHandler<UpdateQuoteMessageDetailsCommand>
 {
   constructor(
-    private repo: PendingQuoteWriteRepositoryService,
+    private repo: PendingQuoteWriteRepository,
     private logger: Logger,
   ) {}
 

@@ -1,16 +1,13 @@
 import { Logger } from '@nestjs/common'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { ReactToReceiveCommand } from 'src/domain/commands/react-to-receive.command'
-import { ReceiveWriteRepositoryService } from 'src/write-repositories/receive-write-repository/receive-write-repository.service'
+import { ReceiveWriteRepository } from 'src/write-repositories/abstract/receive-write-repository.abstract'
 
 @CommandHandler(ReactToReceiveCommand)
 export class ReactToReceiveCommandHandlerService
   implements ICommandHandler<ReactToReceiveCommand>
 {
-  constructor(
-    private repo: ReceiveWriteRepositoryService,
-    private logger: Logger,
-  ) {}
+  constructor(private repo: ReceiveWriteRepository, private logger: Logger) {}
 
   async execute({ payload }: ReactToReceiveCommand): Promise<any> {
     const { karma, receiveId, userId } = payload

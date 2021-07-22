@@ -1,13 +1,7 @@
-import {
-  ErrorType,
-  EventStoreDBClient,
-  ExpectedRevision,
-  JSONRecordedEvent,
-  NO_STREAM,
-} from '@eventstore/db-client'
+import { ExpectedRevision, NO_STREAM } from '@eventstore/db-client'
 import { Injectable } from '@nestjs/common'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
-import { IQuoteEntity, Quote } from 'src/domain/entities/quote.entity'
+import { Quote } from 'src/domain/entities/quote.entity'
 import { QUOTE_REDUCERS } from './../reducers/quote.reducer'
 import {
   EsdbRepository,
@@ -15,51 +9,40 @@ import {
 } from '../abstract/esdb-repository.abstract'
 import { QuoteReceivedEvent } from 'src/domain/events/quote-received.event'
 import { ReceiveCreatedEvent } from 'src/domain/events/receive-created.event'
-import { convertDomainEventToJsonEvent } from './../utils/convert-domain-event-to-json-event.util'
-import { writeRepositoryReducerDispatcherFactory } from '../reducers/write-repository-reducer-dispatcher.util'
+import { reduceEvents } from '../reducers/reducer.util'
+import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
+import { EsdbHelperService } from '../esdb-helper/esdb-helper.service'
 
 @Injectable()
 export class QuoteWriteRepositoryService extends EsdbRepository<Quote> {
-  constructor(private client: EventStoreDBClient) {
+  constructor(
+    private pub: DomainEventPublisherService,
+    private helper: EsdbHelperService,
+  ) {
     super()
   }
 
   async findById(id: string): Promise<IEsdbRepositoryEntity<Quote>> {
-    try {
-      const resolvedEvents = await this.client.readStream(id)
-      const events = resolvedEvents.map(
-        ({ event }) => event as JSONRecordedEvent,
+    const events = await this.helper.readAllEvents(id)
+
+    if (
+      !events ||
+      !events.some(
+        ({ type }) => type === DomainEventNames.PENDING_QUOTE_ACCEPTED,
       )
+    ) {
+      /*
+       * If PENDING_QUOTE_ACCEPTED was not found, then this quote has not reached the accepted status. Hence, the Quote
+       * entity for this id technically doesn't exist yet.
+       */
+      return null
+    }
 
-      if (
-        !events.some(
-          ({ type }) => type === DomainEventNames.PENDING_QUOTE_ACCEPTED,
-        )
-      ) {
-        /*
-         * If PENDING_QUOTE_ACCEPTED was not found, then this quote has not reached the accepted status. Hence, the Quote
-         * entity for this id technically doesn't exist yet.
-         */
-        return null
-      }
+    const [entity, revision] = reduceEvents(events, QUOTE_REDUCERS)
 
-      const asObject = events.reduce<IQuoteEntity>(
-        writeRepositoryReducerDispatcherFactory(QUOTE_REDUCERS),
-        null,
-      )
-
-      const [lastEvent] = events.reverse()
-
-      return {
-        entity: new Quote(asObject),
-        revision: lastEvent.revision,
-      }
-    } catch (e) {
-      if (e.type === ErrorType.STREAM_NOT_FOUND) {
-        return null
-      }
-
-      throw e
+    return {
+      entity: new Quote(entity),
+      revision,
     }
   }
 
@@ -70,27 +53,15 @@ export class QuoteWriteRepositoryService extends EsdbRepository<Quote> {
     let nextRev: ExpectedRevision = expectedRevision
 
     for (const event of entity.events) {
-      const streamName = event.aggregateId
-
       if (event instanceof QuoteReceivedEvent) {
-        const { nextExpectedRevision } = await this.client.appendToStream(
-          streamName,
-          convertDomainEventToJsonEvent(event),
-          {
-            expectedRevision: nextRev,
-          },
+        const { nextExpectedRevision } = await this.pub.publishEvents(
+          event,
+          nextRev,
         )
 
         nextRev = nextExpectedRevision
       } else if (event instanceof ReceiveCreatedEvent) {
-        await this.client.appendToStream(
-          streamName,
-          convertDomainEventToJsonEvent(event),
-          {
-            // We're statically expecting NO_STREAM here because this event is the root event for receive streams
-            expectedRevision: NO_STREAM,
-          },
-        )
+        await this.pub.publishEvents(event, NO_STREAM)
       } else {
         // TODO do checking if all events received here are for the quote event only
       }

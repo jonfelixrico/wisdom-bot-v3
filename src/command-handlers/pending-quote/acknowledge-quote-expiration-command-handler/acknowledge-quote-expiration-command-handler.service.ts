@@ -2,14 +2,14 @@ import { Logger } from '@nestjs/common'
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { AcknowledgePendingQuoteExpirationCommand } from 'src/domain/commands/acknowledge-pending-quote-expiration.command'
 import { UpdateSubmitMessageAsExpiredCommand } from 'src/infrastructure/commands/update-submit-message-to-expired.command'
-import { PendingQuoteWriteRepositoryService } from 'src/write-repositories/pending-quote-write-repository/pending-quote-write-repository.service'
+import { PendingQuoteWriteRepository } from 'src/write-repositories/abstract/pending-quote-write-repository.abstract'
 
 @CommandHandler(AcknowledgePendingQuoteExpirationCommand)
 export class AcknowledgeQuoteExpirationCommandHandlerService
   implements ICommandHandler<AcknowledgePendingQuoteExpirationCommand>
 {
   constructor(
-    private repo: PendingQuoteWriteRepositoryService,
+    private repo: PendingQuoteWriteRepository,
     private logger: Logger,
     private commandBus: CommandBus,
   ) {}

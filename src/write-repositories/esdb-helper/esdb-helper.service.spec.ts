@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { ReadStreamService } from './read-stream.service'
+import { EsdbHelperService } from './esdb-helper.service'
 
-describe('ReadStreamService', () => {
-  let service: ReadStreamService
+describe('EsdbHelperService', () => {
+  let service: EsdbHelperService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ReadStreamService],
+      providers: [EsdbHelperService],
     }).compile()
 
-    service = module.get<ReadStreamService>(ReadStreamService)
+    service = module.get<EsdbHelperService>(EsdbHelperService)
   })
 
   it('should be defined', () => {

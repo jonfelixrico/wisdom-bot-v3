@@ -1,48 +1,36 @@
-import {
-  ErrorType,
-  EventStoreDBClient,
-  ExpectedRevision,
-  JSONRecordedEvent,
-} from '@eventstore/db-client'
+import { ExpectedRevision } from '@eventstore/db-client'
 import { Injectable } from '@nestjs/common'
-import { IReceiveEntity, Receive } from 'src/domain/entities/receive.entity'
+import { Receive } from 'src/domain/entities/receive.entity'
 import { RECEIVE_REDUCERS } from '../reducers/recieve.reducer'
-import { convertDomainEventToJsonEvent } from '../utils/convert-domain-event-to-json-event.util'
 import {
   EsdbRepository,
   IEsdbRepositoryEntity,
 } from '../abstract/esdb-repository.abstract'
-import { writeRepositoryReducerDispatcherFactory } from '../reducers/write-repository-reducer-dispatcher.util'
+import { reduceEvents } from '../reducers/reducer.util'
+import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
+import { EsdbHelperService } from '../esdb-helper/esdb-helper.service'
 
 @Injectable()
 export class ReceiveWriteRepositoryService extends EsdbRepository<Receive> {
-  constructor(private client: EventStoreDBClient) {
+  constructor(
+    private pub: DomainEventPublisherService,
+    private helper: EsdbHelperService,
+  ) {
     super()
   }
 
   async findById(id: string): Promise<IEsdbRepositoryEntity<Receive>> {
-    try {
-      const resolvedEvents = await this.client.readStream(id)
-      const events = resolvedEvents.map(
-        ({ event }) => event as JSONRecordedEvent,
-      )
+    const events = await this.helper.readAllEvents(id)
 
-      const asObject = events.reduce<IReceiveEntity>(
-        writeRepositoryReducerDispatcherFactory(RECEIVE_REDUCERS),
-        null,
-      )
+    if (!events) {
+      return
+    }
 
-      const [lastEvent] = events.reverse()
-      return {
-        entity: new Receive(asObject),
-        revision: lastEvent.revision,
-      }
-    } catch (e) {
-      if (e.type === ErrorType.STREAM_NOT_FOUND) {
-        return null
-      }
+    const [entity, revision] = reduceEvents(events, RECEIVE_REDUCERS)
 
-      throw e
+    return {
+      entity: new Receive(entity),
+      revision,
     }
   }
 
@@ -50,13 +38,6 @@ export class ReceiveWriteRepositoryService extends EsdbRepository<Receive> {
     { events }: Receive,
     expectedRevision: ExpectedRevision,
   ): Promise<void> {
-    const [firstEvent] = events
-    await this.client.appendToStream(
-      firstEvent.aggregateId,
-      events.map(convertDomainEventToJsonEvent),
-      {
-        expectedRevision,
-      },
-    )
+    await this.pub.publishEvents(events, expectedRevision)
   }
 }

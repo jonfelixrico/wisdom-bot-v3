@@ -1,20 +1,15 @@
 import { Injectable } from '@nestjs/common'
 import { PendingQuote } from 'src/domain/entities/pending-quote.entity'
-import {
-  ErrorType,
-  EventStoreDBClient,
-  ExpectedRevision,
-  JSONRecordedEvent,
-} from '@eventstore/db-client'
+import { ExpectedRevision } from '@eventstore/db-client'
 import {
   EsdbRepository,
   IEsdbRepositoryEntity,
 } from '../abstract/esdb-repository.abstract'
-import { convertDomainEventToJsonEvent } from '../utils/convert-domain-event-to-json-event.util'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { PENDING_QUOTE_REDUCERS } from '../reducers/pending-quote.reducer'
-import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
-import { writeRepositoryReducerDispatcherFactory } from '../reducers/write-repository-reducer-dispatcher.util'
+import { reduceEvents } from '../reducers/reducer.util'
+import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
+import { EsdbHelperService } from '../esdb-helper/esdb-helper.service'
 
 const {
   PENDING_QUOTE_ACCEPTED,
@@ -30,38 +25,25 @@ const DISQUALIFIER_EVENTS = new Set<string>([
 
 @Injectable()
 export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQuote> {
-  constructor(private client: EventStoreDBClient) {
+  constructor(
+    private helper: EsdbHelperService,
+    private pub: DomainEventPublisherService,
+  ) {
     super()
   }
 
   async findById(id: string): Promise<IEsdbRepositoryEntity<PendingQuote>> {
-    try {
-      const resolvedEvents = await this.client.readStream(id)
-      const events = resolvedEvents.map(
-        ({ event }) => event as JSONRecordedEvent,
-      )
+    const events = await this.helper.readAllEvents(id)
 
-      if (events.some(({ type }) => DISQUALIFIER_EVENTS.has(type))) {
-        return null
-      }
+    if (!events || events.some(({ type }) => DISQUALIFIER_EVENTS.has(type))) {
+      return null
+    }
 
-      const asObject = events.reduce<IPendingQuote>(
-        writeRepositoryReducerDispatcherFactory(PENDING_QUOTE_REDUCERS),
-        null,
-      )
+    const [entity, revision] = reduceEvents(events, PENDING_QUOTE_REDUCERS)
 
-      const [lastEvent] = events.reverse()
-
-      return {
-        entity: new PendingQuote(asObject),
-        revision: lastEvent.revision,
-      }
-    } catch (e) {
-      if (e.type === ErrorType.STREAM_NOT_FOUND) {
-        return null
-      }
-
-      throw e
+    return {
+      entity: new PendingQuote(entity),
+      revision,
     }
   }
 
@@ -69,14 +51,6 @@ export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQu
     { events }: PendingQuote,
     expectedRevision: ExpectedRevision,
   ) {
-    const [firstEvent] = events
-    this.client.appendToStream(
-      // We're going to trust that all aggregateIds here are the same
-      firstEvent.aggregateId,
-      events.map(convertDomainEventToJsonEvent),
-      {
-        expectedRevision,
-      },
-    )
+    await this.pub.publishEvents(events, expectedRevision)
   }
 }
