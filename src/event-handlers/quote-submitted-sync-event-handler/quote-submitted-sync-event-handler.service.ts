@@ -55,6 +55,7 @@ export class QuoteSubmittedSyncEventHandlerService
     )
 
     await message.edit(null, new MessageEmbed(embed))
+    await message.react(upvoteEmoji)
   }
 
   onModuleInit() {
