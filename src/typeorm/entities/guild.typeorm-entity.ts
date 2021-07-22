@@ -8,9 +8,6 @@ export class GuildTypeormEntity {
   @PrimaryColumn('uuid')
   id: string
 
-  @Column()
-  guildId: string
-
   @Column('json')
   quoteSettings: IQuoteSettings
 
