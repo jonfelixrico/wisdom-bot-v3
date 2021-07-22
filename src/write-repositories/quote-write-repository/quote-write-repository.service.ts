@@ -7,7 +7,7 @@ import {
 } from '@eventstore/db-client'
 import { Injectable } from '@nestjs/common'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
-import { IQuoteEntity, Quote } from 'src/domain/entities/quote.entity'
+import { Quote } from 'src/domain/entities/quote.entity'
 import { QUOTE_REDUCERS } from './../reducers/quote.reducer'
 import {
   EsdbRepository,
@@ -15,7 +15,7 @@ import {
 } from '../abstract/esdb-repository.abstract'
 import { QuoteReceivedEvent } from 'src/domain/events/quote-received.event'
 import { ReceiveCreatedEvent } from 'src/domain/events/receive-created.event'
-import { writeRepositoryReducerDispatcherFactory } from '../reducers/reducer.util'
+import { reduceEvents } from '../reducers/reducer.util'
 import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
 
 @Injectable()
@@ -46,16 +46,11 @@ export class QuoteWriteRepositoryService extends EsdbRepository<Quote> {
         return null
       }
 
-      const asObject = events.reduce<IQuoteEntity>(
-        writeRepositoryReducerDispatcherFactory(QUOTE_REDUCERS),
-        null,
-      )
-
-      const [lastEvent] = events.reverse()
+      const [entity, revision] = reduceEvents(events, QUOTE_REDUCERS)
 
       return {
-        entity: new Quote(asObject),
-        revision: lastEvent.revision,
+        entity: new Quote(entity),
+        revision,
       }
     } catch (e) {
       if (e.type === ErrorType.STREAM_NOT_FOUND) {

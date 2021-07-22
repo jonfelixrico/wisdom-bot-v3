@@ -5,13 +5,13 @@ import {
   JSONRecordedEvent,
 } from '@eventstore/db-client'
 import { Injectable } from '@nestjs/common'
-import { IReceiveEntity, Receive } from 'src/domain/entities/receive.entity'
+import { Receive } from 'src/domain/entities/receive.entity'
 import { RECEIVE_REDUCERS } from '../reducers/recieve.reducer'
 import {
   EsdbRepository,
   IEsdbRepositoryEntity,
 } from '../abstract/esdb-repository.abstract'
-import { writeRepositoryReducerDispatcherFactory } from '../reducers/reducer.util'
+import { reduceEvents } from '../reducers/reducer.util'
 import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
 
 @Injectable()
@@ -30,15 +30,11 @@ export class ReceiveWriteRepositoryService extends EsdbRepository<Receive> {
         ({ event }) => event as JSONRecordedEvent,
       )
 
-      const asObject = events.reduce<IReceiveEntity>(
-        writeRepositoryReducerDispatcherFactory(RECEIVE_REDUCERS),
-        null,
-      )
+      const [entity, revision] = reduceEvents(events, RECEIVE_REDUCERS)
 
-      const [lastEvent] = events.reverse()
       return {
-        entity: new Receive(asObject),
-        revision: lastEvent.revision,
+        entity: new Receive(entity),
+        revision,
       }
     } catch (e) {
       if (e.type === ErrorType.STREAM_NOT_FOUND) {

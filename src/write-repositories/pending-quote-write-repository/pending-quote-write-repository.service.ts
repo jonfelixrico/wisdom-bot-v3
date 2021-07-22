@@ -12,8 +12,7 @@ import {
 } from '../abstract/esdb-repository.abstract'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { PENDING_QUOTE_REDUCERS } from '../reducers/pending-quote.reducer'
-import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
-import { writeRepositoryReducerDispatcherFactory } from '../reducers/reducer.util'
+import { reduceEvents } from '../reducers/reducer.util'
 import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
 
 const {
@@ -48,16 +47,11 @@ export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQu
         return null
       }
 
-      const asObject = events.reduce<IPendingQuote>(
-        writeRepositoryReducerDispatcherFactory(PENDING_QUOTE_REDUCERS),
-        null,
-      )
-
-      const [lastEvent] = events.reverse()
+      const [entity, revision] = reduceEvents(events, PENDING_QUOTE_REDUCERS)
 
       return {
-        entity: new PendingQuote(asObject),
-        revision: lastEvent.revision,
+        entity: new PendingQuote(entity),
+        revision,
       }
     } catch (e) {
       if (e.type === ErrorType.STREAM_NOT_FOUND) {
