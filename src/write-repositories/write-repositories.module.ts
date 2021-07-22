@@ -9,6 +9,7 @@ import { ReceiveWriteRepository } from './abstract/receive-write-repository.abst
 import { DomainEventPublisherService } from './domain-event-publisher/domain-event-publisher.service'
 import { CqrsModule } from '@nestjs/cqrs'
 import { EsdbHelperService } from './esdb-helper/esdb-helper.service'
+import { GuildWriteRepositoryService } from './guild-write-repository/guild-write-repository.service'
 
 const providersToExport: Provider[] = [
   {
@@ -30,6 +31,7 @@ const providersToExport: Provider[] = [
     ...providersToExport,
     DomainEventPublisherService,
     EsdbHelperService,
+    GuildWriteRepositoryService,
   ],
   imports: [EventStoreModule, CqrsModule],
   exports: providersToExport,
