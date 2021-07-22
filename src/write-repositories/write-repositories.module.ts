@@ -10,6 +10,7 @@ import { DomainEventPublisherService } from './domain-event-publisher/domain-eve
 import { CqrsModule } from '@nestjs/cqrs'
 import { EsdbHelperService } from './esdb-helper/esdb-helper.service'
 import { GuildWriteRepositoryService } from './guild-write-repository/guild-write-repository.service'
+import { GuildWriteRepository } from './abstract/guild-write-repository.abstract'
 
 const providersToExport: Provider[] = [
   {
@@ -24,6 +25,10 @@ const providersToExport: Provider[] = [
     provide: ReceiveWriteRepository,
     useClass: ReceiveWriteRepositoryService,
   },
+  {
+    provide: GuildWriteRepository,
+    useClass: GuildWriteRepositoryService,
+  },
 ]
 
 @Module({
@@ -31,7 +36,6 @@ const providersToExport: Provider[] = [
     ...providersToExport,
     DomainEventPublisherService,
     EsdbHelperService,
-    GuildWriteRepositoryService,
   ],
   imports: [EventStoreModule, CqrsModule],
   exports: providersToExport,
