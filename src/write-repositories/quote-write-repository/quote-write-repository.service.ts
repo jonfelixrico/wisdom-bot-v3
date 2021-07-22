@@ -26,6 +26,7 @@ export class QuoteWriteRepositoryService extends EsdbRepository<Quote> {
     const events = await this.helper.readAllEvents(id)
 
     if (
+      !events ||
       !events.some(
         ({ type }) => type === DomainEventNames.PENDING_QUOTE_ACCEPTED,
       )

@@ -21,6 +21,11 @@ export class ReceiveWriteRepositoryService extends EsdbRepository<Receive> {
 
   async findById(id: string): Promise<IEsdbRepositoryEntity<Receive>> {
     const events = await this.helper.readAllEvents(id)
+
+    if (!events) {
+      return
+    }
+
     const [entity, revision] = reduceEvents(events, RECEIVE_REDUCERS)
 
     return {

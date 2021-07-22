@@ -35,11 +35,7 @@ export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQu
   async findById(id: string): Promise<IEsdbRepositoryEntity<PendingQuote>> {
     const events = await this.helper.readAllEvents(id)
 
-    if (
-      !events ||
-      !events.length ||
-      events.some(({ type }) => DISQUALIFIER_EVENTS.has(type))
-    ) {
+    if (!events || events.some(({ type }) => DISQUALIFIER_EVENTS.has(type))) {
       return null
     }
 
