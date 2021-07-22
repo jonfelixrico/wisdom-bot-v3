@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { PendingQuote } from 'src/domain/entities/pending-quote.entity'
-import {
-  ErrorType,
-  EventStoreDBClient,
-  ExpectedRevision,
-  JSONRecordedEvent,
-} from '@eventstore/db-client'
+import { ExpectedRevision } from '@eventstore/db-client'
 import {
   EsdbRepository,
   IEsdbRepositoryEntity,
@@ -14,6 +9,7 @@ import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { PENDING_QUOTE_REDUCERS } from '../reducers/pending-quote.reducer'
 import { reduceEvents } from '../reducers/reducer.util'
 import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
+import { EsdbHelperService } from '../esdb-helper/esdb-helper.service'
 
 const {
   PENDING_QUOTE_ACCEPTED,
@@ -30,35 +26,28 @@ const DISQUALIFIER_EVENTS = new Set<string>([
 @Injectable()
 export class PendingQuoteWriteRepositoryService extends EsdbRepository<PendingQuote> {
   constructor(
-    private client: EventStoreDBClient,
+    private helper: EsdbHelperService,
     private pub: DomainEventPublisherService,
   ) {
     super()
   }
 
   async findById(id: string): Promise<IEsdbRepositoryEntity<PendingQuote>> {
-    try {
-      const resolvedEvents = await this.client.readStream(id)
-      const events = resolvedEvents.map(
-        ({ event }) => event as JSONRecordedEvent,
-      )
+    const events = await this.helper.readAllEvents(id)
 
-      if (events.some(({ type }) => DISQUALIFIER_EVENTS.has(type))) {
-        return null
-      }
+    if (
+      !events ||
+      !events.length ||
+      events.some(({ type }) => DISQUALIFIER_EVENTS.has(type))
+    ) {
+      return null
+    }
 
-      const [entity, revision] = reduceEvents(events, PENDING_QUOTE_REDUCERS)
+    const [entity, revision] = reduceEvents(events, PENDING_QUOTE_REDUCERS)
 
-      return {
-        entity: new PendingQuote(entity),
-        revision,
-      }
-    } catch (e) {
-      if (e.type === ErrorType.STREAM_NOT_FOUND) {
-        return null
-      }
-
-      throw e
+    return {
+      entity: new PendingQuote(entity),
+      revision,
     }
   }
 

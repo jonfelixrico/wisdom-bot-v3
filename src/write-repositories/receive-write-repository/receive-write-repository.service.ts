@@ -1,9 +1,4 @@
-import {
-  ErrorType,
-  EventStoreDBClient,
-  ExpectedRevision,
-  JSONRecordedEvent,
-} from '@eventstore/db-client'
+import { ExpectedRevision } from '@eventstore/db-client'
 import { Injectable } from '@nestjs/common'
 import { Receive } from 'src/domain/entities/receive.entity'
 import { RECEIVE_REDUCERS } from '../reducers/recieve.reducer'
@@ -13,35 +8,24 @@ import {
 } from '../abstract/esdb-repository.abstract'
 import { reduceEvents } from '../reducers/reducer.util'
 import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
+import { EsdbHelperService } from '../esdb-helper/esdb-helper.service'
 
 @Injectable()
 export class ReceiveWriteRepositoryService extends EsdbRepository<Receive> {
   constructor(
-    private client: EventStoreDBClient,
     private pub: DomainEventPublisherService,
+    private helper: EsdbHelperService,
   ) {
     super()
   }
 
   async findById(id: string): Promise<IEsdbRepositoryEntity<Receive>> {
-    try {
-      const resolvedEvents = await this.client.readStream(id)
-      const events = resolvedEvents.map(
-        ({ event }) => event as JSONRecordedEvent,
-      )
+    const events = await this.helper.readAllEvents(id)
+    const [entity, revision] = reduceEvents(events, RECEIVE_REDUCERS)
 
-      const [entity, revision] = reduceEvents(events, RECEIVE_REDUCERS)
-
-      return {
-        entity: new Receive(entity),
-        revision,
-      }
-    } catch (e) {
-      if (e.type === ErrorType.STREAM_NOT_FOUND) {
-        return null
-      }
-
-      throw e
+    return {
+      entity: new Receive(entity),
+      revision,
     }
   }
 
