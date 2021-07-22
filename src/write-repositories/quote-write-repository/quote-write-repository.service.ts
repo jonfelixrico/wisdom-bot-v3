@@ -15,7 +15,7 @@ import {
 } from '../abstract/esdb-repository.abstract'
 import { QuoteReceivedEvent } from 'src/domain/events/quote-received.event'
 import { ReceiveCreatedEvent } from 'src/domain/events/receive-created.event'
-import { writeRepositoryReducerDispatcherFactory } from '../reducers/write-repository-reducer-dispatcher.util'
+import { writeRepositoryReducerDispatcherFactory } from '../reducers/reducer.util'
 import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
 
 @Injectable()

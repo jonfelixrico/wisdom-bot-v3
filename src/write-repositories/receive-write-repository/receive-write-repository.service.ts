@@ -11,7 +11,7 @@ import {
   EsdbRepository,
   IEsdbRepositoryEntity,
 } from '../abstract/esdb-repository.abstract'
-import { writeRepositoryReducerDispatcherFactory } from '../reducers/write-repository-reducer-dispatcher.util'
+import { writeRepositoryReducerDispatcherFactory } from '../reducers/reducer.util'
 import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
 
 @Injectable()

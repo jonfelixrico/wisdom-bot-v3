@@ -13,7 +13,7 @@ import {
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { PENDING_QUOTE_REDUCERS } from '../reducers/pending-quote.reducer'
 import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
-import { writeRepositoryReducerDispatcherFactory } from '../reducers/write-repository-reducer-dispatcher.util'
+import { writeRepositoryReducerDispatcherFactory } from '../reducers/reducer.util'
 import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
 
 const {
