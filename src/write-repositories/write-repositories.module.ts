@@ -8,6 +8,7 @@ import { QuoteWriteRepository } from './abstract/quote-write-repository.abstract
 import { ReceiveWriteRepository } from './abstract/receive-write-repository.abstract'
 import { DomainEventPublisherService } from './domain-event-publisher/domain-event-publisher.service'
 import { CqrsModule } from '@nestjs/cqrs'
+import { EsdbHelperService } from './esdb-helper/esdb-helper.service'
 
 const providersToExport: Provider[] = [
   {
@@ -25,7 +26,11 @@ const providersToExport: Provider[] = [
 ]
 
 @Module({
-  providers: [...providersToExport, DomainEventPublisherService],
+  providers: [
+    ...providersToExport,
+    DomainEventPublisherService,
+    EsdbHelperService,
+  ],
   imports: [EventStoreModule, CqrsModule],
   exports: providersToExport,
 })
