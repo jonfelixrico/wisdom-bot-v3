@@ -1,31 +1,37 @@
+import { NO_STREAM } from '@eventstore/db-client'
 import { Logger } from '@nestjs/common'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { ReceiveQuoteCommand } from 'src/domain/commands/receive-quote.command'
 import { QuoteWriteRepository } from 'src/write-repositories/abstract/quote-write-repository.abstract'
+import { ReceiveWriteRepository } from 'src/write-repositories/abstract/receive-write-repository.abstract'
 
 @CommandHandler(ReceiveQuoteCommand)
 export class ReceiveQuoteCommandHandlerService
   implements ICommandHandler<ReceiveQuoteCommand>
 {
-  constructor(private logger: Logger, private repo: QuoteWriteRepository) {}
+  constructor(
+    private logger: Logger,
+    private quoteRepo: QuoteWriteRepository,
+    private receiveRepo: ReceiveWriteRepository,
+  ) {}
 
   async execute({ payload }: ReceiveQuoteCommand): Promise<any> {
     const { channelId, messageId, quoteId, userId } = payload
-    const quote = await this.repo.findById(quoteId)
+    const results = await this.quoteRepo.findById(quoteId)
 
-    if (!quote) {
+    if (!results) {
       this.logger.warn(`Quote ${quoteId} not found.`)
       return
     }
 
-    const { entity, revision } = quote
+    const { entity: quote } = results
 
-    entity.receive({
+    const receive = quote.receive({
       channelId,
       messageId,
       userId,
     })
 
-    await this.repo.publishEvents(entity, revision)
+    await this.receiveRepo.publishEvents(receive, NO_STREAM)
   }
 }
