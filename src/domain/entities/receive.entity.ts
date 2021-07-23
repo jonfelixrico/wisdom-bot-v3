@@ -14,6 +14,7 @@ interface IReaction {
 
 export interface IReceiveEntity {
   receiveId: string
+  receiveDt: Date
   quoteId: string
   guildId: string
   channelId: string
@@ -34,6 +35,7 @@ export class Receive extends DomainEntity implements IReceiveEntity {
   messageId: string
   reactions: IReaction[]
   guildId: string
+  receiveDt: Date
 
   constructor({
     channelId,
@@ -41,6 +43,7 @@ export class Receive extends DomainEntity implements IReceiveEntity {
     messageId,
     quoteId,
     receiveId,
+    receiveDt,
   }: IReceiveEntity) {
     super()
     this.channelId = channelId
@@ -48,6 +51,7 @@ export class Receive extends DomainEntity implements IReceiveEntity {
     this.messageId = messageId
     this.quoteId = quoteId
     this.receiveId = receiveId
+    this.receiveDt = receiveDt
   }
 
   react({ karma = 1, userId }: IReceiveReactionInput) {
