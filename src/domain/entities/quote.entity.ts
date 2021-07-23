@@ -1,6 +1,5 @@
 import { v4 } from 'uuid'
 import { DomainEntity } from '../abstracts/domain-entity.abstract'
-import { QuoteReceivedEvent } from '../events/quote-received.event'
 import { ReceiveCreatedEvent } from '../events/receive-created.event'
 
 interface IQuoteReceiveInput {
@@ -64,11 +63,6 @@ export class Quote extends DomainEntity implements IQuoteEntity {
     this.receives.push({ receiveId })
 
     this.apply(
-      new QuoteReceivedEvent({
-        receiveId,
-        quoteId,
-      }),
-
       new ReceiveCreatedEvent({
         ...newReceive,
         receiveId,
