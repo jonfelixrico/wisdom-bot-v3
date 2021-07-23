@@ -1,7 +1,7 @@
 import { v4 } from 'uuid'
 import { DomainEntity } from '../abstracts/domain-entity.abstract'
-import { QuoteReceivedEvent } from '../events/quote-received.event'
 import { ReceiveCreatedEvent } from '../events/receive-created.event'
+import { Receive } from './receive.entity'
 
 interface IQuoteReceiveInput {
   readonly userId: string
@@ -17,12 +17,6 @@ export interface IQuoteEntity {
   submitDt: Date
   guildId: string
   acceptDt: Date
-
-  receives: IQuoteReceive[]
-}
-
-interface IQuoteReceive {
-  readonly receiveId: string
 }
 
 export class Quote extends DomainEntity implements IQuoteEntity {
@@ -33,7 +27,6 @@ export class Quote extends DomainEntity implements IQuoteEntity {
   submitDt: Date
   guildId: string
   acceptDt: Date
-  receives: IQuoteReceive[]
 
   constructor({
     acceptDt,
@@ -41,7 +34,6 @@ export class Quote extends DomainEntity implements IQuoteEntity {
     content,
     guildId,
     quoteId,
-    receives,
     submitDt,
     submitterId,
   }: IQuoteEntity) {
@@ -50,7 +42,6 @@ export class Quote extends DomainEntity implements IQuoteEntity {
     this.authorId = authorId
     this.content = content
     this.guildId = guildId
-    this.receives = receives || []
     this.quoteId = quoteId
     this.submitDt = submitDt
     this.submitterId = submitterId
@@ -61,14 +52,16 @@ export class Quote extends DomainEntity implements IQuoteEntity {
     const receiveDt = new Date()
     const receiveId = v4()
 
-    this.receives.push({ receiveId })
+    const receive = new Receive({
+      ...newReceive,
+      receiveId,
+      quoteId,
+      guildId,
+      reactions: [],
+      receiveDt,
+    })
 
-    this.apply(
-      new QuoteReceivedEvent({
-        receiveId,
-        quoteId,
-      }),
-
+    receive.apply(
       new ReceiveCreatedEvent({
         ...newReceive,
         receiveId,
@@ -77,5 +70,7 @@ export class Quote extends DomainEntity implements IQuoteEntity {
         guildId,
       }),
     )
+
+    return receive
   }
 }

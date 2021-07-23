@@ -3,7 +3,6 @@ import { IPendingQuoteAcceptedPayload } from 'src/domain/events/pending-quote-ac
 import { IPendingQuoteCancelledPayload } from 'src/domain/events/pending-quote-cancelled.event'
 import { IPendingQuoteExpirationAcknowledgedEventPayload } from 'src/domain/events/pending-quote-expiration-acknowledged.event'
 import { IQuoteMessageDetailsUpdatedPayload } from 'src/domain/events/quote-message-details-updated.event'
-import { IQuoteReceivedPayload } from 'src/domain/events/quote-received.event'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 import { ReadRepositoryReducer } from '../types/read-repository-reducer.type'
@@ -87,26 +86,6 @@ const cancelled: ReadRepositoryReducer<IPendingQuoteCancelledPayload> = async (
   return affected > 0
 }
 
-const received: ReadRepositoryReducer<IQuoteReceivedPayload> = async (
-  { revision, data },
-  manager,
-) => {
-  const { quoteId } = data
-  const { affected } = await manager
-    .createQueryBuilder()
-    .update(QuoteTypeormEntity)
-    .set({
-      revision,
-    })
-    .where('id = :quoteId AND revision = :revision', {
-      quoteId,
-      revision: revision - 1n,
-    })
-    .execute()
-
-  return affected > 0
-}
-
 const messageDetailsUpdated: ReadRepositoryReducer<IQuoteMessageDetailsUpdatedPayload> =
   async ({ revision, data }, manager) => {
     const { quoteId, ...changes } = data
@@ -139,7 +118,6 @@ const expirationAcknowledged: ReadRepositoryReducer<IPendingQuoteExpirationAckno
 
 const {
   QUOTE_SUBMITTED,
-  QUOTE_RECEIVED,
   PENDING_QUOTE_ACCEPTED,
   PENDING_QUOTE_CANCELLED,
   QUOTE_MESSAGE_DETAILS_UPDATED,
@@ -147,7 +125,6 @@ const {
 } = DomainEventNames
 
 export const QUOTE_REDUCERS: ReducerMap = Object.freeze({
-  [QUOTE_RECEIVED]: received,
   [QUOTE_SUBMITTED]: submitted,
   [PENDING_QUOTE_ACCEPTED]: accepted,
   [PENDING_QUOTE_CANCELLED]: cancelled,
