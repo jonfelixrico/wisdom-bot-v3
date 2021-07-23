@@ -29,8 +29,7 @@ const accepted: WriteRepositoryReducer<
   }
 }
 
-const { QUOTE_RECEIVED, PENDING_QUOTE_ACCEPTED, QUOTE_SUBMITTED } =
-  DomainEventNames
+const { PENDING_QUOTE_ACCEPTED, QUOTE_SUBMITTED } = DomainEventNames
 export const QUOTE_REDUCERS: WriteRepositoryReducerMap<IQuoteEntity> = {
   [QUOTE_SUBMITTED]: submitted,
   [PENDING_QUOTE_ACCEPTED]: accepted,

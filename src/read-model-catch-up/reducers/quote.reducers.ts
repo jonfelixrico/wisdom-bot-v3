@@ -118,7 +118,6 @@ const expirationAcknowledged: ReadRepositoryReducer<IPendingQuoteExpirationAckno
 
 const {
   QUOTE_SUBMITTED,
-  QUOTE_RECEIVED,
   PENDING_QUOTE_ACCEPTED,
   PENDING_QUOTE_CANCELLED,
   QUOTE_MESSAGE_DETAILS_UPDATED,
