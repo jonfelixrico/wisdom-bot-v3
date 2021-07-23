@@ -1,4 +1,4 @@
-import { ExpectedRevision, NO_STREAM } from '@eventstore/db-client'
+import { ExpectedRevision } from '@eventstore/db-client'
 import { Injectable } from '@nestjs/common'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { Quote } from 'src/domain/entities/quote.entity'
@@ -7,7 +7,6 @@ import {
   EsdbRepository,
   IEsdbRepositoryEntity,
 } from '../abstract/esdb-repository.abstract'
-import { ReceiveCreatedEvent } from 'src/domain/events/receive-created.event'
 import { reduceEvents } from '../reducers/reducer.util'
 import { DomainEventPublisherService } from '../domain-event-publisher/domain-event-publisher.service'
 import { EsdbHelperService } from '../esdb-helper/esdb-helper.service'
