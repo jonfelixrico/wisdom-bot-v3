@@ -19,10 +19,6 @@ export interface IQuoteEntity {
   acceptDt: Date
 }
 
-interface IQuoteReceive {
-  readonly receiveId: string
-}
-
 export class Quote extends DomainEntity implements IQuoteEntity {
   quoteId: string
   content: string
@@ -31,7 +27,6 @@ export class Quote extends DomainEntity implements IQuoteEntity {
   submitDt: Date
   guildId: string
   acceptDt: Date
-  receives: IQuoteReceive[]
 
   constructor({
     acceptDt,
@@ -56,8 +51,6 @@ export class Quote extends DomainEntity implements IQuoteEntity {
     const { quoteId, guildId } = this
     const receiveDt = new Date()
     const receiveId = v4()
-
-    this.receives.push({ receiveId })
 
     const receive = new Receive({
       ...newReceive,

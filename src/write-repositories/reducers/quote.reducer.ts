@@ -13,7 +13,6 @@ const submitted: WriteRepositoryReducer<
 > = ({ submitDt, ...data }) => {
   return {
     ...data,
-    receives: [],
     acceptDt: null,
     submitDt: new Date(submitDt),
   }
