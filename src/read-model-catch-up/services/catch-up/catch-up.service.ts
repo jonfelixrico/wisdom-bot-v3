@@ -38,51 +38,71 @@ export class CatchUpService implements OnApplicationBootstrap {
     })
   }
 
-  processEvent({ event }: AllStreamResolvedEvent) {
+  async doReduce(manager: EntityManager, { event }: AllStreamResolvedEvent) {
     const { position, type, isJson } = event
-    return this.conn.transaction(async (manager) => {
-      await this.updatePosition(manager, position)
+    await this.updatePosition(manager, position)
 
-      // events that start with '$' are system events. we don't need those
-      if (type.startsWith('$') || !isJson) {
-        return
-      }
+    // events that start with '$' are system events. we don't need those
+    if (type.startsWith('$') || !isJson) {
+      return
+    }
 
-      const reducerFn = REDUCER_MAP[type]
-      const isConsumed = await reducerFn(
-        event as AllStreamJSONRecordedEvent,
-        manager,
+    const reducerFn = REDUCER_MAP[type]
+    const isConsumed = await reducerFn(
+      event as AllStreamJSONRecordedEvent,
+      manager,
+    )
+
+    const sprintfArgs = [
+      position.commit,
+      position.prepare,
+      event.revision,
+      event.type,
+      event.streamId,
+    ]
+
+    if (isConsumed) {
+      this.eventBus.publish(
+        new EventConsumedEvent(event.streamId, event.revision),
       )
+      this.logger.debug(
+        sprintf(
+          '[commit %s, prepare %s] Processed event revision %s of type %s for stream %s.',
+          ...sprintfArgs,
+        ),
+        CatchUpService.name,
+      )
+    } else {
+      this.logger.debug(
+        sprintf(
+          '[commit %s, prepare %s] Skipped event revision %s of type %s for stream %s.',
+          ...sprintfArgs,
+        ),
+        CatchUpService.name,
+      )
+    }
 
-      const sprintfArgs = [
-        position.commit,
-        position.prepare,
-        event.revision,
-        event.type,
-        event.streamId,
-      ]
+    return isConsumed
+  }
+
+  async processEvent(event: AllStreamResolvedEvent) {
+    const runner = this.conn.createQueryRunner()
+    try {
+      await runner.connect()
+      await runner.startTransaction()
+
+      const isConsumed = await this.doReduce(runner.manager, event)
 
       if (isConsumed) {
-        this.eventBus.publish(
-          new EventConsumedEvent(event.streamId, event.revision),
-        )
-        this.logger.debug(
-          sprintf(
-            '[commit %s, prepare %s] Processed event revision %s of type %s for stream %d.',
-            ...sprintfArgs,
-          ),
-          CatchUpService.name,
-        )
+        await runner.commitTransaction()
       } else {
-        this.logger.debug(
-          sprintf(
-            '[commit %s, prepare %s] Skipped event revision %s of type %s for stream %d.',
-            ...sprintfArgs,
-          ),
-          CatchUpService.name,
-        )
+        await runner.rollbackTransaction()
       }
-    })
+    } catch (e) {
+      await runner.rollbackTransaction()
+    } finally {
+      await runner.release()
+    }
   }
 
   async retrievePosition() {
@@ -113,6 +133,7 @@ export class CatchUpService implements OnApplicationBootstrap {
         const { currentPosition } = this
 
         if (
+          currentPosition &&
           commit === currentPosition.commit &&
           prepare === currentPosition.prepare
         ) {
