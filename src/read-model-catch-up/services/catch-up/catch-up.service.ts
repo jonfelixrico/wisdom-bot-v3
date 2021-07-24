@@ -3,16 +3,17 @@ import {
   AllStreamResolvedEvent,
   EventStoreDBClient,
   Position,
-  ReadPosition,
+  START,
 } from '@eventstore/db-client'
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common'
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common'
 import { EventBus } from '@nestjs/cqrs'
 import { fromEvent } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
+import { sprintf } from 'sprintf-js'
 import { CatchUpFinishedEvent } from 'src/read-model-catch-up/catch-up-finished.event'
 import { EventConsumedEvent } from 'src/read-model-catch-up/event-consumed.event'
 import { MapTypeormEntity } from 'src/typeorm/entities/map.typeorm-entity'
-import { Connection, EntityManager, Repository } from 'typeorm'
+import { Connection, EntityManager } from 'typeorm'
 import { REDUCER_MAP } from './../../reducers/index'
 
 const POSITION_KEY = 'POSITION'
@@ -20,26 +21,24 @@ const READ_MAX_COUNT = 1000
 
 @Injectable()
 export class CatchUpService implements OnApplicationBootstrap {
-  private currentPosition: ReadPosition = 'start'
-  private readonly mapRepo: Repository<MapTypeormEntity>
+  private currentPosition: Position
 
   constructor(
     private conn: Connection,
     private client: EventStoreDBClient,
     private eventBus: EventBus,
-  ) {
-    this.mapRepo = conn.getRepository(MapTypeormEntity)
-  }
+    private logger: Logger,
+  ) {}
 
   async updatePosition(manager: EntityManager, position: Position) {
     this.currentPosition = position
-    await this.mapRepo.save({
+    await manager.save(MapTypeormEntity, {
       key: POSITION_KEY,
       value: [position.commit, position.prepare].join('/'),
     })
   }
 
-  async processEvent({ event }: AllStreamResolvedEvent) {
+  processEvent({ event }: AllStreamResolvedEvent) {
     const { position, type, isJson } = event
     return this.conn.transaction(async (manager) => {
       await this.updatePosition(manager, position)
@@ -55,16 +54,42 @@ export class CatchUpService implements OnApplicationBootstrap {
         manager,
       )
 
+      const sprintfArgs = [
+        position.commit,
+        position.prepare,
+        event.revision,
+        event.type,
+        event.streamId,
+      ]
+
       if (isConsumed) {
         this.eventBus.publish(
           new EventConsumedEvent(event.streamId, event.revision),
+        )
+        this.logger.debug(
+          sprintf(
+            '[commit %s, prepare %s] Processed event revision %s of type %s for stream %d.',
+            ...sprintfArgs,
+          ),
+          CatchUpService.name,
+        )
+      } else {
+        this.logger.debug(
+          sprintf(
+            '[commit %s, prepare %s] Skipped event revision %s of type %s for stream %d.',
+            ...sprintfArgs,
+          ),
+          CatchUpService.name,
         )
       }
     })
   }
 
   async retrievePosition() {
-    const position = await this.mapRepo.findOne({ key: POSITION_KEY })
+    const position = await this.conn
+      .getRepository(MapTypeormEntity)
+      .findOne({ key: POSITION_KEY })
+
     if (position) {
       const [commit, prepare] = position.value.split('/')
       this.currentPosition = {
@@ -79,11 +104,25 @@ export class CatchUpService implements OnApplicationBootstrap {
   private async doCatchingUp() {
     while (true) {
       const resolvedEvents = await this.client.readAll({
-        fromPosition: this.currentPosition,
+        fromPosition: this.currentPosition ?? START,
         maxCount: READ_MAX_COUNT,
       })
 
       for (const event of resolvedEvents) {
+        const { commit, prepare } = event.event.position
+        const { currentPosition } = this
+
+        if (
+          commit === currentPosition.commit &&
+          prepare === currentPosition.prepare
+        ) {
+          this.logger.debug(
+            `Skipped commit ${commit}, prepare ${prepare} due to it matching the current position`,
+            CatchUpService.name,
+          )
+          continue
+        }
+
         await this.processEvent(event)
       }
 
