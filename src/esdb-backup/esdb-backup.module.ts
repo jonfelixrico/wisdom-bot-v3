@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 import { Connection, createConnection } from 'typeorm'
 import { ConfigService } from '@nestjs/config'
 import { EventTypeormEntity } from './event.typeorm-entity'
+import { EventStoreModule } from 'src/event-store/event-store.module'
 
 @Module({
   providers: [
@@ -17,5 +18,6 @@ import { EventTypeormEntity } from './event.typeorm-entity'
       inject: [ConfigService],
     },
   ],
+  imports: [EventStoreModule],
 })
 export class EsdbBackupModule {}
