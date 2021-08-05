@@ -16,7 +16,7 @@ import { MapTypeormEntity } from 'src/typeorm/entities/map.typeorm-entity'
 import { Connection, EntityManager } from 'typeorm'
 import { REDUCER_MAP } from './../../reducers/index'
 
-const POSITION_KEY = 'POSITION'
+const POSITION_KEY = 'READ_MODEL_POSITION'
 const READ_MAX_COUNT = 1000
 
 @Injectable()
