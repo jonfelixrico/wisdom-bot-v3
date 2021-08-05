@@ -13,6 +13,7 @@ import { InfrastructureModule } from './infrastructure/infrastructure.module'
 import { ReadModelQueryModule } from './read-model-query/read-model-query.module'
 import { EventHandlersModule } from './event-handlers/event-handlers.module'
 import { EsdbBackupModule } from './esdb-backup/esdb-backup.module'
+import { StatsQueryModule } from './stats-query/stats-query.module'
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { EsdbBackupModule } from './esdb-backup/esdb-backup.module'
     ReadModelQueryModule,
     EventHandlersModule,
     EsdbBackupModule,
+    StatsQueryModule,
   ],
 })
 export class AppModule {}
