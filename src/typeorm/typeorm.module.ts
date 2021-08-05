@@ -10,7 +10,7 @@ const typeormConnectionProvider = {
       type: 'mysql',
       url: cfg.get('READ_DB_URL'),
       synchronize: !!cfg.get('READ_DB_SYNC'),
-      entities: [__dirname + '/../**/*.typeorm-entity{.ts,.js}'],
+      entities: [__dirname + '/**/*.typeorm-entity{.ts,.js}'],
     }),
   inject: [ConfigService],
 }
