@@ -12,7 +12,7 @@ import { ServicesModule } from './services/services.module'
 import { InfrastructureModule } from './infrastructure/infrastructure.module'
 import { ReadModelQueryModule } from './read-model-query/read-model-query.module'
 import { EventHandlersModule } from './event-handlers/event-handlers.module'
-import { EsdbSqlReplicaModule } from './esdb-sql-replica/esdb-sql-replica.module'
+import { EsdbBackupModule } from './esdb-backup/esdb-backup.module'
 
 @Module({
   imports: [
@@ -33,7 +33,7 @@ import { EsdbSqlReplicaModule } from './esdb-sql-replica/esdb-sql-replica.module
     InfrastructureModule,
     ReadModelQueryModule,
     EventHandlersModule,
-    EsdbSqlReplicaModule,
+    EsdbBackupModule,
   ],
 })
 export class AppModule {}
