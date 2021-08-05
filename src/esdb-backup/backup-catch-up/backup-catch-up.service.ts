@@ -10,7 +10,6 @@ import { fromEvent } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
 import { Connection } from 'typeorm'
 import { EventTypeormEntity } from '../event.typeorm-entity'
-
 const READ_MAX_COUNT = 1000
 
 @Injectable()
@@ -69,6 +68,7 @@ export class BackupCatchUpService implements OnApplicationBootstrap {
   }
 
   private async doCatchingUp() {
+    let batchCount = 0
     while (true) {
       const resolvedEvents = await this.client.readAll({
         fromPosition: this.currentPosition ?? START,
@@ -94,6 +94,16 @@ export class BackupCatchUpService implements OnApplicationBootstrap {
         await this.processEvent(event)
       }
 
+      if (resolvedEvents.length) {
+        this.logger.debug(
+          `Processed ${resolvedEvents.length} events for batch ${
+            batchCount + 1
+          }.`,
+          BackupCatchUpService.name,
+        )
+      }
+      batchCount++
+
       if (resolvedEvents.length < READ_MAX_COUNT) {
         return
       }
@@ -112,8 +122,13 @@ export class BackupCatchUpService implements OnApplicationBootstrap {
   }
 
   async onApplicationBootstrap() {
+    this.logger.log(
+      'Starting catch-up for the backup...',
+      BackupCatchUpService.name,
+    )
     await this.retrievePosition()
     await this.doCatchingUp()
+    this.logger.log('Catch-up done.', BackupCatchUpService.name)
     this.streamEvents()
   }
 }
