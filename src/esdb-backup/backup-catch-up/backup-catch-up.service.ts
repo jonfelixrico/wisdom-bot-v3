@@ -84,10 +84,10 @@ export class BackupCatchUpService implements OnApplicationBootstrap {
           commit === currentPosition.commit &&
           prepare === currentPosition.prepare
         ) {
-          this.logger.debug(
-            `Skipped commit ${commit}, prepare ${prepare} due to it matching the current position`,
-            BackupCatchUpService.name,
-          )
+          /*
+           * This can happen with the first item of subsequent batches. The event at the position that we
+           * provided in `fromPosition` is included in the result set.
+           */
           continue
         }
 
