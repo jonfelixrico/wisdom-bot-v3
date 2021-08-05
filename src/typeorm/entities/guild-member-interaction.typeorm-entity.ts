@@ -29,16 +29,4 @@ export class GuildMemberInteractionTypeormEntity {
     comment: 'Times user has received a quote belonging to targetUser',
   })
   receives: number
-
-  @Column({
-    default: 0,
-    comment: 'Times user has reacted to a quote authored by targetUser',
-  })
-  authorReacts: number
-
-  @Column({
-    default: 0,
-    comment: 'Times user has reacted to a quote received by targetUser',
-  })
-  receiveReacts: number
 }
