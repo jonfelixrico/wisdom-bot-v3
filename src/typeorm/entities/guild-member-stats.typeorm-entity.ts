@@ -18,21 +18,18 @@ export class GuildMemberInteractionTypeormEntity {
   guildId: string
 
   @Column({
-    type: 'number',
     default: 0,
     comment: 'No. of quotes submitted',
   })
   submitted: number
 
   @Column({
-    type: 'number',
     default: 0,
     comment: 'No. of quotes authored',
   })
   authored: number
 
   @Column({
-    type: 'number',
     default: 0,
     comment: 'No. of quotes received',
   })
