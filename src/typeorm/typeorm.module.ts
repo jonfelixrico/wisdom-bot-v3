@@ -11,6 +11,7 @@ const typeormConnectionProvider = {
       url: cfg.get('READ_DB_URL'),
       synchronize: !!cfg.get('READ_DB_SYNC'),
       entities: [__dirname + '/**/*.typeorm-entity{.ts,.js}'],
+      name: 'read-model',
     }),
   inject: [ConfigService],
 }
