@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { Connection, createConnection } from 'typeorm'
 import { ConfigService } from '@nestjs/config'
+import { EventTypeormEntity } from './event.typeorm-entity'
 
 @Module({
   providers: [
@@ -10,8 +11,8 @@ import { ConfigService } from '@nestjs/config'
         await createConnection({
           type: 'mysql',
           url: cfg.get('BACKUP_DB_URL'),
-          entities: [__dirname + '/**/*.typeorm-entity{.ts,.js}'],
           name: 'esdb-backup',
+          entities: [EventTypeormEntity],
         }),
       inject: [ConfigService],
     },
