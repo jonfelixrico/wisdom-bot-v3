@@ -1,3 +1,4 @@
+import { JSONType } from '@eventstore/db-client'
 import { Column, Entity, Generated, PrimaryColumn } from 'typeorm'
 
 @Entity({ name: 'event' })
@@ -13,7 +14,7 @@ export class EventTypeormEntity {
   rowNo: bigint
 
   @Column('json')
-  data: string
+  data: JSONType
 
   @Column()
   type: string
@@ -40,8 +41,5 @@ export class EventTypeormEntity {
   eventId: string
 
   @Column('varchar')
-  stream: string
-
-  @Column()
-  timestamp: Date
+  streamId: string
 }
