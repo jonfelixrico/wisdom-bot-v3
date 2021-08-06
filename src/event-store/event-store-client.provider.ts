@@ -6,12 +6,5 @@ export const eventStoreClientProvider: Provider = {
   provide: EventStoreDBClient,
   inject: [ConfigService],
   useFactory: (cfg: ConfigService) =>
-    new EventStoreDBClient(
-      {
-        endpoint: cfg.get('ESDB_HOST'),
-      },
-      {
-        insecure: true,
-      },
-    ),
+    EventStoreDBClient.connectionString(cfg.get('ESDB_URL')),
 }
