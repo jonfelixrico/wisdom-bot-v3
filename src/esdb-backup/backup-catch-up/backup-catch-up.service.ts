@@ -1,4 +1,5 @@
 import {
+  AllStreamRecordedEvent,
   AllStreamResolvedEvent,
   EventStoreDBClient,
   JSONType,
@@ -11,6 +12,20 @@ import { mergeMap } from 'rxjs/operators'
 import { Connection } from 'typeorm'
 import { EventTypeormEntity } from '../event.typeorm-entity'
 const READ_MAX_COUNT = 1000
+
+const eventToEntityFn = (event: AllStreamRecordedEvent) => {
+  const { data, streamId, position, id, type } = event
+  const { commit, prepare } = position
+
+  return {
+    commit,
+    prepare,
+    data: data as JSONType,
+    eventId: id,
+    streamId,
+    type,
+  } as Partial<EventTypeormEntity>
+}
 
 @Injectable()
 export class BackupCatchUpService implements OnApplicationBootstrap {
@@ -27,9 +42,7 @@ export class BackupCatchUpService implements OnApplicationBootstrap {
   }
 
   async processEvent({ event }: AllStreamResolvedEvent) {
-    const { data, streamId, position, id, type, isJson } = event
-    const { commit, prepare } = position
-
+    const { type, isJson, position } = event
     this.currentPosition = position
 
     // events that start with '$' are system events. we don't need those
@@ -37,14 +50,34 @@ export class BackupCatchUpService implements OnApplicationBootstrap {
       return
     }
 
-    await this.eventRepository.insert({
-      commit,
-      prepare,
-      data: data as JSONType,
-      eventId: id,
-      streamId,
-      type,
-    })
+    await this.eventRepository.insert(eventToEntityFn(event))
+  }
+
+  async processEventsInBatch(events: AllStreamResolvedEvent[]) {
+    if (!events.length) {
+      return
+    }
+
+    const lastEvent = events[events.length - 1]
+
+    const { currentPosition } = this
+
+    const forInsertion = events
+      .map(({ event }) => event)
+      .filter(({ position }) => {
+        const { commit, prepare } = position
+
+        return (
+          !currentPosition ||
+          (commit !== currentPosition.commit &&
+            prepare !== currentPosition.prepare)
+        )
+      })
+      .filter(({ type, isJson }) => isJson && !type.startsWith('$'))
+      .map(eventToEntityFn)
+
+    this.currentPosition = lastEvent.event.position
+    await this.eventRepository.insert(forInsertion)
   }
 
   async retrievePosition() {
@@ -75,24 +108,7 @@ export class BackupCatchUpService implements OnApplicationBootstrap {
         maxCount: READ_MAX_COUNT,
       })
 
-      for (const event of resolvedEvents) {
-        const { commit, prepare } = event.event.position
-        const { currentPosition } = this
-
-        if (
-          currentPosition &&
-          commit === currentPosition.commit &&
-          prepare === currentPosition.prepare
-        ) {
-          /*
-           * This can happen with the first item of subsequent batches. The event at the position that we
-           * provided in `fromPosition` is included in the result set.
-           */
-          continue
-        }
-
-        await this.processEvent(event)
-      }
+      await this.processEventsInBatch(resolvedEvents)
 
       if (resolvedEvents.length) {
         this.logger.debug(
