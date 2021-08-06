@@ -1,17 +1,10 @@
 import { JSONType } from '@eventstore/db-client'
-import { Column, Entity, Generated, PrimaryColumn } from 'typeorm'
+import { Column, Entity, PrimaryColumn } from 'typeorm'
 
 @Entity({ name: 'event' })
 export class EventTypeormEntity {
-  @Generated('increment')
-  @PrimaryColumn({
-    type: 'bigint',
-    transformer: {
-      to: (val) => val,
-      from: (val) => BigInt(val),
-    },
-  })
-  rowNo: bigint
+  @PrimaryColumn('uuid')
+  eventId: string
 
   @Column('json')
   data: JSONType
@@ -37,9 +30,15 @@ export class EventTypeormEntity {
   })
   prepare: bigint
 
-  @Column('uuid')
-  eventId: string
-
   @Column('varchar')
   streamId: string
+
+  @Column({
+    type: 'bigint',
+    transformer: {
+      to: (val) => val,
+      from: (val) => BigInt(val),
+    },
+  })
+  commitPosition: bigint
 }

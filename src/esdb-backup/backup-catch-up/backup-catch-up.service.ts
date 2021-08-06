@@ -1,5 +1,4 @@
 import {
-  AllStreamRecordedEvent,
   AllStreamResolvedEvent,
   EventStoreDBClient,
   JSONType,
@@ -13,7 +12,7 @@ import { Connection } from 'typeorm'
 import { EventTypeormEntity } from '../event.typeorm-entity'
 const READ_MAX_COUNT = 1000
 
-const eventToEntityFn = (event: AllStreamRecordedEvent) => {
+const eventToEntityFn = ({ event, commitPosition }: AllStreamResolvedEvent) => {
   const { data, streamId, position, id, type } = event
   const { commit, prepare } = position
 
@@ -24,6 +23,7 @@ const eventToEntityFn = (event: AllStreamRecordedEvent) => {
     eventId: id,
     streamId,
     type,
+    commitPosition,
   } as Partial<EventTypeormEntity>
 }
 
@@ -41,8 +41,8 @@ export class BackupCatchUpService implements OnApplicationBootstrap {
     return this.conn.getRepository(EventTypeormEntity)
   }
 
-  async processEvent({ event }: AllStreamResolvedEvent) {
-    const { type, isJson, position } = event
+  async processEvent(resolved: AllStreamResolvedEvent) {
+    const { type, isJson, position } = resolved.event
     this.currentPosition = position
 
     // events that start with '$' are system events. we don't need those
@@ -50,7 +50,7 @@ export class BackupCatchUpService implements OnApplicationBootstrap {
       return
     }
 
-    await this.eventRepository.insert(eventToEntityFn(event))
+    await this.eventRepository.insert(eventToEntityFn(resolved))
   }
 
   async processEventsInBatch(events: AllStreamResolvedEvent[]) {
@@ -63,9 +63,8 @@ export class BackupCatchUpService implements OnApplicationBootstrap {
     const { currentPosition } = this
 
     const forInsertion = events
-      .map(({ event }) => event)
-      .filter(({ position }) => {
-        const { commit, prepare } = position
+      .filter((resolved) => {
+        const { commit, prepare } = resolved.event.position
 
         return (
           !currentPosition ||
@@ -73,7 +72,10 @@ export class BackupCatchUpService implements OnApplicationBootstrap {
             prepare !== currentPosition.prepare)
         )
       })
-      .filter(({ type, isJson }) => isJson && !type.startsWith('$'))
+      .filter(({ event }) => {
+        const { type, isJson } = event
+        return isJson && !type.startsWith('$')
+      })
       .map(eventToEntityFn)
 
     this.currentPosition = lastEvent.event.position
@@ -83,7 +85,7 @@ export class BackupCatchUpService implements OnApplicationBootstrap {
   async retrievePosition() {
     const lastEvent = await this.eventRepository
       .createQueryBuilder()
-      .orderBy('rowNo', 'DESC')
+      .orderBy('commitPosition', 'DESC')
       .getOne()
 
     if (!lastEvent) {
