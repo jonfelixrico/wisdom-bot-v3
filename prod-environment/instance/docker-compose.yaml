@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  mysql.db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: wisdom-v3
+    volumes:
+      - type: volume
+        source: mysql-volume-data
+        target: /var/lib/mysql
+
+  wisdom:
+    depends_on:
+      - mysql.db
+      - eventstore.db
+    build: ../
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - BACKUP_DB_SYNC=true
+      - READ_DB_SYNC=true
+      - READ_DB_URL=mysql://root:password@mysql.db:3306/wisdom-v3
+
+volumes:
+  mysql-volume-data:
