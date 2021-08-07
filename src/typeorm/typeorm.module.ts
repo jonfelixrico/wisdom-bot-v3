@@ -7,7 +7,7 @@ const typeormConnectionProvider = {
   provide: Connection,
   useFactory: async (cfg: ConfigService) =>
     await createConnection({
-      type: 'mysql',
+      type: 'postgres',
       url: cfg.get('READ_DB_URL'),
       synchronize: !!cfg.get('READ_DB_SYNC'),
       entities: [__dirname + '/**/*.typeorm-entity{.ts,.js}'],

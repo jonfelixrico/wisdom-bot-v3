@@ -15,6 +15,20 @@ services:
         source: mysql-volume-data
         target: /var/lib/mysql
 
+  postgres.db:
+    image: postgres
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: root
+      POSTGRES_DB: wisdom-v3
+    volumes:
+      - type: volume
+        source: postgres-volume-data
+        target: /var/lib/postgresql/data
+
   eventstore.db:
     image: eventstore/eventstore:latest
     restart: unless-stopped
@@ -42,3 +56,4 @@ volumes:
   eventstore-volume-data:
   eventstore-volume-logs:
   mysql-volume-data:
+  postgres-volume-data:
