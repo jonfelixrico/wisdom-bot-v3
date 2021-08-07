@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { ReactionTypeormRepository } from 'src/typeorm/providers/reaction.typeorm-repository'
 import { QuoteTypeormRepository } from 'src/typeorm/providers/quote.typeorm-repository'
 import { ReceiveTypeormRepository } from 'src/typeorm/providers/receive.typeorm-repository'
-import { Not } from 'typeorm'
+import { IsNull, Not } from 'typeorm'
 
 @Injectable()
 export class GuildStatsQueryService {
@@ -16,7 +16,7 @@ export class GuildStatsQueryService {
     const quotes = await this.quoteRepo.count({
       where: {
         guildId,
-        acceptDt: Not(null),
+        acceptDt: Not(IsNull()),
       },
     })
 
