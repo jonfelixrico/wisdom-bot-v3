@@ -58,15 +58,16 @@ const reacted: ReadRepositoryReducer<IReceiveReactedPayload> = async (
     return false
   }
 
-  const { affected } = await manager
-    .createQueryBuilder()
-    .update(ReceiveTypeormEntity)
-    .where('id = :receiveId AND revision = :revision', {
-      receiveId,
+  const { affected } = await manager.update(
+    ReceiveTypeormEntity,
+    {
+      id: receiveId,
       revision: revision - 1n,
-    })
-    .set({ revision })
-    .execute()
+    },
+    {
+      revision,
+    },
+  )
 
   if (!affected) {
     return false
