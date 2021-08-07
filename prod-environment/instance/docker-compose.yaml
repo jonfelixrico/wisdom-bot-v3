@@ -12,6 +12,7 @@ services:
       - READ_DB_SYNC=true
       - READ_DB_URL=postgresql://root:password@postgres.db:5432/wisdom-v3
       - BACKUP_DB_SYNC=true
+      - LOGGING_LEVEL=debug
 
   postgres.db:
     image: postgres
