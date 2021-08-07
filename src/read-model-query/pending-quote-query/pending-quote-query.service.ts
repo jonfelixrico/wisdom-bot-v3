@@ -13,13 +13,13 @@ export class PendingQuoteQueryService {
   async getChannelIdsWithPendingQuotes(guildId: string) {
     const results = await this.repo
       .createQueryBuilder()
-      .select('channelId', 'channelId')
-      .where('guildId = :guildId', { guildId })
-      .andWhere('expireAckDt IS NULL')
-      .andWhere('acceptDt IS NULL')
-      .andWhere('cancelDt IS NULL')
-      .groupBy('channelId')
-      .having('COUNT(channelId) > 0')
+      .select('"channelId"', 'channelId')
+      .where('"guildId" = :guildId', { guildId })
+      .andWhere('"expireAckDt" IS NULL')
+      .andWhere('"acceptDt" IS NULL')
+      .andWhere('"cancelDt" IS NULL')
+      .groupBy('"channelId"')
+      .having('COUNT("channelId") > 0')
       .getRawMany<{ channelId: string }>()
 
     return results.map(({ channelId }) => channelId)
@@ -33,10 +33,10 @@ export class PendingQuoteQueryService {
   async getPendingQuotesFromChannel(channelId: string) {
     const results = await this.repo
       .createQueryBuilder()
-      .where('channelId = :channelId', { channelId })
-      .andWhere('expireAckDt IS NULL')
-      .andWhere('acceptDt IS NULL')
-      .andWhere('cancelDt IS NULL')
+      .where('"channelId" = :channelId', { channelId })
+      .andWhere('"expireAckDt" IS NULL')
+      .andWhere('"acceptDt" IS NULL')
+      .andWhere('"cancelDt" IS NULL')
       .getMany()
 
     return results.map(
@@ -59,12 +59,12 @@ export class PendingQuoteQueryService {
   async getGuildsWithPendingQuotes() {
     const results = await this.repo
       .createQueryBuilder()
-      .select('guildId', 'guildId')
-      .where('expireAckDt IS NULL')
-      .andWhere('acceptDt IS NULL')
-      .andWhere('cancelDt IS NULL')
-      .groupBy('guildId')
-      .having('COUNT(guildId) > 0')
+      .select('"guildId"', 'guildId')
+      .where('"expireAckDt" IS NULL')
+      .andWhere('"acceptDt" IS NULL')
+      .andWhere('"cancelDt" IS NULL')
+      .groupBy('"guildId"')
+      .having('COUNT("guildId") > 0')
       .getRawMany<{ guildId: string }>()
 
     return results.map(({ guildId }) => guildId)

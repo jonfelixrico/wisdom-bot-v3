@@ -49,18 +49,17 @@ const accepted: ReadRepositoryReducer<IPendingQuoteAcceptedPayload> = async (
   manager,
 ) => {
   const { acceptDt, quoteId } = data
-  const { affected } = await manager
-    .createQueryBuilder()
-    .update(QuoteTypeormEntity)
-    .set({
-      acceptDt,
-      revision,
-    })
-    .where('id = :quoteId AND revision = :revision', {
-      quoteId,
+  const { affected } = await manager.update(
+    QuoteTypeormEntity,
+    {
+      id: quoteId,
       revision: revision - 1n,
-    })
-    .execute()
+    },
+    {
+      revision,
+      acceptDt,
+    },
+  )
 
   return affected > 0
 }
@@ -70,18 +69,17 @@ const cancelled: ReadRepositoryReducer<IPendingQuoteCancelledPayload> = async (
   manager,
 ) => {
   const { cancelDt, quoteId } = data
-  const { affected } = await manager
-    .createQueryBuilder()
-    .update(QuoteTypeormEntity)
-    .set({
-      cancelDt,
-      revision,
-    })
-    .where('id = :quoteId AND revision = :revision', {
-      quoteId,
+  const { affected } = await manager.update(
+    QuoteTypeormEntity,
+    {
+      id: quoteId,
       revision: revision - 1n,
-    })
-    .execute()
+    },
+    {
+      revision,
+      cancelDt,
+    },
+  )
 
   return affected > 0
 }
