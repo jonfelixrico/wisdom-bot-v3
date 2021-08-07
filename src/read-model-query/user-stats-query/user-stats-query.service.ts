@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { ReactionTypeormRepository } from 'src/typeorm/providers/reaction.typeorm-repository'
 import { QuoteTypeormRepository } from 'src/typeorm/providers/quote.typeorm-repository'
 import { ReceiveTypeormRepository } from 'src/typeorm/providers/receive.typeorm-repository'
-import { Not } from 'typeorm'
+import { IsNull, Not } from 'typeorm'
 
 @Injectable()
 export class UserStatsQueryService {
@@ -17,7 +17,7 @@ export class UserStatsQueryService {
       where: {
         guildId,
         submitterId: userId,
-        acceptDt: Not(null),
+        acceptDt: Not(IsNull()),
       },
     })
 
@@ -47,7 +47,7 @@ export class UserStatsQueryService {
       where: {
         guildId,
         authorId: userId,
-        acceptDt: Not(null),
+        acceptDt: Not(IsNull()),
       },
     })
 
