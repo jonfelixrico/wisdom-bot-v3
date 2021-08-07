@@ -1,32 +1,28 @@
 version: '3.4'
 
 services:
-  mysql.db:
-    image: mysql
-    command: --default-authentication-plugin=mysql_native_password
-    restart: unless-stopped
-    ports:
-      - '3306:3306'
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: wisdom-v3
-    volumes:
-      - type: volume
-        source: mysql-volume-data
-        target: /var/lib/mysql
-
-  wisdom:
-    depends_on:
-      - mysql.db
-      - eventstore.db
-    build: ../
-    restart: unless-stopped
+  discord.client:
+    build: .
     env_file:
       - .env
     environment:
-      - BACKUP_DB_SYNC=true
       - READ_DB_SYNC=true
-      - READ_DB_URL=mysql://root:password@mysql.db:3306/wisdom-v3
+      - READ_DB_URL=postgresql://root:password@postgres.db:5432/wisdom-v3
+      - BACKUP_DB_SYNC=true
+
+  postgres.db:
+    image: postgres
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: root
+      POSTGRES_DB: wisdom-v3
+    volumes:
+      - type: volume
+        source: postgres-volume-data
+        target: /var/lib/postgresql/data
 
 volumes:
-  mysql-volume-data:
+  postgres-volume-data:
