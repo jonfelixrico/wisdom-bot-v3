@@ -2,6 +2,8 @@ version: '3.4'
 
 services:
   discord.client:
+    depends_on:
+      - postgres.db
     build: ../../.
     restart: unless-stopped
     env_file:
