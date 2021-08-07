@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { ReactionTypeormRepository } from 'src/typeorm/providers/reaction.typeorm-repository'
 import { QuoteTypeormRepository } from 'src/typeorm/providers/quote.typeorm-repository'
 import { ReceiveTypeormRepository } from 'src/typeorm/providers/receive.typeorm-repository'
+import { Not } from 'typeorm'
 
 @Injectable()
 export class GuildStatsQueryService {
@@ -12,21 +13,20 @@ export class GuildStatsQueryService {
   ) {}
 
   async getStats(guildId: string) {
-    const quotes = await this.quoteRepo
-      .createQueryBuilder()
-      .where('guildId = :guildId', { guildId })
-      .andWhere('acceptDt IS NOT NULL')
-      .getCount()
+    const quotes = await this.quoteRepo.count({
+      where: {
+        guildId,
+        acceptDt: Not(null),
+      },
+    })
 
-    const receives = await this.receiveRepo
-      .createQueryBuilder()
-      .where('guildId = :guildId', { guildId })
-      .getCount()
+    const receives = await this.receiveRepo.count({
+      where: { guildId },
+    })
 
-    const reactions = await this.reactionRepo
-      .createQueryBuilder()
-      .where('guildId = :guildId', { guildId })
-      .getCount()
+    const reactions = await this.reactionRepo.count({
+      where: { guildId },
+    })
 
     return {
       quotes,
