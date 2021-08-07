@@ -44,7 +44,7 @@ export class QuoteQueryService {
     if (authorId) {
       result = await query
         .where(
-          'acceptDt IS NOT NULL AND guildId = :guildId AND authorId = :authorId',
+          '"acceptDt" IS NOT NULL AND "guildId" = :guildId AND "authorId" = :authorId',
           {
             guildId,
             authorId,
@@ -53,7 +53,7 @@ export class QuoteQueryService {
         .getOne()
     } else {
       result = await query
-        .where('acceptDt IS NOT NULL AND guildId = :guildId', { guildId })
+        .where('"acceptDt" IS NOT NULL AND "guildId" = :guildId', { guildId })
         .getOne()
     }
 
