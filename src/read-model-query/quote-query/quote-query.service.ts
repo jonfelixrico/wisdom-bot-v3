@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common'
+import { random } from 'lodash'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 import { ReceiveTypeormEntity } from 'src/typeorm/entities/receive.typeorm-entity'
-import { Connection } from 'typeorm'
+import { Connection, FindConditions, IsNull, Not } from 'typeorm'
 
 @Injectable()
 export class QuoteQueryService {
@@ -35,29 +36,32 @@ export class QuoteQueryService {
    * @returns Null if no quotes were found, else the id of a quote will be returned instead.
    */
   async getRandomQuoteId(guildId: string, authorId?: string) {
-    const query = this.conn
-      .getRepository(QuoteTypeormEntity)
-      .createQueryBuilder()
-      .orderBy('RAND()')
-
-    let result: QuoteTypeormEntity
-    if (authorId) {
-      result = await query
-        .where(
-          '"acceptDt" IS NOT NULL AND "guildId" = :guildId AND "authorId" = :authorId',
-          {
-            guildId,
-            authorId,
-          },
-        )
-        .getOne()
-    } else {
-      result = await query
-        .where('"acceptDt" IS NOT NULL AND "guildId" = :guildId', { guildId })
-        .getOne()
+    const findOptions: FindConditions<QuoteTypeormEntity> = {
+      acceptDt: Not(IsNull()),
+      guildId,
     }
 
-    return result?.id ?? null
+    if (authorId) {
+      findOptions.authorId = authorId
+    }
+
+    const repo = this.conn.getRepository(QuoteTypeormEntity)
+
+    const count = await repo.count({
+      where: findOptions,
+    })
+
+    if (!count) {
+      return null
+    }
+
+    const [found] = await repo.find({
+      where: findOptions,
+      take: 1,
+      skip: random(0, count - 1, false),
+    })
+
+    return found?.id ?? null
   }
 
   async getQuoteData(quoteId: string) {
