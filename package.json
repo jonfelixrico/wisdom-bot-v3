@@ -34,7 +34,6 @@
     "mysql2": "^2.2.5",
     "nest-winston": "^1.5.0",
     "pg": "^8.7.1",
-    "random": "^3.0.6",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
