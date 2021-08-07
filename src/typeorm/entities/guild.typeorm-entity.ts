@@ -5,7 +5,7 @@ import { Column, Entity, PrimaryColumn } from 'typeorm'
   name: 'guild',
 })
 export class GuildTypeormEntity {
-  @PrimaryColumn('uuid')
+  @PrimaryColumn('varchar')
   id: string
 
   @Column('json')
