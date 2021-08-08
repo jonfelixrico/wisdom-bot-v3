@@ -11,6 +11,7 @@ import { DownvoteCommandService } from './handlers/downvote-command/downvote-com
 import { UserStatsCommandService } from './handlers/user-stats-command/user-stats-command.service'
 import { GuildStatsCommandService } from './handlers/guild-stats-command/guild-stats-command.service'
 import { ReadModelQueryModule } from 'src/read-model-query/read-model-query.module'
+import { TopContributorsCommandService } from './handlers/top-contributors-command/top-contributors-command.service';
 
 @Module({
   imports: [DiscordModule, CqrsModule, TypeormModule, ReadModelQueryModule],
@@ -23,6 +24,7 @@ import { ReadModelQueryModule } from 'src/read-model-query/read-model-query.modu
     DownvoteCommandService,
     UserStatsCommandService,
     GuildStatsCommandService,
+    TopContributorsCommandService,
   ],
 })
 export class CommandoModule {}
