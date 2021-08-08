@@ -7,7 +7,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
  * This table is experimental and may be removed in the future.
  */
 @Entity('guild-member-stats')
-export class GuildMemberInteractionTypeormEntity {
+export class GuildMemberStatsTypeormEntity {
   @PrimaryGeneratedColumn()
   id: string
 
