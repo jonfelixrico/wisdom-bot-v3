@@ -20,9 +20,7 @@ const submit: TypeormReducer<IQuoteSubmittedEventPayload> = async (
     content,
   })
 
-  const intRepo = await manager.getRepository(
-    GuildMemberInteractionTypeormEntity,
-  )
+  const intRepo = manager.getRepository(GuildMemberInteractionTypeormEntity)
 
   const interaction = await intRepo.findOne({
     where: {
@@ -46,6 +44,7 @@ const submit: TypeormReducer<IQuoteSubmittedEventPayload> = async (
       targetUserId: authorId,
       // hardcoded to 1 because this is the first time user has interacted with target
       submitted: 1,
+      guildId,
     })
   }
 
@@ -73,9 +72,7 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
 
   const { authorId } = quote
 
-  const intRepo = await manager.getRepository(
-    GuildMemberInteractionTypeormEntity,
-  )
+  const intRepo = manager.getRepository(GuildMemberInteractionTypeormEntity)
 
   const interaction = await intRepo.findOne({
     where: {
@@ -99,6 +96,7 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
       targetUserId: authorId,
       // hardcoded to 1 because this is the first time user has interacted with target
       receives: 1,
+      guildId,
     })
   }
 
