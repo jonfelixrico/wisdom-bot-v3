@@ -101,6 +101,8 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
       receives: 1,
     })
   }
+
+  return true
 }
 
 const { QUOTE_SUBMITTED, RECEIVE_CREATED } = DomainEventNames
