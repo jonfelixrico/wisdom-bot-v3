@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common'
 import { EventStoreModule } from 'src/event-store/event-store.module'
-import { TypeormModule } from 'src/typeorm/typeorm.module'
+import { statsModelTypeormProvider } from './typeorm/stats-model-typeorm.provider'
 
 @Module({
-  imports: [TypeormModule, EventStoreModule],
+  imports: [EventStoreModule],
+  providers: [statsModelTypeormProvider],
 })
 export class StatsModelModule {}
