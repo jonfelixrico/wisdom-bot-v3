@@ -1,12 +1,14 @@
 import { IGuildRegisteredEventPayload } from 'src/domain/events/guild-registered.event'
 import { GuildTypeormEntity } from 'src/typeorm/entities/guild.typeorm-entity'
-import { ReadRepositoryReducer } from '../types/read-repository-reducer.type'
+import {
+  TypeormReducerMap,
+  TypeormReducer,
+} from '../../types/typeorm-reducers.types'
 import { IGuildSettingsUpdatedEventPayload } from 'src/domain/events/guild-settings-updated.event'
 import { IGuildQuoteSettingsUpdatedEventPayload } from 'src/domain/events/guild-quote-settings-updated.event'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
-import { ReducerMap } from '../types/reducer-map.type'
 
-const registered: ReadRepositoryReducer<IGuildRegisteredEventPayload> = async (
+const registered: TypeormReducer<IGuildRegisteredEventPayload> = async (
   { revision, data },
   manager,
 ) => {
@@ -26,7 +28,7 @@ const registered: ReadRepositoryReducer<IGuildRegisteredEventPayload> = async (
   return true
 }
 
-const settingsUpdated: ReadRepositoryReducer<IGuildSettingsUpdatedEventPayload> =
+const settingsUpdated: TypeormReducer<IGuildSettingsUpdatedEventPayload> =
   async ({ data, revision }, manager) => {
     const { guildId, ...settings } = data
     const { affected } = await manager.update(
@@ -44,7 +46,7 @@ const settingsUpdated: ReadRepositoryReducer<IGuildSettingsUpdatedEventPayload> 
     return !!affected
   }
 
-const quoteSettingsUpdated: ReadRepositoryReducer<IGuildQuoteSettingsUpdatedEventPayload> =
+const quoteSettingsUpdated: TypeormReducer<IGuildQuoteSettingsUpdatedEventPayload> =
   async ({ data, revision }, manager) => {
     const { guildId, ...quoteSettings } = data
     const { affected } = await manager.update(
@@ -68,7 +70,7 @@ const {
   GUILD_REGISTERED,
 } = DomainEventNames
 
-export const GUILD_REDUCERS: ReducerMap = {
+export const GUILD_REDUCERS: TypeormReducerMap = {
   [GUILD_QUOTE_SETTINGS_UPDATED]: quoteSettingsUpdated,
   [GUILD_REGISTERED]: registered,
   [GUILD_SETTINGS_UPDATED]: settingsUpdated,

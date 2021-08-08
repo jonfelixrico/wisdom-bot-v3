@@ -5,10 +5,12 @@ import { IPendingQuoteExpirationAcknowledgedEventPayload } from 'src/domain/even
 import { IQuoteMessageDetailsUpdatedPayload } from 'src/domain/events/quote-message-details-updated.event'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
-import { ReadRepositoryReducer } from '../types/read-repository-reducer.type'
-import { ReducerMap } from '../types/reducer-map.type'
+import {
+  TypeormReducerMap,
+  TypeormReducer,
+} from '../../types/typeorm-reducers.types'
 
-const submitted: ReadRepositoryReducer<IQuoteSubmittedEventPayload> = async (
+const submitted: TypeormReducer<IQuoteSubmittedEventPayload> = async (
   { revision, data },
   manager,
 ) => {
@@ -44,7 +46,7 @@ const submitted: ReadRepositoryReducer<IQuoteSubmittedEventPayload> = async (
   return true
 }
 
-const accepted: ReadRepositoryReducer<IPendingQuoteAcceptedPayload> = async (
+const accepted: TypeormReducer<IPendingQuoteAcceptedPayload> = async (
   { revision, data },
   manager,
 ) => {
@@ -64,7 +66,7 @@ const accepted: ReadRepositoryReducer<IPendingQuoteAcceptedPayload> = async (
   return affected > 0
 }
 
-const cancelled: ReadRepositoryReducer<IPendingQuoteCancelledPayload> = async (
+const cancelled: TypeormReducer<IPendingQuoteCancelledPayload> = async (
   { revision, data },
   manager,
 ) => {
@@ -84,7 +86,7 @@ const cancelled: ReadRepositoryReducer<IPendingQuoteCancelledPayload> = async (
   return affected > 0
 }
 
-const messageDetailsUpdated: ReadRepositoryReducer<IQuoteMessageDetailsUpdatedPayload> =
+const messageDetailsUpdated: TypeormReducer<IQuoteMessageDetailsUpdatedPayload> =
   async ({ revision, data }, manager) => {
     const { quoteId, ...changes } = data
 
@@ -99,7 +101,7 @@ const messageDetailsUpdated: ReadRepositoryReducer<IQuoteMessageDetailsUpdatedPa
     return affected > 0
   }
 
-const expirationAcknowledged: ReadRepositoryReducer<IPendingQuoteExpirationAcknowledgedEventPayload> =
+const expirationAcknowledged: TypeormReducer<IPendingQuoteExpirationAcknowledgedEventPayload> =
   async ({ revision, data }, manager) => {
     const { quoteId, expireAckDt } = data
 
@@ -122,7 +124,7 @@ const {
   PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED,
 } = DomainEventNames
 
-export const QUOTE_REDUCERS: ReducerMap = Object.freeze({
+export const QUOTE_REDUCERS: TypeormReducerMap = Object.freeze({
   [QUOTE_SUBMITTED]: submitted,
   [PENDING_QUOTE_ACCEPTED]: accepted,
   [PENDING_QUOTE_CANCELLED]: cancelled,
