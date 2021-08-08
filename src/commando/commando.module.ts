@@ -6,12 +6,12 @@ import { CqrsModule } from '@nestjs/cqrs'
 import { TypeormModule } from 'src/typeorm/typeorm.module'
 import { ReceiveCommandService } from './handlers/receive-command/receive-command.service'
 import { ReactionHelperService } from './services/reaction-helper/reaction-helper.service'
-import { UpvoteCommandService } from './handlers/upvote-command/upvote-command.service'
-import { DownvoteCommandService } from './handlers/downvote-command/downvote-command.service'
+// import { UpvoteCommandService } from './handlers/upvote-command/upvote-command.service'
+// import { DownvoteCommandService } from './handlers/downvote-command/downvote-command.service'
 import { UserStatsCommandService } from './handlers/user-stats-command/user-stats-command.service'
 import { GuildStatsCommandService } from './handlers/guild-stats-command/guild-stats-command.service'
 import { ReadModelQueryModule } from 'src/read-model-query/read-model-query.module'
-import { TopContributorsCommandService } from './handlers/top-contributors-command/top-contributors-command.service';
+import { TopContributorsCommandService } from './handlers/top-contributors-command/top-contributors-command.service'
 
 @Module({
   imports: [DiscordModule, CqrsModule, TypeormModule, ReadModelQueryModule],
@@ -20,8 +20,8 @@ import { TopContributorsCommandService } from './handlers/top-contributors-comma
     SubmitCommandService,
     ReceiveCommandService,
     ReactionHelperService,
-    UpvoteCommandService,
-    DownvoteCommandService,
+    // UpvoteCommandService,
+    // DownvoteCommandService,
     UserStatsCommandService,
     GuildStatsCommandService,
     TopContributorsCommandService,
