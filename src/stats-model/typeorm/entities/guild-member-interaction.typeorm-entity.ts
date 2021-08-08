@@ -6,7 +6,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
  */
 @Entity('guild-member-interaction')
 export class GuildMemberInteractionTypeormEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string
 
   @Column()
