@@ -27,7 +27,7 @@ services:
       - type: volume
         source: postgres-volume-data
         target: /var/lib/postgresql/data
-      - ../docker-common/postgres-init:/docker-entrypoint-initdb.d
+      - ../common/postgres-init:/docker-entrypoint-initdb.d
 
   eventstore.db:
     image: eventstore/eventstore:latest
