@@ -5,4 +5,4 @@ import { TypeormModule } from 'src/typeorm/typeorm.module'
 @Module({
   imports: [TypeormModule, EventStoreModule],
 })
-export class StatsQueryModule {}
+export class StatsModelModule {}
