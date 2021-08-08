@@ -4,7 +4,8 @@ services:
   discord.client:
     depends_on:
       - postgres.db
-    build: ../../.
+    # points to the root of this repository
+    build: ../../../.
     restart: unless-stopped
     env_file:
       - .env
