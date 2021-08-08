@@ -33,7 +33,7 @@ export class GuildTopContributorsQueryHandlerService
       .where('"guildId" = :guildId', { guildId })
       .groupBy('"userId"')
       .having('SUM("submitted") > 0')
-      .orderBy('submitted', 'DESC')
+      .orderBy('contributions', 'DESC')
       .limit(limit)
       .getRawMany<IResult>()
 
