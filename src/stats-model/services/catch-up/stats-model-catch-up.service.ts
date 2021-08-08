@@ -5,7 +5,7 @@ import {
   Position,
   START,
 } from '@eventstore/db-client'
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common'
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common'
 import { fromEvent } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
 import { STATS_REDUCERS } from 'src/stats-model/stats.reducers'
@@ -16,10 +16,14 @@ const POSITION_KEY = 'POSITION'
 const READ_MAX_COUNT = 1000
 
 @Injectable()
-export class CatchUpService implements OnApplicationBootstrap {
+export class StatsModelCatchUpService implements OnApplicationBootstrap {
   private currentPosition: Position
 
-  constructor(private conn: Connection, private client: EventStoreDBClient) {}
+  constructor(
+    private conn: Connection,
+    private client: EventStoreDBClient,
+    private logger: Logger,
+  ) {}
 
   async updatePosition(manager: EntityManager, position: Position) {
     this.currentPosition = position
@@ -129,8 +133,18 @@ export class CatchUpService implements OnApplicationBootstrap {
   }
 
   async onApplicationBootstrap() {
+    this.logger.log(
+      'Starting catch-up for the stats model.',
+      StatsModelCatchUpService.name,
+    )
     await this.retrievePosition()
     await this.doCatchingUp()
+
+    this.logger.log(
+      'Catch-up finished, now watching for live events.',
+      StatsModelCatchUpService.name,
+    )
+
     this.streamEvents()
   }
 }
