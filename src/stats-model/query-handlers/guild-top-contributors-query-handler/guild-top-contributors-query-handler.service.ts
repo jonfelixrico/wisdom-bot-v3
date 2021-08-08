@@ -17,7 +17,7 @@ export class GuildTopContributorsQueryHandlerService
 {
   constructor(private conn: Connection) {}
 
-  get repo() {
+  private get repo() {
     return this.conn.getRepository(GuildMemberInteractionTypeormEntity)
   }
 
