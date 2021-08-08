@@ -87,7 +87,7 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
     await intRepo.update(
       { id },
       {
-        submitted: receives + 1,
+        receives: receives + 1,
       },
     )
   } else {
