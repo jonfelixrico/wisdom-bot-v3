@@ -23,11 +23,11 @@ services:
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: root
-      POSTGRES_DB: wisdom-v3
     volumes:
       - type: volume
         source: postgres-volume-data
         target: /var/lib/postgresql/data
+      - ../docker-common/postgres-init:/docker-entrypoint-initdb.d
 
   eventstore.db:
     image: eventstore/eventstore:latest
