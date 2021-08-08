@@ -22,6 +22,8 @@ const registered: ReadRepositoryReducer<IGuildRegisteredEventPayload> = async (
     ...guild,
     id: guildId,
   })
+
+  return true
 }
 
 const settingsUpdated: ReadRepositoryReducer<IGuildSettingsUpdatedEventPayload> =
