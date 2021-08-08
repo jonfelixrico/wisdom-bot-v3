@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
 /**
  * Keeps track the number of actions a user has done to another user, scoped per guild.
- * This is for stat-tracking so that we won't need to rely on joins and aggregates to crunch the numbers.
+ * This is for stat-tracking so that we won't need to rely on joins.
  */
 @Entity('guild-member-interaction')
 export class GuildMemberInteractionTypeormEntity {
