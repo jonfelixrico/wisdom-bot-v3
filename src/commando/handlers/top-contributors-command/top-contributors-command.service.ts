@@ -46,7 +46,10 @@ export class TopContributorsCommandService extends WrappedCommand<ITopContributo
     super(client, COMMAND_INFO)
   }
 
-  async handleAuthor(message: CommandoMessage, user: User) {
+  async handleAuthor(
+    message: CommandoMessage,
+    user: User,
+  ): Promise<MessageEmbedOptions> {
     const results: IAuthorTopContributorsQueryOutput =
       await this.queryBus.execute(
         new AuthorTopContributorsQuery({
@@ -55,6 +58,12 @@ export class TopContributorsCommandService extends WrappedCommand<ITopContributo
           guildId: message.guild.id,
         }),
       )
+
+    if (!results.length) {
+      return {
+        description: `No contributions yet for ${user}.`,
+      }
+    }
 
     const embed: MessageEmbedOptions = {
       author: {
@@ -75,7 +84,7 @@ export class TopContributorsCommandService extends WrappedCommand<ITopContributo
     return embed
   }
 
-  async handleGuild(message: CommandoMessage) {
+  async handleGuild(message: CommandoMessage): Promise<MessageEmbedOptions> {
     const results: IGuildTopContributorsQueryOutput =
       await this.queryBus.execute(
         new GuildTopContributorsQuery({
@@ -85,6 +94,12 @@ export class TopContributorsCommandService extends WrappedCommand<ITopContributo
       )
 
     const guild = message.guild
+
+    if (!results.length) {
+      return {
+        description: `No contributions yet for ${guild}.`,
+      }
+    }
 
     const embed: MessageEmbedOptions = {
       author: {
