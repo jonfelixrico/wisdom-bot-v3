@@ -10,4 +10,6 @@ export type IGuildTopReceivedAuthorsQueryOutput = {
   receives: number
 }[]
 
-export class GuildTopReceivedAuthorsQuery implements IQuery {}
+export class GuildTopReceivedAuthorsQuery implements IQuery {
+  constructor(readonly input: IGuildTopReceivedAuthorsQueryInput) {}
+}
