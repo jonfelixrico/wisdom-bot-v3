@@ -15,6 +15,8 @@ export class QuoteInfoTypeormEntity {
   @Column()
   content: string
 
-  @Column()
+  @Column({
+    default: 0,
+  })
   receives: number
 }
