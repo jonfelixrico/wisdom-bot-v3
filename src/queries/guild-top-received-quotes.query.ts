@@ -12,4 +12,6 @@ export type IGuildTopReceivedQuotesQueryOutput = {
   receives: number
 }[]
 
-export class GuildTopReceivedQuotesQuery implements IQuery {}
+export class GuildTopReceivedQuotesQuery implements IQuery {
+  constructor(readonly input: IGuildTopReceivedQuotesQueryInput) {}
+}
