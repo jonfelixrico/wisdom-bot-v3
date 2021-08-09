@@ -15,6 +15,9 @@ export class QuoteInfoTypeormEntity {
   @Column()
   content: string
 
+  @Column()
+  guildId: string
+
   @Column({
     default: 0,
   })
