@@ -18,6 +18,7 @@ const submit: TypeormReducer<IQuoteSubmittedEventPayload> = async (
     quoteId,
     authorId,
     content,
+    guildId,
   })
 
   const intRepo = manager.getRepository(GuildMemberInteractionTypeormEntity)
