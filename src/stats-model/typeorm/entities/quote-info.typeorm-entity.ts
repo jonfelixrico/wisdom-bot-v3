@@ -14,4 +14,7 @@ export class QuoteInfoTypeormEntity {
 
   @Column()
   content: string
+
+  @Column()
+  receives: number
 }
