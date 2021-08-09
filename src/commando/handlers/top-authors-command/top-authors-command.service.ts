@@ -62,7 +62,9 @@ export class TopAuthorsCommandService extends WrappedCommand {
       )
       .join('\n')
 
-    embed.footer.text = 'Ranking is based on the number of receives.'
+    embed.footer = {
+      text: 'Ranking is based on the number of receives.',
+    }
 
     return message.channel.send(new MessageEmbed(embed))
   }
