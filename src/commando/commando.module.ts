@@ -13,6 +13,8 @@ import { GuildStatsCommandService } from './handlers/guild-stats-command/guild-s
 import { ReadModelQueryModule } from 'src/read-model-query/read-model-query.module'
 import { TopContributorsCommandService } from './handlers/top-contributors-command/top-contributors-command.service'
 import { TopAuthorsCommandService } from './handlers/top-authors-command/top-authors-command.service'
+import { GuildTopQuoteService } from './handlers/guild-top-quote/guild-top-quote.service'
+import { UserTopQuoteService } from './handlers/user-top-quote/user-top-quote.service'
 
 @Module({
   imports: [DiscordModule, CqrsModule, TypeormModule, ReadModelQueryModule],
@@ -27,6 +29,8 @@ import { TopAuthorsCommandService } from './handlers/top-authors-command/top-aut
     GuildStatsCommandService,
     TopContributorsCommandService,
     TopAuthorsCommandService,
+    GuildTopQuoteService,
+    UserTopQuoteService,
   ],
 })
 export class CommandoModule {}
