@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { QueryBus } from '@nestjs/cqrs'
-import { Message, MessageEmbed, MessageEmbedOptions, User } from 'discord.js'
+import {
+  Message,
+  MessageEmbed,
+  MessageEmbedOptions,
+  User,
+  Util,
+} from 'discord.js'
 
 import {
   CommandoMessage,
@@ -76,7 +82,7 @@ export class UserTopQuoteService extends WrappedCommand<IUserTopQuotesCommandArg
       '',
       ...results.map(
         ({ receives, content }, index) =>
-          `${index + 1}. **"${content}"** (${receives})`,
+          `${index + 1}. **"${Util.escapeMarkdown(content)}"** (${receives})`,
       ),
     ].join('\n')
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { QueryBus } from '@nestjs/cqrs'
-import { Message, MessageEmbed, MessageEmbedOptions } from 'discord.js'
+import { Message, MessageEmbed, MessageEmbedOptions, Util } from 'discord.js'
 
 import {
   CommandoMessage,
@@ -58,7 +58,7 @@ export class GuildTopQuoteService extends WrappedCommand {
     embed.description = results
       .map(({ authorId, receives, content }, index) =>
         [
-          `${index + 1}. **"${content}"**`,
+          `${index + 1}. **"${Util.escapeMarkdown(content)}"**`,
           `- <@${authorId}> (${receives})`,
         ].join('\n'),
       )
