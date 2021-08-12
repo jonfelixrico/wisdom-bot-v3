@@ -38,4 +38,4 @@ COPY --from=builder /home/node/dist/ /home/node/dist/
 
 RUN yarn ci
 
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
