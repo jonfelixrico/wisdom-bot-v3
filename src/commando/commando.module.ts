@@ -17,6 +17,7 @@ import { GuildTopQuoteService } from './handlers/guild-top-quote/guild-top-quote
 import { UserTopQuoteService } from './handlers/user-top-quote/user-top-quote.service'
 import { GuildTopReceiversCommandService } from './handlers/guild-top-receivers-command/guild-top-receivers-command.service'
 import { AuthorTopReceiversCommandService } from './handlers/author-top-receivers-command/author-top-receivers-command.service'
+// import { InfoCommandService } from './handlers/info-command/info-command.service'
 
 @Module({
   imports: [DiscordModule, CqrsModule, TypeormModule, ReadModelQueryModule],
@@ -35,6 +36,7 @@ import { AuthorTopReceiversCommandService } from './handlers/author-top-receiver
     UserTopQuoteService,
     GuildTopReceiversCommandService,
     AuthorTopReceiversCommandService,
+    // InfoCommandService,
   ],
 })
 export class CommandoModule {}
