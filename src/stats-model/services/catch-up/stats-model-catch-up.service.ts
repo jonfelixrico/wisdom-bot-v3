@@ -67,6 +67,8 @@ export class StatsModelCatchUpService implements OnApplicationBootstrap {
         await runner.rollbackTransaction()
       }
     } catch (e) {
+      const err = e as Error
+      this.logger.error(err.message, err.stack, StatsModelCatchUpService.name)
       await runner.rollbackTransaction()
     } finally {
       await runner.release()
