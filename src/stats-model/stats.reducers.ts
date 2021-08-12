@@ -18,6 +18,7 @@ const submit: TypeormReducer<IQuoteSubmittedEventPayload> = async (
     quoteId,
     authorId,
     content,
+    guildId,
   })
 
   const intRepo = manager.getRepository(GuildMemberInteractionTypeormEntity)
@@ -57,8 +58,11 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
 ) => {
   const { quoteId, userId, guildId } = data
 
+  const intRepo = manager.getRepository(GuildMemberInteractionTypeormEntity)
+  const quoteRepo = manager.getRepository(QuoteInfoTypeormEntity)
+
   // we're looking for the author of the quote here
-  const quote = await manager.findOne(QuoteInfoTypeormEntity, {
+  const quote = await quoteRepo.findOne({
     where: { quoteId },
   })
 
@@ -70,9 +74,14 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
     return false
   }
 
-  const { authorId } = quote
+  await quoteRepo.update(
+    {
+      quoteId,
+    },
+    { receives: quote.receives + 1 },
+  )
 
-  const intRepo = manager.getRepository(GuildMemberInteractionTypeormEntity)
+  const { authorId } = quote
 
   const interaction = await intRepo.findOne({
     where: {

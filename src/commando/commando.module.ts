@@ -12,6 +12,12 @@ import { UserStatsCommandService } from './handlers/user-stats-command/user-stat
 import { GuildStatsCommandService } from './handlers/guild-stats-command/guild-stats-command.service'
 import { ReadModelQueryModule } from 'src/read-model-query/read-model-query.module'
 import { TopContributorsCommandService } from './handlers/top-contributors-command/top-contributors-command.service'
+import { TopAuthorsCommandService } from './handlers/top-authors-command/top-authors-command.service'
+import { GuildTopQuoteService } from './handlers/guild-top-quote/guild-top-quote.service'
+import { UserTopQuoteService } from './handlers/user-top-quote/user-top-quote.service'
+import { GuildTopReceiversCommandService } from './handlers/guild-top-receivers-command/guild-top-receivers-command.service'
+import { AuthorTopReceiversCommandService } from './handlers/author-top-receivers-command/author-top-receivers-command.service'
+// import { InfoCommandService } from './handlers/info-command/info-command.service'
 
 @Module({
   imports: [DiscordModule, CqrsModule, TypeormModule, ReadModelQueryModule],
@@ -25,6 +31,12 @@ import { TopContributorsCommandService } from './handlers/top-contributors-comma
     UserStatsCommandService,
     GuildStatsCommandService,
     TopContributorsCommandService,
+    TopAuthorsCommandService,
+    GuildTopQuoteService,
+    UserTopQuoteService,
+    GuildTopReceiversCommandService,
+    AuthorTopReceiversCommandService,
+    // InfoCommandService,
   ],
 })
 export class CommandoModule {}

@@ -1,5 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { Message, MessageEmbed, MessageEmbedOptions, User } from 'discord.js'
+import {
+  Message,
+  MessageEmbed,
+  MessageEmbedOptions,
+  User,
+  Util,
+} from 'discord.js'
 import {
   CommandoClient,
   CommandInfo,
@@ -79,7 +85,10 @@ export class ReceiveCommandService extends WrappedCommand<IReceiveCommandArgs> {
     const newReceiveCount = receiveCount + 1
 
     const embed: MessageEmbedOptions = {
-      description: [`**"${content}"**`, `- <@${authorId}>, ${year}`].join('\n'),
+      description: [
+        `**"${Util.escapeMarkdown(content)}"**`,
+        `- <@${authorId}>, ${year}`,
+      ].join('\n'),
       author: {
         name: 'Quote Received',
       },
