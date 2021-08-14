@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common'
 import { DiscordModule } from './discord/discord.module'
 import { ConfigModule } from '@nestjs/config'
 import { TypeormModule } from './typeorm/typeorm.module'
-import { CommandoModule } from './commando/commando.module'
 import { CommandHandlersModule } from './command-handlers/command-handlers.module'
 import { LoggerModule } from './logger/logger.module'
 import { EventStoreModule } from './event-store/event-store.module'
@@ -24,7 +23,6 @@ import { StatsModelModule } from './stats-model/stats-model.module'
     }),
     TypeormModule,
     DiscordModule,
-    CommandoModule,
     CommandHandlersModule,
     EventStoreModule,
     WriteRepositoriesModule,
