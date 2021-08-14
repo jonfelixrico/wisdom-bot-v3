@@ -1,6 +1,6 @@
 import { Provider } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { Client } from 'discord.js'
+import { Client, Intents } from 'discord.js'
 
 export const discordProviders: Provider[] = [
   {
@@ -8,7 +8,10 @@ export const discordProviders: Provider[] = [
     useFactory: (cfg: ConfigService) =>
       new Promise(async (resolve, reject) => {
         try {
-          const client = new Client()
+          const client = new Client({
+            intents: [Intents.FLAGS.GUILDS],
+          })
+
           client.once('ready', () => {
             resolve(client)
           })
