@@ -8,6 +8,7 @@ import { QuoteSubmittedEvent } from '../events/quote-submitted.event'
 import { PendingQuote } from './pending-quote.entity'
 
 export interface ISubmittedQuote {
+  quoteId: string
   content: string
   authorId: string
   submitterId: string
