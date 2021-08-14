@@ -5,7 +5,7 @@ import { EventPayload } from './event-payload.type'
 export interface IPendingQuoteVoteWithdrawnEventPayload extends EventPayload {
   readonly quoteId: string
   readonly userId: string
-  readonly voteValue: number
+  readonly withdrawDt: Date
 }
 
 export class PendingQuoteVoteWithdrawnEvent extends DomainEvent<IPendingQuoteVoteWithdrawnEventPayload> {

@@ -6,6 +6,7 @@ export interface IPendingQuoteVoteCastedEventPayload extends EventPayload {
   readonly quoteId: string
   readonly userId: string
   readonly voteValue: number
+  readonly voteDt: Date
 }
 
 export class PendingQuoteVoteCastedEvent extends DomainEvent<IPendingQuoteVoteCastedEventPayload> {
