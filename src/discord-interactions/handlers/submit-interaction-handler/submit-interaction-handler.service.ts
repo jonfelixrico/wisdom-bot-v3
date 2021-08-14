@@ -84,14 +84,15 @@ export class SubmitInteractionHandlerService
       )
 
       const { upvoteCount, upvoteWindow } = guild.quoteSettings
-      const now = new DateTime()
+      const now = DateTime.now()
       const expireDt = now.plus({ millisecond: upvoteWindow })
 
       const embed: MessageEmbedOptions = {
         author: {
           name: 'Quote Submitted',
+          icon_url: await submitter.displayAvatarURL({ format: 'png' }),
         },
-        description: [`**"${quote}"**`, `- <${author}, ${now.year}`].join('\n'),
+        description: [`**"${quote}"**`, `- ${author}, ${now.year}`].join('\n'),
         fields: [
           {
             name: SPACE_CHARACTER,
@@ -111,6 +112,9 @@ export class SubmitInteractionHandlerService
            */
           text: `Submitted on ${now.toLocaleString(DateTime.DATETIME_FULL)}`,
         },
+        thumbnail: {
+          url: await author.displayAvatarURL({ format: 'png' }),
+        },
       }
 
       await interaction.editReply({
@@ -123,7 +127,8 @@ export class SubmitInteractionHandlerService
         SubmitInteractionHandlerService.name,
       )
     } catch (e) {
-      logger.error(e, SubmitInteractionHandlerService.name)
+      const err = e as Error
+      logger.error(err.message, err.stack, SubmitInteractionHandlerService.name)
 
       await interaction.editReply({
         content:
