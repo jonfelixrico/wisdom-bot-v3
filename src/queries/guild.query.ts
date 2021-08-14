@@ -15,5 +15,5 @@ export interface IGuildQueryInput {
 }
 
 export class GuildQuery implements IQuery {
-  constructor(readonly input: IGuildQueryOuptut) {}
+  constructor(readonly input: IGuildQueryInput) {}
 }
