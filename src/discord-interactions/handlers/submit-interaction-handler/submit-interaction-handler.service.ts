@@ -13,7 +13,11 @@ import { v4 } from 'uuid'
 import { GuildQuery, IGuildQueryOuptut } from 'src/queries/guild.query'
 import { DateTime } from 'luxon'
 import { SPACE_CHARACTER } from 'src/types/discord.constants'
-import { MessageEmbedOptions } from 'discord.js'
+import {
+  MessageActionRow,
+  MessageButton,
+  MessageEmbedOptions,
+} from 'discord.js'
 
 const COMMAND_NAME = 'submit'
 const AUTHOR_OPTION_NAME = 'author'
@@ -72,6 +76,8 @@ export class SubmitInteractionHandlerService
 
       // TODO add logging here
 
+      const quoteId = v4()
+
       await this.commandBus.execute(
         new SubmitQuoteCommand({
           authorId: author.id,
@@ -79,7 +85,7 @@ export class SubmitInteractionHandlerService
           channelId,
           content: quote,
           guildId,
-          quoteId: v4(),
+          quoteId,
         }),
       )
 
@@ -98,7 +104,7 @@ export class SubmitInteractionHandlerService
             name: SPACE_CHARACTER,
             value: [
               `Submitted by ${submitter}`,
-              `This submission needs ${upvoteCount} upvotes on or before ${expireDt.toLocaleString(
+              `This submission needs ${upvoteCount} votes on or before ${expireDt.toLocaleString(
                 DateTime.DATETIME_FULL,
               )}.`,
             ].join('\n\n'),
@@ -117,9 +123,25 @@ export class SubmitInteractionHandlerService
         },
       }
 
+      const row = new MessageActionRow({
+        components: [
+          new MessageButton({
+            customId: `quote/${quoteId}/vote/1`,
+            style: 'SUCCESS',
+            emoji: '👍',
+          }),
+          new MessageButton({
+            customId: `quote/${quoteId}/vote/-1`,
+            style: 'DANGER',
+            emoji: '👎',
+          }),
+        ],
+      })
+
       await interaction.editReply({
         // TODO add buttons here for reactions
         embeds: [embed],
+        components: [row],
       })
 
       logger.log(
