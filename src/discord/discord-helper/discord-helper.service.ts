@@ -1,11 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import {
-  Client,
-  DiscordAPIError,
-  Guild,
-  GuildChannel,
-  TextChannel,
-} from 'discord.js'
+import { Client, DiscordAPIError, Guild, TextChannel } from 'discord.js'
 
 function is404Error(e: Error) {
   return e instanceof DiscordAPIError && e.httpStatus === 404
@@ -41,10 +35,10 @@ export class DiscordHelperService {
     }
   }
 
-  async getChannel(
+  async getTextChannel(
     guildId: string,
     channelId: string,
-  ): Promise<GuildChannel | null> {
+  ): Promise<TextChannel | null> {
     const guild = await this.getGuild(guildId)
     if (!guild) {
       return null
@@ -52,32 +46,26 @@ export class DiscordHelperService {
 
     const { channels } = guild
 
-    const channel = channels.cache.get(channelId)
-    if (channel) {
-      return channel
+    // first, we try to take the channel from the cache
+    const fromCache = channels.cache.get(channelId)
+    if (fromCache) {
+      // we'll automatically return null if not a text channel
+      return fromCache.type === 'GUILD_TEXT' ? (fromCache as TextChannel) : null
     }
 
     try {
-      return await channels.resolve(channelId)
+      const fromResolve = await channels.resolve(channelId)
+      return fromResolve.type === 'GUILD_TEXT'
+        ? (fromResolve as TextChannel)
+        : null
     } catch (e) {
       if (is404Error(e)) {
+        // if resovle doesn't find the channel, it will throw an error instead
         return null
       }
 
       throw e
     }
-  }
-
-  async getTextChannel(
-    guildId: string,
-    channelId: string,
-  ): Promise<TextChannel | null> {
-    const channel = await this.getChannel(guildId, channelId)
-    if (!channel || !(channel instanceof TextChannel)) {
-      return null
-    }
-
-    return channel
   }
 
   async getMessage(guildId: string, channelId: string, messageId: string) {
@@ -102,7 +90,6 @@ export class DiscordHelperService {
     guildId: string,
     channelId: string,
     messageId: string,
-    reason?: string,
   ): Promise<boolean> {
     const channel = await this.getTextChannel(guildId, channelId)
     if (!channel) {
@@ -111,7 +98,7 @@ export class DiscordHelperService {
 
     const { messages } = channel
     try {
-      await messages.delete(messageId, reason)
+      await messages.delete(messageId)
       return true
     } catch (e) {
       if (is404Error(e)) {
