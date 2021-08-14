@@ -1,9 +1,6 @@
 import { DomainEntity } from '../abstracts/domain-entity.abstract'
 import { PendingQuoteAcceptedEvent } from '../events/pending-quote-accepted.event'
 import { PendingQuoteCancelledEvent } from '../events/pending-quote-cancelled.event'
-import { QuoteSubmittedEvent } from '../events/quote-submitted.event'
-import { IQuoteToSubmit } from './quote-to-submit.interface'
-import { v4 } from 'uuid'
 import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
 import { DomainError } from '../errors/domain-error.class'
 import { QuoteMessageDetailsUpdatedEvent } from '../events/quote-message-details-updated.event'
@@ -171,30 +168,5 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
         expireAckDt: now,
       }),
     )
-  }
-
-  /**
-   * Creates a quote.
-   * @param quote Data required to create a quote.
-   */
-  static submit(quote: IQuoteToSubmit) {
-    const quoteId = v4()
-
-    const submitEvent = new QuoteSubmittedEvent({
-      ...quote,
-      quoteId,
-    })
-
-    const entity = new PendingQuote({
-      ...quote,
-      quoteId,
-      acceptDt: null,
-      cancelDt: null,
-      expireAckDt: null,
-    })
-
-    entity.apply(submitEvent)
-
-    return entity
   }
 }
