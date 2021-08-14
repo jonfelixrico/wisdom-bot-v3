@@ -1,5 +1,5 @@
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
-import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
+import { IPendingQuote } from 'src/domain/entities/pending-quote.entity'
 import { IPendingQuoteAcceptedPayload } from 'src/domain/events/pending-quote-accepted.event'
 import { IPendingQuoteCancelledPayload } from 'src/domain/events/pending-quote-cancelled.event'
 import { IPendingQuoteExpirationAcknowledgedEventPayload } from 'src/domain/events/pending-quote-expiration-acknowledged.event'
