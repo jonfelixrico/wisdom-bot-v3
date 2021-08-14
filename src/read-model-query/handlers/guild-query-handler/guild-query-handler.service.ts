@@ -25,14 +25,25 @@ export class GuildQueryHandlerService implements IQueryHandler<GuildQuery> {
 
     if (guild) {
       const { quoteSettings, settings } = guild
+      logger.debug(`Found guild ${guildId}`, GuildQueryHandlerService.name)
+
       return {
         quoteSettings,
         settings,
         doesExist: true,
       }
     } else if (!guild && existingOnly) {
+      logger.debug(
+        `Guild ${guildId} not found; returning null due to the existingOnly flag.`,
+        GuildQueryHandlerService.name,
+      )
       return null
     }
+
+    logger.debug(
+      `Guild ${guildId} not found, returning defaults instead.`,
+      GuildQueryHandlerService.name,
+    )
 
     return {
       // TODO create service for default guild values
