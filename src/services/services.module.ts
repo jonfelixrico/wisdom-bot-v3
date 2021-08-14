@@ -6,6 +6,7 @@ import { MessageRecacheService } from './message-recache/message-recache.service
 
 @Module({
   imports: [ReadModelQueryModule, CqrsModule, DiscordModule],
-  providers: [MessageRecacheService],
+  // TODO check out why MessageRecacheService fails
+  // providers: [MessageRecacheService],
 })
 export class ServicesModule {}
