@@ -14,7 +14,7 @@ import { EventHandlersModule } from './event-handlers/event-handlers.module'
 import { EsdbBackupModule } from './esdb-backup/esdb-backup.module'
 import { StatsModelModule } from './stats-model/stats-model.module'
 import { DiscordWatchersModule } from './discord-watchers/discord-watchers.module'
-import { InteractionHandlersModule } from './interaction-handlers/interaction-handlers.module'
+import { DiscordInteractionsModule } from './discord-interactions/discord-interactions.module'
 
 @Module({
   imports: [
@@ -37,7 +37,7 @@ import { InteractionHandlersModule } from './interaction-handlers/interaction-ha
     EsdbBackupModule,
     StatsModelModule,
     DiscordWatchersModule,
-    InteractionHandlersModule,
+    DiscordInteractionsModule,
   ],
 })
 export class AppModule {}

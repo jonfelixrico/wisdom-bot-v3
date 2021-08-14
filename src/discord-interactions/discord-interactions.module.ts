@@ -7,4 +7,4 @@ import { InteractionCreatedRelayService } from './services/interaction-created-r
   imports: [DiscordModule, CqrsModule],
   providers: [InteractionCreatedRelayService],
 })
-export class InteractionHandlersModule {}
+export class DiscordInteractionsModule {}

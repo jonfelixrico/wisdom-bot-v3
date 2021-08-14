@@ -1,7 +1,7 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common'
 import { EventBus } from '@nestjs/cqrs'
 import { Client } from 'discord.js'
-import { DiscordInteractionEvent } from 'src/interaction-handlers/types/discord-interaction.event'
+import { DiscordInteractionEvent } from 'src/discord-interactions/types/discord-interaction.event'
 
 @Injectable()
 export class InteractionCreatedRelayService implements OnApplicationBootstrap {
