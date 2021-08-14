@@ -35,7 +35,6 @@ export interface IPendingQuote {
   // for approval/expiration
   expireDt: Date
   upvoteCount: number
-  upvoteEmoji: string
 }
 
 export interface IQuoteMessageDetails {
@@ -78,7 +77,6 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     messageId,
     expireDt,
     upvoteCount,
-    upvoteEmoji,
   }: IPendingQuote) {
     super()
 
@@ -94,7 +92,6 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     this.messageId = messageId
     this.expireDt = expireDt
     this.upvoteCount = upvoteCount
-    this.upvoteEmoji = upvoteEmoji
   }
 
   get isExpired() {
