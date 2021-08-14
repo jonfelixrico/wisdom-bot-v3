@@ -5,6 +5,7 @@ import { InteractionCreatedRelayService } from './services/interaction-created-r
 import { ReceiveInteractionHandlerService } from './handlers/receive-interaction-handler/receive-interaction-handler.service'
 import { CommandManagerService } from './services/command-manager/command-manager.service'
 import { ReadModelQueryModule } from 'src/read-model-query/read-model-query.module'
+import { SubmitInteractionHandlerService } from './handlers/submit-interaction-handler/submit-interaction-handler.service'
 
 @Module({
   imports: [DiscordModule, CqrsModule, ReadModelQueryModule],
@@ -12,6 +13,7 @@ import { ReadModelQueryModule } from 'src/read-model-query/read-model-query.modu
     InteractionCreatedRelayService,
     ReceiveInteractionHandlerService,
     CommandManagerService,
+    SubmitInteractionHandlerService,
   ],
 })
 export class DiscordInteractionsModule {}
