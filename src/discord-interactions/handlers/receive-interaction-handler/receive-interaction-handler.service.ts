@@ -8,6 +8,9 @@ import { SPACE_CHARACTER } from 'src/types/discord.constants'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { CommandManagerService } from 'src/discord-interactions/services/command-manager/command-manager.service'
 
+const COMMAND_NAME = 'receive'
+const AUTHOR_OPTION_NAME = 'author'
+
 @EventsHandler(DiscordInteractionEvent)
 export class ReceiveInteractionHandlerService
   implements IEventHandler<DiscordInteractionEvent>, OnModuleInit
@@ -21,12 +24,12 @@ export class ReceiveInteractionHandlerService
 
   onModuleInit() {
     const command = new SlashCommandBuilder()
-      .setName('receive')
+      .setName(COMMAND_NAME)
       .setDescription('Gives you a random quote.')
       .addUserOption(
         (option) =>
           option
-            .setName('author')
+            .setName(AUTHOR_OPTION_NAME)
             .setDescription(
               'You can filter the author of the random quote by providing a mention.',
             )
@@ -34,15 +37,11 @@ export class ReceiveInteractionHandlerService
       )
 
     this.manager.registerCommand(command as SlashCommandBuilder)
-    this.logger.verbose(
-      `Registered command ${command.name}`,
-      ReceiveInteractionHandlerService.name,
-    )
   }
 
   async handle({ interaction }: DiscordInteractionEvent) {
     // TODO get the string literal "receive" from an enum or something
-    if (!interaction.isCommand() || interaction.commandName !== 'receive') {
+    if (!interaction.isCommand() || interaction.commandName !== COMMAND_NAME) {
       return
     }
 
@@ -52,7 +51,7 @@ export class ReceiveInteractionHandlerService
     await interaction.deferReply()
 
     // TODO get the string literal "author" from an enum
-    const author = options.getUser('author')
+    const author = options.getUser(AUTHOR_OPTION_NAME)
 
     const quoteId = await quoteQuery.getRandomQuoteId(guild.id, author?.id)
     if (!quoteId) {
