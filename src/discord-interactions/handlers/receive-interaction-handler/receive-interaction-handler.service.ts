@@ -66,11 +66,6 @@ export class ReceiveInteractionHandlerService
       return await interaction.editReply('No quotes available.')
     }
 
-    const response = await interaction.editReply(
-      'Retrieving quote information...',
-    )
-    await interaction.deferReply()
-
     const { year, content, authorId, receiveCount } =
       await quoteQuery.getQuoteData(quoteId)
     const newReceiveCount = receiveCount + 1
@@ -78,7 +73,6 @@ export class ReceiveInteractionHandlerService
     await commandBus.execute(
       new ReceiveQuoteCommand({
         channelId: channel.id,
-        messageId: response.id,
         quoteId,
         userId: receiver.id,
       }),
@@ -111,7 +105,7 @@ export class ReceiveInteractionHandlerService
       timestamp: new Date(),
 
       thumbnail: {
-        url: await author.displayAvatarURL({ format: 'png' }),
+        url: author && (await author.displayAvatarURL({ format: 'png' })),
       },
     }
 
