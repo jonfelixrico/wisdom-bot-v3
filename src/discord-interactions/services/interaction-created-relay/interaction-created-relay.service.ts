@@ -9,6 +9,7 @@ export class InteractionCreatedRelayService implements OnApplicationBootstrap {
 
   onApplicationBootstrap() {
     const { client, eventBus } = this
+
     client.on('interactionCreate', (interaction) => {
       eventBus.publish(new DiscordInteractionEvent(interaction))
     })
