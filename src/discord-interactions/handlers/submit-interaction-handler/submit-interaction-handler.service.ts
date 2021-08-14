@@ -1,10 +1,19 @@
 import { Logger, OnModuleInit } from '@nestjs/common'
-import { CommandBus, EventsHandler, IEventHandler } from '@nestjs/cqrs'
+import {
+  CommandBus,
+  EventsHandler,
+  IEventHandler,
+  QueryBus,
+} from '@nestjs/cqrs'
 import { DiscordInteractionEvent } from 'src/discord-interactions/types/discord-interaction.event'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { CommandManagerService } from 'src/discord-interactions/services/command-manager/command-manager.service'
 import { SubmitQuoteCommand } from 'src/domain/commands/submit-quote.command'
 import { v4 } from 'uuid'
+import { GuildQuery, IGuildQueryOuptut } from 'src/queries/guild.query'
+import { DateTime } from 'luxon'
+import { SPACE_CHARACTER } from 'src/types/discord.constants'
+import { MessageEmbedOptions } from 'discord.js'
 
 const COMMAND_NAME = 'submit'
 const AUTHOR_OPTION_NAME = 'author'
@@ -18,6 +27,7 @@ export class SubmitInteractionHandlerService
     private logger: Logger,
     private manager: CommandManagerService,
     private commandBus: CommandBus,
+    private queryBus: QueryBus,
   ) {}
 
   onModuleInit() {
@@ -45,22 +55,80 @@ export class SubmitInteractionHandlerService
       return
     }
 
-    const { commandBus } = this
+    const { logger } = this
+
     const { channelId, guildId, user: submitter, options } = interaction
     const quote = options.getString(QUOTE_OPTION_NAME)
     const author = options.getUser(AUTHOR_OPTION_NAME)
 
-    // TODO add logging here
+    try {
+      // TODO add logging here
 
-    await commandBus.execute(
-      new SubmitQuoteCommand({
-        authorId: author.id,
-        submitterId: submitter.id,
-        channelId,
-        content: quote,
-        guildId,
-        quoteId: v4(),
-      }),
-    )
+      await interaction.deferReply()
+
+      const guild: IGuildQueryOuptut = await this.queryBus.execute(
+        new GuildQuery({ guildId }),
+      )
+
+      // TODO add logging here
+
+      await this.commandBus.execute(
+        new SubmitQuoteCommand({
+          authorId: author.id,
+          submitterId: submitter.id,
+          channelId,
+          content: quote,
+          guildId,
+          quoteId: v4(),
+        }),
+      )
+
+      const { upvoteCount, upvoteWindow } = guild.quoteSettings
+      const now = new DateTime()
+      const expireDt = now.plus({ millisecond: upvoteWindow })
+
+      const embed: MessageEmbedOptions = {
+        author: {
+          name: 'Quote Submitted',
+        },
+        description: [`**"${quote}"**`, `- <${author}, ${now.year}`].join('\n'),
+        fields: [
+          {
+            name: SPACE_CHARACTER,
+            value: [
+              `Submitted by ${submitter}`,
+              `This submission needs ${upvoteCount} upvotes on or before ${expireDt.toLocaleString(
+                DateTime.DATETIME_FULL,
+              )}.`,
+            ].join('\n\n'),
+          },
+        ],
+        footer: {
+          /*
+           * We're using `footer` instead of `timestamp` because the latter adjusts with the Discord client device's
+           * timezone (device of a discord user). We don't want that because it'll be inconsistent with our other date-related
+           * strings if ever they did change timezones.
+           */
+          text: `Submitted on ${now.toLocaleString(DateTime.DATETIME_FULL)}`,
+        },
+      }
+
+      await interaction.editReply({
+        // TODO add buttons here for reactions
+        embeds: [embed],
+      })
+
+      logger.log(
+        `Processed the quote submission of user ${submitter.id} in guild ${guildId}`,
+        SubmitInteractionHandlerService.name,
+      )
+    } catch (e) {
+      logger.error(e, SubmitInteractionHandlerService.name)
+
+      await interaction.editReply({
+        content:
+          'Something went wrong while processing your submission. Try again later, maybe?',
+      })
+    }
   }
 }
