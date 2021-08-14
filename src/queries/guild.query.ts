@@ -2,7 +2,6 @@ import { IQuery } from '@nestjs/cqrs'
 import { IQuoteSettings, ISettings } from 'src/domain/entities/guild.interfaces'
 
 export interface IGuildQueryOuptut {
-  id: string
   quoteSettings: IQuoteSettings
   settings: ISettings
 
