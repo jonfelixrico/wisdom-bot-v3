@@ -10,7 +10,7 @@ const AUTHOR_OPTION_NAME = 'author'
 const QUOTE_OPTION_NAME = 'quote'
 
 @EventsHandler(DiscordInteractionEvent)
-export class ReceiveInteractionHandlerService
+export class SubmitInteractionHandlerService
   implements IEventHandler<DiscordInteractionEvent>, OnModuleInit
 {
   constructor(
