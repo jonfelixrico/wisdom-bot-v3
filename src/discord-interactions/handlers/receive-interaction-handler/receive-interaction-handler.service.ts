@@ -1,35 +1,44 @@
-import { Logger } from '@nestjs/common'
+import { Logger, OnModuleInit } from '@nestjs/common'
 import { CommandBus, EventsHandler, IEventHandler } from '@nestjs/cqrs'
 import { MessageEmbed, MessageEmbedOptions, Util } from 'discord.js'
-import { DiscordInteractionsModule } from 'src/discord-interactions/discord-interactions.module'
 import { DiscordInteractionEvent } from 'src/discord-interactions/types/discord-interaction.event'
 import { ReceiveQuoteCommand } from 'src/domain/commands/receive-quote.command'
 import { QuoteQueryService } from 'src/read-model-query/quote-query/quote-query.service'
 import { SPACE_CHARACTER } from 'src/types/discord.constants'
 import { SlashCommandBuilder } from '@discordjs/builders'
+import { CommandManagerService } from 'src/discord-interactions/services/command-manager/command-manager.service'
 
-export const receiveCommand = new SlashCommandBuilder()
-  .setName('receive')
-  .setDescription('Gives you a random quote.')
-  .addUserOption(
-    (option) =>
-      option
-        .setName('author')
-        .setDescription(
-          'You can filter the author of the random quote by providing a mention.',
-        )
-        .setRequired(false), // explicitly set this to false
-  )
-
-@EventsHandler(DiscordInteractionsModule)
+@EventsHandler(DiscordInteractionEvent)
 export class ReceiveInteractionHandlerService
-  implements IEventHandler<DiscordInteractionEvent>
+  implements IEventHandler<DiscordInteractionEvent>, OnModuleInit
 {
   constructor(
     private logger: Logger,
     private quoteQuery: QuoteQueryService,
     private commandBus: CommandBus,
+    private manager: CommandManagerService,
   ) {}
+
+  onModuleInit() {
+    const command = new SlashCommandBuilder()
+      .setName('receive')
+      .setDescription('Gives you a random quote.')
+      .addUserOption(
+        (option) =>
+          option
+            .setName('author')
+            .setDescription(
+              'You can filter the author of the random quote by providing a mention.',
+            )
+            .setRequired(false), // explicitly set this to false
+      )
+
+    this.manager.registerCommand(command as SlashCommandBuilder)
+    this.logger.verbose(
+      `Registered command ${command.name}`,
+      ReceiveInteractionHandlerService.name,
+    )
+  }
 
   async handle({ interaction }: DiscordInteractionEvent) {
     // TODO get the string literal "receive" from an enum or something
