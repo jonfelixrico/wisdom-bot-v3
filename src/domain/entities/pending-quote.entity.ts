@@ -5,13 +5,21 @@ import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
 import { DomainError } from '../errors/domain-error.class'
 import { QuoteMessageDetailsUpdatedEvent } from '../events/quote-message-details-updated.event'
 import { PendingQuoteExpirationAcknowledgedEvent } from '../events/pending-quote-expiration-acknowledged.event'
+import { PendingQuoteVoteCastedEvent } from '../events/pending-quote-vote-casted.event'
+import { PendingQuoteVoteWithdrawnEvent } from '../events/pending-quote-vote-withdrawn.event'
 
 const {
   QUOTE_APPROVED,
   QUOTE_CANCELLED,
   QUOTE_EXPIRED,
   QUOTE_INVALID_EXPIRATION_ACK,
+  PENDING_QUOTE_USER_ALREADY_VOTED,
 } = DomainErrorCodes
+
+export interface IVote {
+  userId: string
+  voteValue: number
+}
 
 export interface IPendingQuote {
   quoteId: string
@@ -35,6 +43,8 @@ export interface IPendingQuote {
   // for approval/expiration
   expireDt: Date
   upvoteCount: number
+
+  votes: IVote[]
 }
 
 export interface IQuoteMessageDetails {
@@ -61,6 +71,7 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
   acceptDt?: Date
   cancelDt?: Date
   expireAckDt?: Date
+  votes: IVote[]
 
   // TODO create private flag for created
 
@@ -77,6 +88,7 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     messageId,
     expireDt,
     upvoteCount,
+    votes,
   }: IPendingQuote) {
     super()
 
@@ -92,6 +104,7 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     this.messageId = messageId
     this.expireDt = expireDt
     this.upvoteCount = upvoteCount
+    this.votes = votes
   }
 
   get isExpired() {
@@ -163,6 +176,42 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
       new PendingQuoteExpirationAcknowledgedEvent({
         quoteId,
         expireAckDt: now,
+      }),
+    )
+  }
+
+  castVote(vote: IVote) {
+    const { votes, quoteId } = this
+
+    if (votes.some(({ userId }) => userId === vote.userId)) {
+      throw new DomainError(PENDING_QUOTE_USER_ALREADY_VOTED)
+    }
+
+    votes.push(vote)
+    this.apply(
+      new PendingQuoteVoteCastedEvent({
+        ...vote,
+        voteDt: new Date(),
+        quoteId,
+      }),
+    )
+  }
+
+  withdrawVote(userId: string) {
+    const { votes, quoteId } = this
+
+    const index = votes.findIndex((v) => v.userId === userId)
+    if (index === -1) {
+      // userId not found in votes
+      throw new DomainError(PENDING_QUOTE_USER_ALREADY_VOTED)
+    }
+
+    votes.splice(index, 1)
+    this.apply(
+      new PendingQuoteVoteWithdrawnEvent({
+        quoteId,
+        userId,
+        withdrawDt: new Date(),
       }),
     )
   }
