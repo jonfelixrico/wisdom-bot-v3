@@ -68,6 +68,7 @@ export class Guild extends DomainEntity implements IGuildEntity {
       guildId,
       submitDt,
       expireDt,
+      votes: [],
     }
 
     const entity = new PendingQuote(newQuote)
