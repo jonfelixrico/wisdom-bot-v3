@@ -4,6 +4,7 @@ import { DiscordInteractionEvent } from 'src/discord-interactions/types/discord-
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { CommandManagerService } from 'src/discord-interactions/services/command-manager/command-manager.service'
 import { SubmitQuoteCommand } from 'src/domain/commands/submit-quote.command'
+import { v4 } from 'uuid'
 
 const COMMAND_NAME = 'submit'
 const AUTHOR_OPTION_NAME = 'author'
@@ -58,6 +59,7 @@ export class SubmitInteractionHandlerService
         channelId,
         content: quote,
         guildId,
+        quoteId: v4(),
       }),
     )
   }
