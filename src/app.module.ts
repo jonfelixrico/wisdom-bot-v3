@@ -13,6 +13,8 @@ import { ReadModelQueryModule } from './read-model-query/read-model-query.module
 import { EventHandlersModule } from './event-handlers/event-handlers.module'
 import { EsdbBackupModule } from './esdb-backup/esdb-backup.module'
 import { StatsModelModule } from './stats-model/stats-model.module'
+import { DiscordWatchersModule } from './discord-watchers/discord-watchers.module'
+import { InteractionHandlersModule } from './interaction-handlers/interaction-handlers.module'
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { StatsModelModule } from './stats-model/stats-model.module'
     EventHandlersModule,
     EsdbBackupModule,
     StatsModelModule,
+    DiscordWatchersModule,
+    InteractionHandlersModule,
   ],
 })
 export class AppModule {}
