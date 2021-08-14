@@ -38,8 +38,8 @@ export class SendQuoteAcceptedMessageCommandHandlerService
         channelId,
         // We'll assume that the message belongs to the channel in the payload
         messageId,
-        'Quote got accepted.',
       )
+
       this.logger.debug(
         `Deleted message ${messageId}`,
         SendQuoteAcceptedMessageCommandHandlerService.name,
@@ -81,6 +81,6 @@ export class SendQuoteAcceptedMessageCommandHandlerService
       embed.author.icon_url = submitterAvatarUrl
     }
 
-    return await channel.send(new MessageEmbed(embed))
+    return await channel.send({ embeds: [new MessageEmbed(embed)] })
   }
 }

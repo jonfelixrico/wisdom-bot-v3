@@ -95,7 +95,9 @@ export class UpdateSubmitMessageAsExpiredCommandService
       embed.author.icon_url = submitterAvatarUrl
     }
 
-    await message.edit(null, new MessageEmbed(embed))
+    await message.edit({
+      embeds: [new MessageEmbed(embed)],
+    })
     this.logger.verbose(
       `Updated message ${messageId}.`,
       UpdateSubmitMessageAsExpiredCommandService.name,

@@ -24,7 +24,7 @@ export class ReactionHelperService {
     }
 
     const receiveId = await this.query.getReceiveIdFromMessageId(
-      reference.messageID,
+      reference.messageId,
     )
 
     if (!receiveId) {

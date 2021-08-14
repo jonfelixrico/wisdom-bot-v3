@@ -65,7 +65,10 @@ export class RegeneratePendingQuoteMessageCommandHandlerService
       ),
     })
 
-    const newMessage = await channel.send(new MessageEmbed(embed))
+    const newMessage = await channel.send({
+      embeds: [new MessageEmbed(embed)],
+    })
+
     await newMessage.react(upvoteEmoji)
 
     await this.commandBus.execute(

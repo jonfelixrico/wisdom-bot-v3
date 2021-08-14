@@ -125,6 +125,6 @@ export class UpdateReceiveMessageReactionsListCommandHandlerService
       this.insertReactionList(embed, upvotes, downvotes)
     }
 
-    await message.edit(null, new MessageEmbed(embed))
+    await message.edit({ embeds: [new MessageEmbed(embed)] })
   }
 }

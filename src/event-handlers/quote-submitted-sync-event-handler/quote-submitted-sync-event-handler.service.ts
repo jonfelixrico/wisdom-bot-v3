@@ -54,7 +54,9 @@ export class QuoteSubmittedSyncEventHandlerService
       messageId,
     )
 
-    await message.edit(null, new MessageEmbed(embed))
+    await message.edit({
+      embeds: [new MessageEmbed(embed)],
+    })
     await message.react(upvoteEmoji)
   }
 
