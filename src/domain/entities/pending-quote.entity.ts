@@ -7,6 +7,7 @@ import { QuoteMessageDetailsUpdatedEvent } from '../events/quote-message-details
 import { PendingQuoteExpirationAcknowledgedEvent } from '../events/pending-quote-expiration-acknowledged.event'
 import { PendingQuoteVoteCastedEvent } from '../events/pending-quote-vote-casted.event'
 import { PendingQuoteVoteWithdrawnEvent } from '../events/pending-quote-vote-withdrawn.event'
+import { sumBy } from 'lodash'
 
 const {
   QUOTE_APPROVED,
@@ -62,7 +63,6 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
 
   expireDt: Date
   upvoteCount: number
-  upvoteEmoji: string
 
   channelId?: string
   messageId?: string
@@ -180,12 +180,23 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     )
   }
 
+  private get totalVotes() {
+    return sumBy(this.votes, (v) => v.voteValue)
+  }
+
+  /**
+   * Casts a vote for the pending quote. If this is the final vote needed for approval,
+   * then the quote gets flagged as accepted.
+   * @param vote
+   */
   castVote(vote: IVote) {
-    const { votes, quoteId } = this
+    const { votes, quoteId, upvoteCount, totalVotes } = this
 
     if (votes.some(({ userId }) => userId === vote.userId)) {
       throw new DomainError(PENDING_QUOTE_USER_ALREADY_VOTED)
     }
+
+    this.checkIfPending()
 
     votes.push(vote)
     this.apply(
@@ -195,6 +206,10 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
         quoteId,
       }),
     )
+
+    if (totalVotes >= upvoteCount) {
+      this.accept()
+    }
   }
 
   withdrawVote(userId: string) {
