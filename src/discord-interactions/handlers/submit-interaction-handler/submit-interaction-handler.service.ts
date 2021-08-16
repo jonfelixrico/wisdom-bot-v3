@@ -18,6 +18,7 @@ import {
   MessageButton,
   MessageEmbedOptions,
 } from 'discord.js'
+import { UpdateQuoteMessageDetailsCommand } from 'src/domain/commands/update-quote-message-details.command'
 
 const COMMAND_NAME = 'submit'
 const AUTHOR_OPTION_NAME = 'author'
@@ -59,7 +60,7 @@ export class SubmitInteractionHandlerService
       return
     }
 
-    const { logger } = this
+    const { logger, commandBus } = this
 
     const { channelId, guildId, user: submitter, options } = interaction
     const quote = options.getString(QUOTE_OPTION_NAME)
@@ -78,7 +79,7 @@ export class SubmitInteractionHandlerService
 
       const quoteId = v4()
 
-      await this.commandBus.execute(
+      await commandBus.execute(
         new SubmitQuoteCommand({
           authorId: author.id,
           submitterId: submitter.id,
@@ -138,11 +139,19 @@ export class SubmitInteractionHandlerService
         ],
       })
 
-      await interaction.editReply({
+      const message = await interaction.editReply({
         // TODO add buttons here for reactions
         embeds: [embed],
         components: [row],
       })
+
+      await commandBus.execute(
+        new UpdateQuoteMessageDetailsCommand({
+          channelId,
+          messageId: message.id,
+          quoteId,
+        }),
+      )
 
       logger.log(
         `Processed the quote submission of user ${submitter.id} in guild ${guildId}`,
