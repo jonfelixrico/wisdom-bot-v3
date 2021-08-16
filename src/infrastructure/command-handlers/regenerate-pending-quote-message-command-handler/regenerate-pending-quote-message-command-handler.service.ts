@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common'
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
-import { UpdateQuoteMessageDetailsCommand } from 'src/domain/commands/update-quote-message-id.command'
+import { UpdateQuoteMessageDetailsCommand } from 'src/domain/commands/update-quote-message-details.command'
 import { RegeneratePendingQuoteMessageCommand } from '../../commands/regenerate-pending-quote-message.command'
 import { WatchPendingQuoteCommand } from '../../commands/watch-pending-quote.command'
 import { MessageEmbed } from 'discord.js'
