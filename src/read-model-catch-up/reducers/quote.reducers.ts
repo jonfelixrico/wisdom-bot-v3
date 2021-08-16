@@ -94,6 +94,7 @@ const messageDetailsUpdated: TypeormReducer<IQuoteMessageDetailsUpdatedPayload> 
       QuoteTypeormEntity,
       {
         id: quoteId,
+        revision: revision - 1n,
       },
       { revision, ...changes },
     )
@@ -109,6 +110,7 @@ const expirationAcknowledged: TypeormReducer<IPendingQuoteExpirationAcknowledged
       QuoteTypeormEntity,
       {
         id: quoteId,
+        revision: revision - 1n,
       },
       { revision, expireAckDt },
     )
