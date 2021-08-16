@@ -36,15 +36,8 @@ export class UpdateSubmitMessageAsExpiredCommandService
       )
     }
 
-    const {
-      authorId,
-      content,
-      submitDt,
-      submitterId,
-      upvoteEmoji,
-      upvoteCount,
-      expireDt,
-    } = payload
+    const { authorId, content, submitDt, submitterId, upvoteCount, expireDt } =
+      payload
 
     const embed: MessageEmbedOptions = {
       author: {
@@ -61,9 +54,7 @@ export class UpdateSubmitMessageAsExpiredCommandService
             `Submitted by <@${submitterId}>`,
             `This quote has been rejected because it did not reach ${
               upvoteCount + 1
-            } ${upvoteEmoji} reactions before ${convertDateToString(
-              expireDt,
-            )}.`,
+            } votes before ${convertDateToString(expireDt)}.`,
           ].join('\n\n'),
         },
       ],

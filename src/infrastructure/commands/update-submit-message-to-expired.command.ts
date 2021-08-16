@@ -13,7 +13,6 @@ export interface IUpdateSubmitMessageAsExpiredCommandPayload {
   expireDt: Date
 
   upvoteCount: number
-  upvoteEmoji: string
 }
 export class UpdateSubmitMessageAsExpiredCommand implements ICommand {
   constructor(readonly payload: IUpdateSubmitMessageAsExpiredCommandPayload) {}
