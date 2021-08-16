@@ -184,6 +184,10 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     return sumBy(this.votes, (v) => v.voteValue)
   }
 
+  checkIfHasVoted(userId: string): boolean {
+    return this.votes.some((vote) => userId === vote.userId)
+  }
+
   /**
    * Casts a vote for the pending quote. If this is the final vote needed for approval,
    * then the quote gets flagged as accepted.
@@ -192,7 +196,7 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
   castVote(vote: IVote) {
     const { votes, quoteId, upvoteCount, totalVotes } = this
 
-    if (votes.some(({ userId }) => userId === vote.userId)) {
+    if (this.checkIfHasVoted(vote.userId)) {
       throw new DomainError(PENDING_QUOTE_USER_ALREADY_VOTED)
     }
 
