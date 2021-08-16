@@ -15,8 +15,8 @@ import {
 const BUTTON_ID_REGEXP = /quote\/(.+)\/vote\/(-?\d+)/
 
 const EMOJI_MAPPING = {
-  1: '👍',
-  2: '👎',
+  '1': '👍',
+  '-1': '👎',
 }
 
 @EventsHandler(DiscordInteractionEvent)
