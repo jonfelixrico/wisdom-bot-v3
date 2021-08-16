@@ -180,7 +180,7 @@ const {
   QUOTE_MESSAGE_DETAILS_UPDATED,
   PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED,
   PENDING_QUOTE_VOTE_CASTED,
-  PEDNING_QUOTE_VOTE_WITHDRAWN,
+  PENDING_QUOTE_VOTE_WITHDRAWN,
 } = DomainEventNames
 
 export const QUOTE_REDUCERS: TypeormReducerMap = Object.freeze({
@@ -189,6 +189,6 @@ export const QUOTE_REDUCERS: TypeormReducerMap = Object.freeze({
   [PENDING_QUOTE_CANCELLED]: cancelled,
   [QUOTE_MESSAGE_DETAILS_UPDATED]: messageDetailsUpdated,
   [PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED]: expirationAcknowledged,
-  [PEDNING_QUOTE_VOTE_WITHDRAWN]: voteWithdrawn,
+  [PENDING_QUOTE_VOTE_WITHDRAWN]: voteWithdrawn,
   [PENDING_QUOTE_VOTE_CASTED]: voteCasted,
 })

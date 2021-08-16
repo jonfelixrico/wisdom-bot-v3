@@ -11,7 +11,7 @@ export interface IPendingQuoteVoteWithdrawnEventPayload extends EventPayload {
 export class PendingQuoteVoteWithdrawnEvent extends DomainEvent<IPendingQuoteVoteWithdrawnEventPayload> {
   constructor(payload: IPendingQuoteVoteWithdrawnEventPayload) {
     super(
-      DomainEventNames.PEDNING_QUOTE_VOTE_WITHDRAWN,
+      DomainEventNames.PENDING_QUOTE_VOTE_WITHDRAWN,
       payload.quoteId,
       payload,
     )

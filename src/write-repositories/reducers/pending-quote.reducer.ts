@@ -96,7 +96,7 @@ const {
   QUOTE_MESSAGE_DETAILS_UPDATED,
   PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED,
   PENDING_QUOTE_VOTE_CASTED,
-  PEDNING_QUOTE_VOTE_WITHDRAWN,
+  PENDING_QUOTE_VOTE_WITHDRAWN,
 } = DomainEventNames
 export const PENDING_QUOTE_REDUCERS: WriteRepositoryReducerMap<IPendingQuote> =
   {
@@ -106,5 +106,5 @@ export const PENDING_QUOTE_REDUCERS: WriteRepositoryReducerMap<IPendingQuote> =
     [QUOTE_MESSAGE_DETAILS_UPDATED]: messageDetailsUpdated,
     [PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED]: expirationAcknowledged,
     [PENDING_QUOTE_VOTE_CASTED]: voteCasted,
-    [PEDNING_QUOTE_VOTE_WITHDRAWN]: voteWithdrawn,
+    [PENDING_QUOTE_VOTE_WITHDRAWN]: voteWithdrawn,
   }
