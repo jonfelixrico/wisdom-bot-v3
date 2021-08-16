@@ -6,6 +6,7 @@ import { ReceiveInteractionHandlerService } from './handlers/receive-interaction
 import { CommandManagerService } from './services/command-manager/command-manager.service'
 import { ReadModelQueryModule } from 'src/read-model-query/read-model-query.module'
 import { SubmitInteractionHandlerService } from './handlers/submit-interaction-handler/submit-interaction-handler.service'
+import { QuoteVoteBtnInteractionHandlerService } from './handlers/quote-vote-btn-interaction-handler/quote-vote-btn-interaction-handler.service'
 
 @Module({
   imports: [DiscordModule, CqrsModule, ReadModelQueryModule],
@@ -14,6 +15,7 @@ import { SubmitInteractionHandlerService } from './handlers/submit-interaction-h
     ReceiveInteractionHandlerService,
     CommandManagerService,
     SubmitInteractionHandlerService,
+    QuoteVoteBtnInteractionHandlerService,
   ],
 })
 export class DiscordInteractionsModule {}
