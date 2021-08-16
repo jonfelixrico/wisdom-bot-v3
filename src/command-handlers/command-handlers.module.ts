@@ -8,6 +8,7 @@ import { ReactToReceiveCommandHandlerService } from './receive/react-to-receive-
 import { UpdateQuoteMessageDetailsCommandHandlerService } from './pending-quote/update-quote-message-details-command-handler/update-quote-message-details-command-handler.service'
 import { DiscordModule } from 'src/discord/discord.module'
 import { AcknowledgeQuoteExpirationCommandHandlerService } from './pending-quote/acknowledge-quote-expiration-command-handler/acknowledge-quote-expiration-command-handler.service'
+import { CastPendingQuoteVoteCommandHandlerService } from './pending-quote/cast-pending-quote-vote-command-handler/cast-pending-quote-vote-command-handler.service'
 
 @Module({
   imports: [CqrsModule, WriteRepositoriesModule, DiscordModule],
@@ -18,6 +19,7 @@ import { AcknowledgeQuoteExpirationCommandHandlerService } from './pending-quote
     ReactToReceiveCommandHandlerService,
     UpdateQuoteMessageDetailsCommandHandlerService,
     AcknowledgeQuoteExpirationCommandHandlerService,
+    CastPendingQuoteVoteCommandHandlerService,
   ],
 
   // TODO import repository
