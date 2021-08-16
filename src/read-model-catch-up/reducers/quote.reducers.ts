@@ -2,8 +2,11 @@ import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { IPendingQuoteAcceptedPayload } from 'src/domain/events/pending-quote-accepted.event'
 import { IPendingQuoteCancelledPayload } from 'src/domain/events/pending-quote-cancelled.event'
 import { IPendingQuoteExpirationAcknowledgedEventPayload } from 'src/domain/events/pending-quote-expiration-acknowledged.event'
+import { IPendingQuoteVoteCastedEventPayload } from 'src/domain/events/pending-quote-vote-casted.event'
+import { IPendingQuoteVoteWithdrawnEventPayload } from 'src/domain/events/pending-quote-vote-withdrawn.event'
 import { IQuoteMessageDetailsUpdatedPayload } from 'src/domain/events/quote-message-details-updated.event'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
+import { QuoteVoteTypeormEntity } from 'src/typeorm/entities/quote-vote.typeorm-entity'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 import {
   TypeormReducerMap,
@@ -118,12 +121,66 @@ const expirationAcknowledged: TypeormReducer<IPendingQuoteExpirationAcknowledged
     return affected > 0
   }
 
+const voteCasted: TypeormReducer<IPendingQuoteVoteCastedEventPayload> = async (
+  { revision, data },
+  manager,
+) => {
+  const { quoteId, userId, voteValue } = data
+  const { affected } = await manager.update(
+    QuoteTypeormEntity,
+    {
+      id: quoteId,
+      revision: revision - 1n,
+    },
+    { revision },
+  )
+
+  if (!affected) {
+    return false
+  }
+
+  await manager.insert(QuoteVoteTypeormEntity, {
+    id: `${quoteId}/${userId}`,
+    quoteId,
+    userId,
+    value: voteValue,
+  })
+
+  return true
+}
+
+const voteWithdrawn: TypeormReducer<IPendingQuoteVoteWithdrawnEventPayload> =
+  async ({ revision, data }, manager) => {
+    const { quoteId, userId } = data
+
+    const { affected: updated } = await manager.update(
+      QuoteTypeormEntity,
+      {
+        id: quoteId,
+        revision: revision - 1n,
+      },
+      { revision },
+    )
+
+    if (!updated) {
+      return false
+    }
+
+    const { affected: deleted } = await manager.delete(QuoteVoteTypeormEntity, {
+      id: `${quoteId}/${userId}`,
+    })
+
+    return !!deleted
+  }
+
 const {
   QUOTE_SUBMITTED,
   PENDING_QUOTE_ACCEPTED,
   PENDING_QUOTE_CANCELLED,
   QUOTE_MESSAGE_DETAILS_UPDATED,
   PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED,
+  PENDING_QUOTE_VOTE_CASTED,
+  PEDNING_QUOTE_VOTE_WITHDRAWN,
 } = DomainEventNames
 
 export const QUOTE_REDUCERS: TypeormReducerMap = Object.freeze({
@@ -132,4 +189,6 @@ export const QUOTE_REDUCERS: TypeormReducerMap = Object.freeze({
   [PENDING_QUOTE_CANCELLED]: cancelled,
   [QUOTE_MESSAGE_DETAILS_UPDATED]: messageDetailsUpdated,
   [PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED]: expirationAcknowledged,
+  [PEDNING_QUOTE_VOTE_WITHDRAWN]: voteWithdrawn,
+  [PENDING_QUOTE_VOTE_CASTED]: voteCasted,
 })
