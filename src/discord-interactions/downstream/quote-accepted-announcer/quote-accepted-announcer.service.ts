@@ -1,8 +1,14 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { EventBus, ofType, QueryBus } from '@nestjs/cqrs'
+import {
+  MessageEditOptions,
+  MessageEmbed,
+  MessageEmbedOptions,
+} from 'discord.js'
 import { filter, map } from 'rxjs/operators'
 import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
+import { IPendingQuote } from 'src/domain/entities/pending-quote.entity'
 import {
   IPendingQuoteQueryOutput,
   PendingQuoteQuery,
@@ -17,6 +23,35 @@ export class QuoteAcceptedAnnouncerService implements OnModuleInit {
     private queryBus: QueryBus,
     private helper: DiscordHelperService,
   ) {}
+
+  private async generateResponse({
+    content,
+    authorId,
+    submitDt,
+    submitterId,
+    guildId,
+  }: IPendingQuote): Promise<MessageEditOptions> {
+    const { helper } = this
+    const year = submitDt.getFullYear()
+
+    const embed: MessageEmbedOptions = {
+      author: {
+        name: 'Quote Accepted',
+        icon_url: await helper.getGuildMemberAvatarUrl(guildId, submitterId),
+      },
+      description: [
+        `**"${content}"**`,
+        `- <@${authorId}>, ${year}`,
+        '',
+        `Submitted by <@${submitterId}>`,
+      ].join('\n'),
+      thumbnail: {
+        url: await helper.getGuildMemberAvatarUrl(guildId, authorId),
+      },
+    }
+
+    return { embeds: [new MessageEmbed(embed)] }
+  }
 
   private async handle(quoteId: string) {
     const { logger, helper } = this
@@ -58,8 +93,7 @@ export class QuoteAcceptedAnnouncerService implements OnModuleInit {
     }
 
     if (permissions.has('SEND_MESSAGES')) {
-      // TODO send actual content here
-      await channel.send('test')
+      await channel.send(await this.generateResponse(quote))
       logger.log(
         `Announced acceptance of quote ${quoteId} in guild ${guildId} channel ${channelId}`,
         QuoteAcceptedAnnouncerService.name,
