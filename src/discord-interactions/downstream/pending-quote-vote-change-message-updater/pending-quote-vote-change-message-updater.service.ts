@@ -54,10 +54,47 @@ export class PendingQuoteVoteChangeMessageUpdaterService
 
     const { channelId, messageId, guildId } = pendingQuote
 
+    const guild = await helper.getGuild(guildId)
+
+    if (!guild.available) {
+      logger.warn(
+        `Guild ${guildId} is inaccessible. Can't update.`,
+        PendingQuoteVoteChangeMessageUpdaterService.name,
+      )
+      return
+    }
+
+    const [channel, permissions] =
+      (await helper.getTextChannelAndPermissions(guildId, channelId)) || []
+
+    if (!channel) {
+      logger.warn(
+        `Channel ${channelId} not found. Can't update.`,
+        PendingQuoteVoteChangeMessageUpdaterService.name,
+      )
+      return
+    }
+
+    if (!permissions.has('READ_MESSAGE_HISTORY')) {
+      logger.warn(
+        `No history read rights for ${channelId}. Can't update.`,
+        PendingQuoteVoteChangeMessageUpdaterService.name,
+      )
+      return
+    }
+
     const message = await helper.getMessage(guildId, channelId, messageId)
     if (!message) {
       logger.warn(
         `Attempted cannot find message ${messageId} for quote ${quoteId}`,
+        PendingQuoteVoteChangeMessageUpdaterService.name,
+      )
+      return
+    }
+
+    if (!message.editable || message.deleted) {
+      logger.warn(
+        `Message ${messageId} can no longer be updated.`,
         PendingQuoteVoteChangeMessageUpdaterService.name,
       )
       return
