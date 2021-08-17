@@ -6,12 +6,45 @@ import { IPendingQuoteVoteCastedEventPayload } from 'src/domain/events/pending-q
 import { IPendingQuoteVoteWithdrawnEventPayload } from 'src/domain/events/pending-quote-vote-withdrawn.event'
 import { IQuoteMessageDetailsUpdatedPayload } from 'src/domain/events/quote-message-details-updated.event'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
+import { GuildChannelPendingQuoteTrackerTypeormEntity } from 'src/typeorm/entities/guild-channel-pending-quote-tracker.typeorm-entity'
 import { QuoteVoteTypeormEntity } from 'src/typeorm/entities/quote-vote.typeorm-entity'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
+import { EntityManager } from 'typeorm'
 import {
   TypeormReducerMap,
   TypeormReducer,
 } from '../../types/typeorm-reducers.types'
+
+interface ITrackerData {
+  guildId: string
+  channelId: string
+  countDelta: number
+}
+
+const updateTrackerCount = async (
+  { guildId, channelId, countDelta }: ITrackerData,
+  manager: EntityManager,
+) => {
+  if (!channelId) {
+    return false
+  }
+
+  const repo = manager.getRepository(
+    GuildChannelPendingQuoteTrackerTypeormEntity,
+  )
+  const id = [guildId, channelId].join('/')
+  const tracker = await repo.findOne({
+    where: { id },
+  })
+
+  if (tracker) {
+    await repo.update({ id }, { count: tracker.count + countDelta })
+  } else {
+    await repo.insert({ id, guildId, channelId, count: countDelta })
+  }
+
+  return true
+}
 
 const submitted: TypeormReducer<IQuoteSubmittedEventPayload> = async (
   { revision, data },
@@ -46,7 +79,10 @@ const submitted: TypeormReducer<IQuoteSubmittedEventPayload> = async (
     upvoteEmoji,
   })
 
-  return true
+  return await updateTrackerCount(
+    { guildId, channelId, countDelta: 1 },
+    manager,
+  )
 }
 
 const accepted: TypeormReducer<IPendingQuoteAcceptedPayload> = async (
@@ -54,19 +90,22 @@ const accepted: TypeormReducer<IPendingQuoteAcceptedPayload> = async (
   manager,
 ) => {
   const { acceptDt, quoteId } = data
-  const { affected } = await manager.update(
-    QuoteTypeormEntity,
-    {
-      id: quoteId,
-      revision: revision - 1n,
-    },
-    {
-      revision,
-      acceptDt,
-    },
-  )
 
-  return affected > 0
+  const repo = manager.getRepository(QuoteTypeormEntity)
+  const quote = await repo.findOne({ where: { id: quoteId } })
+
+  if (!quote || quote.revision !== revision - 1n) {
+    return false
+  }
+
+  await repo.update({ id: quoteId }, { revision, acceptDt })
+
+  const { guildId, channelId } = quote
+
+  return await updateTrackerCount(
+    { guildId, channelId, countDelta: -1 },
+    manager,
+  )
 }
 
 const cancelled: TypeormReducer<IPendingQuoteCancelledPayload> = async (
@@ -74,51 +113,80 @@ const cancelled: TypeormReducer<IPendingQuoteCancelledPayload> = async (
   manager,
 ) => {
   const { cancelDt, quoteId } = data
-  const { affected } = await manager.update(
-    QuoteTypeormEntity,
-    {
-      id: quoteId,
-      revision: revision - 1n,
-    },
-    {
-      revision,
-      cancelDt,
-    },
-  )
 
-  return affected > 0
+  const repo = manager.getRepository(QuoteTypeormEntity)
+  const quote = await repo.findOne({ where: { id: quoteId } })
+
+  if (!quote || quote.revision !== revision - 1n) {
+    return false
+  }
+
+  await repo.update({ id: quoteId }, { revision, cancelDt })
+
+  const { guildId, channelId } = quote
+
+  return await updateTrackerCount(
+    { guildId, channelId, countDelta: -1 },
+    manager,
+  )
 }
 
 const messageDetailsUpdated: TypeormReducer<IQuoteMessageDetailsUpdatedPayload> =
   async ({ revision, data }, manager) => {
-    const { quoteId, ...changes } = data
+    const { quoteId, channelId: newChannelId, ...others } = data
 
-    const { affected } = await manager.update(
-      QuoteTypeormEntity,
-      {
-        id: quoteId,
-        revision: revision - 1n,
-      },
-      { revision, ...changes },
+    const repo = manager.getRepository(QuoteTypeormEntity)
+    const quote = await repo.findOne({ where: { id: quoteId } })
+
+    if (!quote || quote.revision !== revision - 1n) {
+      return false
+    }
+
+    await repo.update(
+      { id: quoteId },
+      { revision, channelId: newChannelId, ...others },
     )
 
-    return affected > 0
+    const { guildId, channelId: oldChannelId } = quote
+
+    const didOldUpdateSucceed = await updateTrackerCount(
+      { channelId: oldChannelId, guildId, countDelta: -1 },
+      manager,
+    )
+
+    if (!didOldUpdateSucceed) {
+      return false
+    }
+
+    return await updateTrackerCount(
+      {
+        channelId: newChannelId,
+        guildId,
+        countDelta: 1,
+      },
+      manager,
+    )
   }
 
 const expirationAcknowledged: TypeormReducer<IPendingQuoteExpirationAcknowledgedEventPayload> =
   async ({ revision, data }, manager) => {
     const { quoteId, expireAckDt } = data
 
-    const { affected } = await manager.update(
-      QuoteTypeormEntity,
-      {
-        id: quoteId,
-        revision: revision - 1n,
-      },
-      { revision, expireAckDt },
-    )
+    const repo = manager.getRepository(QuoteTypeormEntity)
+    const quote = await repo.findOne({ where: { id: quoteId } })
 
-    return affected > 0
+    if (!quote || quote.revision !== revision - 1n) {
+      return false
+    }
+
+    await repo.update({ id: quoteId }, { revision, expireAckDt })
+
+    const { guildId, channelId } = quote
+
+    return await updateTrackerCount(
+      { guildId, channelId, countDelta: -1 },
+      manager,
+    )
   }
 
 const voteCasted: TypeormReducer<IPendingQuoteVoteCastedEventPayload> = async (
