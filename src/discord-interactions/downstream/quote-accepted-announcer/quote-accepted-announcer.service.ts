@@ -97,9 +97,9 @@ export class QuoteAcceptedAnnouncerService implements OnModuleInit {
       return
     }
 
-    if (!permissions.has('MANAGE_MESSAGES')) {
+    if (!message.deletable || message.deleted) {
       logger.warn(
-        `Can't clean up pending quote message of ${quoteId} in guild ${guildId} channel ${channelId} because we have no MANAGE_MESSAGES permission.`,
+        `Message ${messageId} is already flagged as undeletable.`,
         QuoteAcceptedAnnouncerService.name,
       )
       return
