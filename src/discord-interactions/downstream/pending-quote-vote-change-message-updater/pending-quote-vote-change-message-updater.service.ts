@@ -8,7 +8,7 @@ import {
   PendingQuoteQuery,
 } from 'src/queries/pending-quote.query'
 import { ReadModelSyncedEvent } from 'src/read-model-catch-up/read-model-synced.event'
-import { PendingQuoteResponseGeneratorService } from '../pending-quote-response-generator/pending-quote-response-generator.service'
+import { PendingQuoteResponseGeneratorService } from '../../services/pending-quote-response-generator/pending-quote-response-generator.service'
 
 const {
   PENDING_QUOTE_VOTE_WITHDRAWN: PEDNING_QUOTE_VOTE_WITHDRAWN,
