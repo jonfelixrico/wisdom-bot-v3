@@ -8,6 +8,7 @@ import { UserStatsQueryService } from './user-stats-query/user-stats-query.servi
 import { GuildQueryHandlerService } from './handlers/guild-query-handler/guild-query-handler.service'
 import { CqrsModule } from '@nestjs/cqrs'
 import { PendingQuoteQueryHandlerService } from './handlers/pending-quote-query-handler/pending-quote-query-handler.service'
+import { GuildChannelsWithPendingQuotesQueryHandlerService } from './handlers/guild-channels-with-pending-quotes-query-handler/guild-channels-with-pending-quotes-query-handler.service'
 
 const exportedModules = [
   QuoteQueryService,
@@ -23,6 +24,7 @@ const exportedModules = [
     ...exportedModules,
     GuildQueryHandlerService,
     PendingQuoteQueryHandlerService,
+    GuildChannelsWithPendingQuotesQueryHandlerService,
   ],
   exports: exportedModules,
 })
