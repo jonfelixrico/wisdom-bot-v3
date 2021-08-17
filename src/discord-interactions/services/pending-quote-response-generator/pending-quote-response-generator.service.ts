@@ -31,6 +31,7 @@ export class PendingQuoteResponseGeneratorService {
       submitterId,
       expireDt,
       quoteId,
+      upvoteCount,
     } = pendingQuote
 
     const voteCount = sumBy(votes, (v) => v.voteValue)
@@ -47,7 +48,9 @@ export class PendingQuoteResponseGeneratorService {
         '',
         `Submitted by <@${submitterId}>`,
         '',
-        formatDate(expireDt),
+        `This submission needs ${upvoteCount} votes on or before ${formatDate(
+          expireDt,
+        )}.`,
         '',
         `**Votes received:** ${voteCount}`,
       ].join('\n'),
