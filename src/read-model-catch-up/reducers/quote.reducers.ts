@@ -26,7 +26,7 @@ const updateTrackerCount = async (
   manager: EntityManager,
 ) => {
   if (!channelId) {
-    return false
+    return
   }
 
   const repo = manager.getRepository(
@@ -42,8 +42,6 @@ const updateTrackerCount = async (
   } else {
     await repo.insert({ id, guildId, channelId, count: countDelta })
   }
-
-  return true
 }
 
 const submitted: TypeormReducer<IQuoteSubmittedEventPayload> = async (
@@ -79,10 +77,8 @@ const submitted: TypeormReducer<IQuoteSubmittedEventPayload> = async (
     upvoteEmoji,
   })
 
-  return await updateTrackerCount(
-    { guildId, channelId, countDelta: 1 },
-    manager,
-  )
+  await updateTrackerCount({ guildId, channelId, countDelta: 1 }, manager)
+  return true
 }
 
 const accepted: TypeormReducer<IPendingQuoteAcceptedPayload> = async (
@@ -102,10 +98,9 @@ const accepted: TypeormReducer<IPendingQuoteAcceptedPayload> = async (
 
   const { guildId, channelId } = quote
 
-  return await updateTrackerCount(
-    { guildId, channelId, countDelta: -1 },
-    manager,
-  )
+  await updateTrackerCount({ guildId, channelId, countDelta: -1 }, manager)
+
+  return true
 }
 
 const cancelled: TypeormReducer<IPendingQuoteCancelledPayload> = async (
@@ -125,10 +120,9 @@ const cancelled: TypeormReducer<IPendingQuoteCancelledPayload> = async (
 
   const { guildId, channelId } = quote
 
-  return await updateTrackerCount(
-    { guildId, channelId, countDelta: -1 },
-    manager,
-  )
+  await updateTrackerCount({ guildId, channelId, countDelta: -1 }, manager)
+
+  return true
 }
 
 const messageDetailsUpdated: TypeormReducer<IQuoteMessageDetailsUpdatedPayload> =
@@ -149,16 +143,12 @@ const messageDetailsUpdated: TypeormReducer<IQuoteMessageDetailsUpdatedPayload> 
 
     const { guildId, channelId: oldChannelId } = quote
 
-    const didOldUpdateSucceed = await updateTrackerCount(
+    await updateTrackerCount(
       { channelId: oldChannelId, guildId, countDelta: -1 },
       manager,
     )
 
-    if (!didOldUpdateSucceed) {
-      return false
-    }
-
-    return await updateTrackerCount(
+    await updateTrackerCount(
       {
         channelId: newChannelId,
         guildId,
@@ -166,6 +156,8 @@ const messageDetailsUpdated: TypeormReducer<IQuoteMessageDetailsUpdatedPayload> 
       },
       manager,
     )
+
+    return true
   }
 
 const expirationAcknowledged: TypeormReducer<IPendingQuoteExpirationAcknowledgedEventPayload> =
@@ -183,10 +175,9 @@ const expirationAcknowledged: TypeormReducer<IPendingQuoteExpirationAcknowledged
 
     const { guildId, channelId } = quote
 
-    return await updateTrackerCount(
-      { guildId, channelId, countDelta: -1 },
-      manager,
-    )
+    await updateTrackerCount({ guildId, channelId, countDelta: -1 }, manager)
+
+    return true
   }
 
 const voteCasted: TypeormReducer<IPendingQuoteVoteCastedEventPayload> = async (
