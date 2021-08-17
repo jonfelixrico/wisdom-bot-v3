@@ -1,6 +1,8 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm'
 
-@Entity('guild-channel-pending-quote-tracker')
+@Entity({
+  name: 'pending-quotes-tracker',
+})
 export class GuildChannelPendingQuoteTrackerTypeormEntity {
   @PrimaryColumn('varchar')
   id: string
