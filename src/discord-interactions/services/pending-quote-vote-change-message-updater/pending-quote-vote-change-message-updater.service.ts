@@ -1,12 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { EventBus, ofType, QueryBus } from '@nestjs/cqrs'
-import {
-  MessageActionRow,
-  MessageButton,
-  MessageEmbedOptions,
-} from 'discord.js'
-import { sumBy } from 'lodash'
-import { DateTime } from 'luxon'
 import { debounceTime, filter, groupBy, map, mergeMap } from 'rxjs/operators'
 import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
@@ -15,6 +8,7 @@ import {
   PendingQuoteQuery,
 } from 'src/queries/pending-quote.query'
 import { ReadModelSyncedEvent } from 'src/read-model-catch-up/read-model-synced.event'
+import { PendingQuoteResponseGeneratorService } from '../pending-quote-response-generator/pending-quote-response-generator.service'
 
 const {
   PENDING_QUOTE_VOTE_WITHDRAWN: PEDNING_QUOTE_VOTE_WITHDRAWN,
@@ -35,6 +29,7 @@ export class PendingQuoteVoteChangeMessageUpdaterService
     private queryBus: QueryBus,
     private logger: Logger,
     private helper: DiscordHelperService,
+    private responseGen: PendingQuoteResponseGeneratorService,
   ) {}
 
   private async refreshDisplayedMessage(quoteId: string) {
@@ -57,18 +52,7 @@ export class PendingQuoteVoteChangeMessageUpdaterService
       return
     }
 
-    const {
-      channelId,
-      messageId,
-      guildId,
-      content,
-      authorId,
-      submitDt,
-      votes,
-      submitterId,
-      upvoteCount,
-      expireDt,
-    } = pendingQuote
+    const { channelId, messageId, guildId } = pendingQuote
 
     const message = await helper.getMessage(guildId, channelId, messageId)
     if (!message) {
@@ -79,56 +63,11 @@ export class PendingQuoteVoteChangeMessageUpdaterService
       return
     }
 
-    const voteCount = sumBy(votes, (v) => v.voteValue)
+    const generatedResponse = await this.responseGen.formatResponse(
+      pendingQuote,
+    )
 
-    const embed: MessageEmbedOptions = {
-      author: {
-        name: 'Quote Submitted',
-        icon_url: await helper.getGuildMemberAvatarUrl(guildId, submitterId),
-      },
-      description: [
-        `**"${content}"**`,
-        `- <@${authorId}>, ${submitDt.getFullYear()}`,
-        '',
-        `Submitted by <@${submitterId}>`,
-        '',
-        `This submission needs ${upvoteCount} votes on or before ${DateTime.fromJSDate(
-          expireDt,
-        ).toLocaleString(DateTime.DATETIME_FULL)}.`,
-        '',
-        `**Votes received:** ${voteCount}`,
-      ].join('\n'),
-      footer: {
-        /*
-         * We're using `footer` instead of `timestamp` because the latter adjusts with the Discord client device's
-         * timezone (device of a discord user). We don't want that because it'll be inconsistent with our other date-related
-         * strings if ever they did change timezones.
-         */
-        text: `Submitted on ${DateTime.fromJSDate(submitDt).toLocaleString(
-          DateTime.DATETIME_FULL,
-        )}`,
-      },
-      thumbnail: {
-        url: await helper.getGuildMemberAvatarUrl(guildId, authorId),
-      },
-    }
-
-    const row = new MessageActionRow({
-      components: [
-        new MessageButton({
-          customId: `quote/${quoteId}/vote/1`,
-          style: 'SUCCESS',
-          emoji: '👍',
-        }),
-        new MessageButton({
-          customId: `quote/${quoteId}/vote/-1`,
-          style: 'DANGER',
-          emoji: '👎',
-        }),
-      ],
-    })
-
-    await message.edit({ embeds: [embed], components: [row] })
+    await message.edit(generatedResponse)
 
     logger.verbose(
       `Updated the displayed message for quote ${quoteId}`,
