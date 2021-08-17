@@ -144,7 +144,7 @@ export class PendingQuoteVoteChangeMessageUpdaterService
         groupBy(({ event }) => event.aggregateId),
         mergeMap((e) => {
           return e.pipe(
-            debounceTime(2500),
+            debounceTime(1000),
             map(({ event }) => event.aggregateId),
           )
         }),
