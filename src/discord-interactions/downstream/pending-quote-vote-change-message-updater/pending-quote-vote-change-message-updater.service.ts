@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { EventBus, ofType, QueryBus } from '@nestjs/cqrs'
-import { debounceTime, filter, groupBy, map, mergeMap } from 'rxjs/operators'
+import { debounceTime, filter, groupBy, mergeMap } from 'rxjs/operators'
 import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import {
@@ -11,13 +11,23 @@ import { ReadModelSyncedEvent } from 'src/read-model-catch-up/read-model-synced.
 import { PendingQuoteResponseGeneratorService } from '../../services/pending-quote-response-generator/pending-quote-response-generator.service'
 
 const {
-  PENDING_QUOTE_VOTE_WITHDRAWN: PEDNING_QUOTE_VOTE_WITHDRAWN,
+  PENDING_QUOTE_VOTE_WITHDRAWN,
   PENDING_QUOTE_VOTE_CASTED,
+  PENDING_QUOTE_ACCEPTED,
+  PENDING_QUOTE_CANCELLED,
+  PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED,
 } = DomainEventNames
 
-const TARGET_EVENTS = new Set<string>([
+const UPDATABLE_EVENTS = new Set<string>([
   PENDING_QUOTE_VOTE_CASTED,
-  PEDNING_QUOTE_VOTE_WITHDRAWN,
+  PENDING_QUOTE_VOTE_WITHDRAWN,
+])
+
+// events that ends a quote's pending status
+const DEAD_END_EVENTS = new Set<string>([
+  PENDING_QUOTE_ACCEPTED,
+  PENDING_QUOTE_CANCELLED,
+  PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED,
 ])
 
 @Injectable()
@@ -116,15 +126,22 @@ export class PendingQuoteVoteChangeMessageUpdaterService
     this.eventBus
       .pipe(
         ofType(ReadModelSyncedEvent),
-        filter(({ event }) => TARGET_EVENTS.has(event.eventName)),
+        filter(
+          ({ event }) =>
+            UPDATABLE_EVENTS.has(event.eventName) ||
+            DEAD_END_EVENTS.has(event.eventName),
+        ),
         groupBy(({ event }) => event.aggregateId),
         mergeMap((e) => {
-          return e.pipe(
-            debounceTime(1000),
-            map(({ event }) => event.aggregateId),
-          )
+          return e.pipe(debounceTime(3000))
         }),
       )
-      .subscribe(this.refreshDisplayedMessage.bind(this))
+      .subscribe(async ({ event }) => {
+        if (DEAD_END_EVENTS.has(event.eventName)) {
+          return
+        }
+
+        await this.refreshDisplayedMessage(event.aggregateId)
+      })
   }
 }
