@@ -6,7 +6,7 @@ import { IPendingQuoteVoteCastedEventPayload } from 'src/domain/events/pending-q
 import { IPendingQuoteVoteWithdrawnEventPayload } from 'src/domain/events/pending-quote-vote-withdrawn.event'
 import { IQuoteMessageDetailsUpdatedPayload } from 'src/domain/events/quote-message-details-updated.event'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
-import { GuildChannelPendingQuoteTrackerTypeormEntity } from 'src/typeorm/entities/guild-channel-pending-quote-tracker.typeorm-entity'
+import { PendingQuotesTrackerTypeormEntity } from 'src/typeorm/entities/pending-quotes-tracker.typeorm-entity'
 import { QuoteVoteTypeormEntity } from 'src/typeorm/entities/quote-vote.typeorm-entity'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
 import { EntityManager } from 'typeorm'
@@ -29,9 +29,7 @@ const updateTrackerCount = async (
     return
   }
 
-  const repo = manager.getRepository(
-    GuildChannelPendingQuoteTrackerTypeormEntity,
-  )
+  const repo = manager.getRepository(PendingQuotesTrackerTypeormEntity)
   const id = [guildId, channelId].join('/')
   const tracker = await repo.findOne({
     where: { id },

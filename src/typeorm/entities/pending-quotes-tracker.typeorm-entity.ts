@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryColumn } from 'typeorm'
 @Entity({
   name: 'pending-quotes-tracker',
 })
-export class GuildChannelPendingQuoteTrackerTypeormEntity {
+export class PendingQuotesTrackerTypeormEntity {
   @PrimaryColumn('varchar')
   id: string
 
