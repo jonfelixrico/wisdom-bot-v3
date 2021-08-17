@@ -194,7 +194,7 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
    * @param vote
    */
   castVote(vote: IVote) {
-    const { votes, quoteId, upvoteCount, totalVotes } = this
+    const { votes, quoteId, upvoteCount } = this
 
     if (this.checkIfHasVoted(vote.userId)) {
       throw new DomainError(PENDING_QUOTE_USER_ALREADY_VOTED)
@@ -211,7 +211,7 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
       }),
     )
 
-    if (totalVotes >= upvoteCount) {
+    if (this.totalVotes >= upvoteCount) {
       this.accept()
     }
   }
