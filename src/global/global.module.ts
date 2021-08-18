@@ -38,4 +38,4 @@ const loggerProvider: Provider = {
   providers: [loggerProvider],
   exports: [dynamicWinstonModule, loggerProvider, CqrsModule],
 })
-export class LoggerModule {}
+export class GlobalModule {}
