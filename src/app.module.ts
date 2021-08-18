@@ -31,7 +31,6 @@ import { DiscordInteractionsModule } from './discord-interactions/discord-intera
     ReadModelCatchUpModule,
     ServicesModule,
     InfrastructureModule,
-    InfrastructureModule,
     ReadModelQueryModule,
     EventHandlersModule,
     EsdbBackupModule,
