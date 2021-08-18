@@ -10,7 +10,7 @@ import { QuoteVoteBtnInteractionHandlerService } from './handlers/quote-vote-btn
 import { PendingQuoteVoteChangeMessageUpdaterService } from './downstream/pending-quote-vote-change-message-updater/pending-quote-vote-change-message-updater.service'
 import { PendingQuoteResponseGeneratorService } from './services/pending-quote-response-generator/pending-quote-response-generator.service'
 import { QuoteAcceptedAnnouncerService } from './downstream/quote-accepted-announcer/quote-accepted-announcer.service'
-import { MessageRecacherService } from './downstream/message-recacher/message-recacher.service'
+import { PendingQuotesStartupService } from './downstream/pending-quotes-startup/pending-quotes-startup.service'
 
 @Module({
   imports: [DiscordModule, CqrsModule, ReadModelQueryModule],
@@ -23,7 +23,7 @@ import { MessageRecacherService } from './downstream/message-recacher/message-re
     PendingQuoteVoteChangeMessageUpdaterService,
     PendingQuoteResponseGeneratorService,
     QuoteAcceptedAnnouncerService,
-    MessageRecacherService,
+    PendingQuotesStartupService,
   ],
 })
 export class DiscordInteractionsModule {}

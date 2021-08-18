@@ -7,8 +7,8 @@ import {
 } from '@nestjs/cqrs'
 import { from } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
-import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 import { AcknowledgePendingQuoteExpirationCommand } from 'src/domain/commands/acknowledge-pending-quote-expiration.command'
+import { FetchMessagesCommand } from 'src/infrastructure/commands/fetch-messages.command'
 import {
   GuildChannelPendingQuotesQuery,
   IGuildChannelPendingQuotesQueryOutput,
@@ -20,13 +20,12 @@ import {
 import { CatchUpFinishedEvent } from 'src/read-model-catch-up/catch-up-finished.event'
 
 @EventsHandler(CatchUpFinishedEvent)
-export class MessageRecacherService
+export class PendingQuotesStartupService
   implements IEventHandler<CatchUpFinishedEvent>
 {
   constructor(
     private logger: Logger,
     private queryBus: QueryBus,
-    private helper: DiscordHelperService,
     private commandBus: CommandBus,
   ) {}
 
@@ -34,7 +33,7 @@ export class MessageRecacherService
     try {
       this.logger.verbose(
         `Sending command to flag ${quoteId} as expired.`,
-        MessageRecacherService.name,
+        PendingQuotesStartupService.name,
       )
       await this.commandBus.execute(
         new AcknowledgePendingQuoteExpirationCommand({ quoteId }),
@@ -43,7 +42,7 @@ export class MessageRecacherService
       this.logger.error(
         `Error encountered while trying flag ${quoteId} as expired: ${e.message}`,
         e.stack,
-        MessageRecacherService.name,
+        PendingQuotesStartupService.name,
       )
 
       // error intentionally suppressed
@@ -58,63 +57,37 @@ export class MessageRecacherService
       }),
     )) as IGuildChannelPendingQuotesQueryOutput
 
-    // TODO move this logic to another service
     const expired = quotes.filter(({ expireDt }) => expireDt < new Date())
     for (const { quoteId } of expired) {
       await this.flagAsExpired(quoteId)
     }
 
-    const { helper, logger } = this
+    const { logger } = this
 
-    const guild = await helper.getGuild(guildId)
-    if (!guild || !guild.available) {
+    const messageIds = quotes
+      .filter(({ expireDt, messageId }) => expireDt >= new Date() && messageId)
+      .map(({ messageId }) => messageId)
+
+    if (!messageIds.length) {
       logger.warn(
-        `Cannot find guild ${guildId}. Aborted fetch.`,
-        MessageRecacherService.name,
+        `Skipped fetching messages for channel ${channelId} @ guild ${guildId}: no quotes with messages found`,
+        PendingQuotesStartupService.name,
       )
       return
     }
 
-    const [channel, permissions] =
-      (await helper.getTextChannelAndPermissions(guildId, channelId)) || []
-
-    if (!channel) {
-      logger.warn(
-        `Cannot find channel ${channelId} @ guild ${guildId}. Aborted fetch.`,
-        MessageRecacherService.name,
-      )
-      return
-    }
-
-    if (!permissions.has('READ_MESSAGE_HISTORY')) {
-      logger.warn(
-        `No READ_MESSAGE_HISTORY access to channel ${channelId} @ guild ${guildId}. Aborted fetch.`,
-        MessageRecacherService.name,
-      )
-    }
-
-    const pendingWithMessage = quotes.filter(
-      ({ expireDt, messageId }) => expireDt >= new Date() && messageId,
+    await this.commandBus.execute(
+      new FetchMessagesCommand({
+        guildId,
+        channelId,
+        messageIds,
+      }),
     )
 
-    for (const { messageId, quoteId } of pendingWithMessage) {
-      try {
-        await helper.getMessage(guildId, channelId, messageId)
-
-        logger.verbose(
-          `Fetched message ${messageId} for quote ${quoteId}.`,
-          MessageRecacherService.name,
-        )
-      } catch (e) {
-        logger.error(
-          `Fetching of message ${messageId} for quote ${quoteId} failed: ${e.message}`,
-          e.stack,
-          MessageRecacherService.name,
-        )
-
-        // error intentionally suppressed
-      }
-    }
+    logger.log(
+      `Fetched messages for channel ${channelId} @ guild ${guildId}`,
+      PendingQuotesStartupService.name,
+    )
   }
 
   async handle() {
