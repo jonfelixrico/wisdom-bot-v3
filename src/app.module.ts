@@ -18,7 +18,6 @@ import { DiscordInteractionsModule } from './discord-interactions/discord-intera
 
 @Module({
   imports: [
-    LoggerModule,
     ConfigModule.forRoot({
       envFilePath: ['.env', '.dev.env'],
       isGlobal: true,
@@ -37,6 +36,8 @@ import { DiscordInteractionsModule } from './discord-interactions/discord-intera
     StatsModelModule,
     DiscordWatchersModule,
     DiscordInteractionsModule,
+
+    LoggerModule,
   ],
 })
 export class AppModule {}
