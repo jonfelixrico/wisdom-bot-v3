@@ -1,12 +1,8 @@
+import { Injectable, OnModuleInit } from '@nestjs/common'
 import { Logger } from '@nestjs/common'
-import {
-  CommandBus,
-  EventsHandler,
-  IEventHandler,
-  QueryBus,
-} from '@nestjs/cqrs'
+import { CommandBus, EventBus, ofType, QueryBus } from '@nestjs/cqrs'
 import { from } from 'rxjs'
-import { mergeMap } from 'rxjs/operators'
+import { mergeMap, take } from 'rxjs/operators'
 import { AcknowledgePendingQuoteExpirationCommand } from 'src/domain/commands/acknowledge-pending-quote-expiration.command'
 import { FetchMessagesCommand } from 'src/infrastructure/commands/fetch-messages.command'
 import {
@@ -19,14 +15,13 @@ import {
 } from 'src/queries/guild-channels-with-pending-quotes.query'
 import { CatchUpFinishedEvent } from 'src/read-model-catch-up/catch-up-finished.event'
 
-@EventsHandler(CatchUpFinishedEvent)
-export class PendingQuotesStartupService
-  implements IEventHandler<CatchUpFinishedEvent>
-{
+@Injectable()
+export class PendingQuotesStartupService implements OnModuleInit {
   constructor(
     private logger: Logger,
     private queryBus: QueryBus,
     private commandBus: CommandBus,
+    private eventBus: EventBus,
   ) {}
 
   async flagAsExpired(quoteId: string) {
@@ -49,7 +44,7 @@ export class PendingQuotesStartupService
     }
   }
 
-  async fetch(guildId: string, channelId: string) {
+  private async fetch(guildId: string, channelId: string) {
     const { logger } = this
 
     logger.verbose(
@@ -95,7 +90,12 @@ export class PendingQuotesStartupService
     )
   }
 
-  async handle() {
+  private async startProcess() {
+    this.logger.log(
+      'Starting pending quotes startup routine...',
+      PendingQuotesStartupService.name,
+    )
+
     const guildChannels = (await this.queryBus.execute(
       new GuildChannelsWithPendingQuotesQuery(),
     )) as IGuildChannelsWithPendingQuotesQueryOutput
@@ -107,6 +107,19 @@ export class PendingQuotesStartupService
           10,
         ),
       )
-      .subscribe()
+      .subscribe({
+        complete: () => {
+          this.logger.log(
+            'Finished startup service...',
+            PendingQuotesStartupService.name,
+          )
+        },
+      })
+  }
+
+  onModuleInit() {
+    this.eventBus
+      .pipe(ofType(CatchUpFinishedEvent), take(1))
+      .subscribe(() => this.startProcess())
   }
 }
