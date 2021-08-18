@@ -12,12 +12,8 @@ import { SubmitQuoteCommand } from 'src/domain/commands/submit-quote.command'
 import { v4 } from 'uuid'
 import { GuildQuery, IGuildQueryOuptut } from 'src/queries/guild.query'
 import { DateTime } from 'luxon'
-import { SPACE_CHARACTER } from 'src/types/discord.constants'
-import {
-  MessageActionRow,
-  MessageButton,
-  MessageEmbedOptions,
-} from 'discord.js'
+import { UpdateQuoteMessageDetailsCommand } from 'src/domain/commands/update-quote-message-details.command'
+import { PendingQuoteResponseGeneratorService } from 'src/discord-interactions/services/pending-quote-response-generator/pending-quote-response-generator.service'
 
 const COMMAND_NAME = 'submit'
 const AUTHOR_OPTION_NAME = 'author'
@@ -32,6 +28,7 @@ export class SubmitInteractionHandlerService
     private manager: CommandManagerService,
     private commandBus: CommandBus,
     private queryBus: QueryBus,
+    private responseGen: PendingQuoteResponseGeneratorService,
   ) {}
 
   onModuleInit() {
@@ -59,11 +56,12 @@ export class SubmitInteractionHandlerService
       return
     }
 
-    const { logger } = this
+    const { logger, commandBus } = this
 
     const { channelId, guildId, user: submitter, options } = interaction
-    const quote = options.getString(QUOTE_OPTION_NAME)
-    const author = options.getUser(AUTHOR_OPTION_NAME)
+    const content = options.getString(QUOTE_OPTION_NAME)
+    const authorId = options.getUser(AUTHOR_OPTION_NAME).id
+    const submitterId = submitter.id
 
     try {
       // TODO add logging here
@@ -77,72 +75,43 @@ export class SubmitInteractionHandlerService
       // TODO add logging here
 
       const quoteId = v4()
+      const { upvoteCount, upvoteWindow } = guild.quoteSettings
+      const submitDt = DateTime.now()
+      const expireDt = submitDt.plus({ millisecond: upvoteWindow })
 
-      await this.commandBus.execute(
+      await commandBus.execute(
         new SubmitQuoteCommand({
-          authorId: author.id,
-          submitterId: submitter.id,
+          authorId,
+          submitterId,
           channelId,
-          content: quote,
+          content,
           guildId,
           quoteId,
         }),
       )
 
-      const { upvoteCount, upvoteWindow } = guild.quoteSettings
-      const now = DateTime.now()
-      const expireDt = now.plus({ millisecond: upvoteWindow })
-
-      const embed: MessageEmbedOptions = {
-        author: {
-          name: 'Quote Submitted',
-          icon_url: await submitter.displayAvatarURL({ format: 'png' }),
-        },
-        description: [`**"${quote}"**`, `- ${author}, ${now.year}`].join('\n'),
-        fields: [
-          {
-            name: SPACE_CHARACTER,
-            value: [
-              `Submitted by ${submitter}`,
-              `This submission needs ${upvoteCount} votes on or before ${expireDt.toLocaleString(
-                DateTime.DATETIME_FULL,
-              )}.`,
-            ].join('\n\n'),
-          },
-        ],
-        footer: {
-          /*
-           * We're using `footer` instead of `timestamp` because the latter adjusts with the Discord client device's
-           * timezone (device of a discord user). We don't want that because it'll be inconsistent with our other date-related
-           * strings if ever they did change timezones.
-           */
-          text: `Submitted on ${now.toLocaleString(DateTime.DATETIME_FULL)}`,
-        },
-        thumbnail: {
-          url: await author.displayAvatarURL({ format: 'png' }),
-        },
-      }
-
-      const row = new MessageActionRow({
-        components: [
-          new MessageButton({
-            customId: `quote/${quoteId}/vote/1`,
-            style: 'SUCCESS',
-            emoji: '👍',
-          }),
-          new MessageButton({
-            customId: `quote/${quoteId}/vote/-1`,
-            style: 'DANGER',
-            emoji: '👎',
-          }),
-        ],
+      const generatedResponse = await this.responseGen.formatResponse({
+        authorId,
+        submitterId,
+        channelId,
+        content,
+        guildId,
+        quoteId,
+        submitDt: submitDt.toJSDate(),
+        expireDt: expireDt.toJSDate(),
+        upvoteCount,
+        votes: [],
       })
 
-      await interaction.editReply({
-        // TODO add buttons here for reactions
-        embeds: [embed],
-        components: [row],
-      })
+      const message = await interaction.editReply(generatedResponse)
+
+      await commandBus.execute(
+        new UpdateQuoteMessageDetailsCommand({
+          channelId,
+          messageId: message.id,
+          quoteId,
+        }),
+      )
 
       logger.log(
         `Processed the quote submission of user ${submitter.id} in guild ${guildId}`,

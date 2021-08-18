@@ -7,6 +7,9 @@ import { ReceiveQueryService } from './receive-query/receive-query.service'
 import { UserStatsQueryService } from './user-stats-query/user-stats-query.service'
 import { GuildQueryHandlerService } from './handlers/guild-query-handler/guild-query-handler.service'
 import { CqrsModule } from '@nestjs/cqrs'
+import { PendingQuoteQueryHandlerService } from './handlers/pending-quote-query-handler/pending-quote-query-handler.service'
+import { GuildChannelsWithPendingQuotesQueryHandlerService } from './handlers/guild-channels-with-pending-quotes-query-handler/guild-channels-with-pending-quotes-query-handler.service'
+import { GuildChannelPendingQuotesQueryHandlerService } from './handlers/guild-channel-pending-quotes-query-handler/guild-channel-pending-quotes-query-handler.service'
 
 const exportedModules = [
   QuoteQueryService,
@@ -18,7 +21,13 @@ const exportedModules = [
 
 @Module({
   imports: [TypeormModule, CqrsModule],
-  providers: [...exportedModules, GuildQueryHandlerService],
+  providers: [
+    ...exportedModules,
+    GuildQueryHandlerService,
+    PendingQuoteQueryHandlerService,
+    GuildChannelsWithPendingQuotesQueryHandlerService,
+    GuildChannelPendingQuotesQueryHandlerService,
+  ],
   exports: exportedModules,
 })
 export class ReadModelQueryModule {}
