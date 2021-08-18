@@ -7,6 +7,7 @@ import { SendQuoteAcceptedMessageCommandHandlerService } from './command-handler
 import { UpdateReceiveMessageReactionsListCommandHandlerService } from './command-handlers/update-receive-message-reactions-list-command-handler/update-receive-message-reactions-list-command-handler.service'
 import { UpdateSubmitMessageAsExpiredCommandService } from './command-handlers/update-submit-message-as-expired-command/update-submit-message-as-expired-command.service'
 import { ReadModelQueryModule } from 'src/read-model-query/read-model-query.module'
+import { FetchMessagesCommandHandlerService } from './command-handlers/fetch-messages-command-handler/fetch-messages-command-handler.service'
 
 @Module({
   imports: [CqrsModule, DiscordModule, ReadModelQueryModule],
@@ -16,6 +17,7 @@ import { ReadModelQueryModule } from 'src/read-model-query/read-model-query.modu
     SendQuoteAcceptedMessageCommandHandlerService,
     UpdateReceiveMessageReactionsListCommandHandlerService,
     UpdateSubmitMessageAsExpiredCommandService,
+    FetchMessagesCommandHandlerService,
   ],
 })
 export class InfrastructureModule {}
