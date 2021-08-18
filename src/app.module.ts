@@ -3,7 +3,7 @@ import { DiscordModule } from './discord/discord.module'
 import { ConfigModule } from '@nestjs/config'
 import { TypeormModule } from './typeorm/typeorm.module'
 import { CommandHandlersModule } from './command-handlers/command-handlers.module'
-import { LoggerModule } from './logger/logger.module'
+import { GlobalModule } from './global/global.module'
 import { EventStoreModule } from './event-store/event-store.module'
 import { WriteRepositoriesModule } from './write-repositories/write-repositories.module'
 import { ReadModelCatchUpModule } from './read-model-catch-up/read-model-catch-up.module'
@@ -37,7 +37,7 @@ import { DiscordInteractionsModule } from './discord-interactions/discord-intera
     DiscordWatchersModule,
     DiscordInteractionsModule,
 
-    LoggerModule,
+    GlobalModule,
   ],
 })
 export class AppModule {}
