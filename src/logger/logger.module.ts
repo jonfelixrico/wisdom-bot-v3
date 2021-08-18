@@ -1,5 +1,6 @@
 import { Global, Logger, Module, Provider } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { CqrsModule } from '@nestjs/cqrs'
 import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
@@ -33,8 +34,8 @@ const loggerProvider: Provider = {
 
 @Global()
 @Module({
-  imports: [dynamicWinstonModule],
+  imports: [dynamicWinstonModule, CqrsModule],
   providers: [loggerProvider],
-  exports: [dynamicWinstonModule, loggerProvider],
+  exports: [dynamicWinstonModule, loggerProvider, CqrsModule],
 })
 export class LoggerModule {}

@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common'
 import { SubmitQuoteCommandHandlerService } from './pending-quote/submit-quote-command-handler/submit-quote-command-handler.service'
-import { CqrsModule } from '@nestjs/cqrs'
 import { WriteRepositoriesModule } from 'src/write-repositories/write-repositories.module'
 import { AcceptQuoteCommandHandlerService } from './pending-quote/accept-quote-command-handler/accept-quote-command-handler.service'
 import { ReceiveQuoteCommandHandlerService } from './quote/receive-quote-command-handler/receive-quote-command-handler.service'
@@ -11,7 +10,7 @@ import { AcknowledgeQuoteExpirationCommandHandlerService } from './pending-quote
 import { CastPendingQuoteVoteCommandHandlerService } from './pending-quote/cast-pending-quote-vote-command-handler/cast-pending-quote-vote-command-handler.service'
 
 @Module({
-  imports: [CqrsModule, WriteRepositoriesModule, DiscordModule],
+  imports: [WriteRepositoriesModule, DiscordModule],
   providers: [
     SubmitQuoteCommandHandlerService,
     AcceptQuoteCommandHandlerService,
