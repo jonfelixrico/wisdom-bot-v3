@@ -9,6 +9,7 @@ import { GuildQueryHandlerService } from './handlers/guild-query-handler/guild-q
 import { CqrsModule } from '@nestjs/cqrs'
 import { PendingQuoteQueryHandlerService } from './handlers/pending-quote-query-handler/pending-quote-query-handler.service'
 import { GuildChannelsWithPendingQuotesQueryHandlerService } from './handlers/guild-channels-with-pending-quotes-query-handler/guild-channels-with-pending-quotes-query-handler.service'
+import { GuildChannelPendingQuotesQueryHandlerService } from './handlers/guild-channel-pending-quotes-query-handler/guild-channel-pending-quotes-query-handler.service'
 
 const exportedModules = [
   QuoteQueryService,
@@ -25,6 +26,7 @@ const exportedModules = [
     GuildQueryHandlerService,
     PendingQuoteQueryHandlerService,
     GuildChannelsWithPendingQuotesQueryHandlerService,
+    GuildChannelPendingQuotesQueryHandlerService,
   ],
   exports: exportedModules,
 })
