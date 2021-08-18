@@ -50,6 +50,13 @@ export class PendingQuotesStartupService
   }
 
   async fetch(guildId: string, channelId: string) {
+    const { logger } = this
+
+    logger.verbose(
+      `Processing channel ${channelId} @ guild ${guildId}...`,
+      PendingQuotesStartupService.name,
+    )
+
     const quotes = (await this.queryBus.execute(
       new GuildChannelPendingQuotesQuery({
         guildId,
@@ -61,8 +68,6 @@ export class PendingQuotesStartupService
     for (const { quoteId } of expired) {
       await this.flagAsExpired(quoteId)
     }
-
-    const { logger } = this
 
     const messageIds = quotes
       .filter(({ expireDt, messageId }) => expireDt >= new Date() && messageId)
