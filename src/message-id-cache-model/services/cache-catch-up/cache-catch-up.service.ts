@@ -9,7 +9,10 @@ import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common'
 import { fromEvent } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
 import { WrappedRedisClient } from 'src/message-id-cache-model/utils/wrapped-redis-client.class'
-import { CACHE_REDUCERS } from 'src/message-id-cache-model/reducers'
+import {
+  CACHE_REDUCERS,
+  serializePosition,
+} from 'src/message-id-cache-model/reducers'
 
 const POSITION_KEY = 'POSITION'
 const READ_MAX_COUNT = 1000
@@ -28,7 +31,11 @@ export class CacheCatchUpService implements OnApplicationBootstrap {
     const serializedPos = await this.redis.get(POSITION_KEY)
 
     if (serializedPos) {
-      this.currentPosition = JSON.parse(serializedPos) as Position
+      const [commit, prepare] = serializedPos.split('/')
+      this.currentPosition = {
+        commit: BigInt(commit),
+        prepare: BigInt(prepare),
+      }
     }
 
     return this.currentPosition
@@ -45,7 +52,8 @@ export class CacheCatchUpService implements OnApplicationBootstrap {
 
     const reducerFn = CACHE_REDUCERS[type]
     if (!reducerFn) {
-      await this.redis.set(POSITION_KEY, JSON.stringify(position))
+      await this.redis.set(POSITION_KEY, serializePosition(position))
+      return
     }
 
     await reducerFn(event as AllStreamJSONRecordedEvent, this.redis)
