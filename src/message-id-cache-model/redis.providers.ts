@@ -11,7 +11,7 @@ export const redisProviders: Provider[] = [
     useFactory: async (config: ConfigService) => {
       return createClient({
         url: config.get('REDIS_URL'),
-        prefix: 'message-id-cache',
+        prefix: 'message-id-cache:',
       })
     },
   },
