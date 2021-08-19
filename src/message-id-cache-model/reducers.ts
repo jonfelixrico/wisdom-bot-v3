@@ -2,6 +2,7 @@ import {
   AllStreamJSONRecordedEvent,
   JSONEventType,
   JSONType,
+  Position,
 } from '@eventstore/db-client'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { IPendingQuoteAcceptedPayload } from 'src/domain/events/pending-quote-accepted.event'
@@ -24,6 +25,10 @@ type CacheReducerMap = {
 
 const POSITION = 'POSITION'
 
+export function serializePosition({ commit, prepare }: Position) {
+  return [commit, prepare].join('/')
+}
+
 const onSubmit: CacheReducer<IQuoteSubmittedEventPayload> = async (
   { position, data },
   { client },
@@ -34,7 +39,7 @@ const onSubmit: CacheReducer<IQuoteSubmittedEventPayload> = async (
     .multi()
     .set(messageId, quoteId)
     .set(quoteId, messageId)
-    .set(POSITION, JSON.stringify(position))
+    .set(POSITION, serializePosition(position))
   await promisify(chain.exec).call(chain)
 }
 
@@ -51,7 +56,7 @@ const onUpdate: CacheReducer<IQuoteMessageDetailsUpdatedPayload> = async (
     .set(quoteId, messageId)
     .set(messageId, quoteId)
     .del(oldMessageId)
-    .set(POSITION, JSON.stringify(position))
+    .set(POSITION, serializePosition(position))
   await promisify(chain.exec).call(chain)
 }
 
@@ -68,7 +73,7 @@ const onPendingEnd: CacheReducer<
     .multi()
     .del(quoteId)
     .del(messageId)
-    .set(POSITION, JSON.stringify(position))
+    .set(POSITION, serializePosition(position))
   await promisify(chain.exec).call(chain)
 }
 
