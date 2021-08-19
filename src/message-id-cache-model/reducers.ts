@@ -37,9 +37,13 @@ const onSubmit: CacheReducer<IQuoteSubmittedEventPayload> = async (
 
   const chain = client
     .multi()
-    .set(messageId, quoteId)
-    .set(quoteId, messageId)
+    .set(quoteId, messageId || null)
     .set(POSITION, serializePosition(position))
+
+  if (messageId) {
+    chain.set(messageId, quoteId)
+  }
+
   await promisify(chain.exec).call(chain)
 }
 
@@ -53,10 +57,17 @@ const onUpdate: CacheReducer<IQuoteMessageDetailsUpdatedPayload> = async (
 
   const chain = wrapped.client
     .multi()
-    .set(quoteId, messageId)
-    .set(messageId, quoteId)
-    .del(oldMessageId)
+    .set(quoteId, messageId || null)
     .set(POSITION, serializePosition(position))
+
+  if (messageId) {
+    chain.set(messageId, quoteId)
+  }
+
+  if (oldMessageId) {
+    chain.del(oldMessageId)
+  }
+
   await promisify(chain.exec).call(chain)
 }
 
@@ -72,8 +83,12 @@ const onPendingEnd: CacheReducer<
   const chain = wrapped.client
     .multi()
     .del(quoteId)
-    .del(messageId)
     .set(POSITION, serializePosition(position))
+
+  if (messageId) {
+    chain.del(messageId)
+  }
+
   await promisify(chain.exec).call(chain)
 }
 
