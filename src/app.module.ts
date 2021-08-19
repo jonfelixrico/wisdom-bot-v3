@@ -15,6 +15,7 @@ import { EsdbBackupModule } from './esdb-backup/esdb-backup.module'
 import { StatsModelModule } from './stats-model/stats-model.module'
 import { DiscordWatchersModule } from './discord-watchers/discord-watchers.module'
 import { DiscordInteractionsModule } from './discord-interactions/discord-interactions.module'
+import { MessageIdCacheModelModule } from './message-id-cache-model/message-id-cache-model.module'
 
 @Module({
   imports: [
@@ -38,6 +39,8 @@ import { DiscordInteractionsModule } from './discord-interactions/discord-intera
     DiscordInteractionsModule,
 
     GlobalModule,
+
+    MessageIdCacheModelModule,
   ],
 })
 export class AppModule {}
