@@ -37,7 +37,7 @@ const onSubmit: CacheReducer<IQuoteSubmittedEventPayload> = async (
 
   const chain = client
     .multi()
-    .set(quoteId, messageId || null)
+    .set(quoteId, messageId || '')
     .set(POSITION, serializePosition(position))
 
   if (messageId) {
@@ -57,7 +57,7 @@ const onUpdate: CacheReducer<IQuoteMessageDetailsUpdatedPayload> = async (
 
   const chain = wrapped.client
     .multi()
-    .set(quoteId, messageId || null)
+    .set(quoteId, messageId || '')
     .set(POSITION, serializePosition(position))
 
   if (messageId) {
