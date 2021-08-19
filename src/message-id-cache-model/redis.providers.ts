@@ -1,7 +1,7 @@
 import { Provider } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { RedisClient } from 'redis'
-import redis from 'redis'
+import { createClient } from 'redis'
 import { WrappedRedisClient } from './utils/wrapped-redis-client.class'
 
 export const redisProviders: Provider[] = [
@@ -9,7 +9,7 @@ export const redisProviders: Provider[] = [
     provide: RedisClient,
     inject: [ConfigService],
     useFactory: async (config: ConfigService) => {
-      return redis.createClient({
+      return createClient({
         url: config.get('REDIS_URL'),
         prefix: 'message-id-cache',
       })
