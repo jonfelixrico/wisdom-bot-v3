@@ -2,7 +2,7 @@ import { Provider } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { RedisClient } from 'redis'
 import { createClient } from 'redis'
-import { WrappedRedisClient } from '../discord-message/wrapped-redis-client.class'
+import { WrappedRedisClient } from '../discord-message/utils/wrapped-redis-client.class'
 
 export const redisProviders: Provider[] = [
   {
