@@ -11,7 +11,7 @@ import { IPendingQuoteExpirationAcknowledgedEventPayload } from 'src/domain/even
 import { IQuoteMessageDetailsUpdatedPayload } from 'src/domain/events/quote-message-details-updated.event'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import { promisify } from 'util'
-import { WrappedRedisClient } from './utils/wrapped-redis-client.class'
+import { WrappedRedisClient } from './wrapped-redis-client.class'
 
 export type CacheReducer<EventDataType extends JSONType = JSONType> = (
   // This is directly taken from EventStoreDB
@@ -100,7 +100,7 @@ const {
   QUOTE_MESSAGE_DETAILS_UPDATED,
 } = DomainEventNames
 
-export const CACHE_REDUCERS: CacheReducerMap = {
+export const WATCHED_MESSAGES_REDUCERS: CacheReducerMap = {
   [QUOTE_SUBMITTED]: onSubmit,
   [QUOTE_MESSAGE_DETAILS_UPDATED]: onUpdate,
   [PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED]: onPendingEnd,

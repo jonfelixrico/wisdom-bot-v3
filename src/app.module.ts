@@ -15,7 +15,7 @@ import { EsdbBackupModule } from './esdb-backup/esdb-backup.module'
 import { StatsModelModule } from './stats-model/stats-model.module'
 import { DiscordWatchersModule } from './discord-watchers/discord-watchers.module'
 import { DiscordInteractionsModule } from './discord-interactions/discord-interactions.module'
-import { MessageIdCacheModelModule } from './message-id-cache-model/message-id-cache-model.module'
+import { DiscordMessageDeleteWatcher } from './discord-message-delete-watcher/discord-message-delete-watcher.module'
 
 @Module({
   imports: [
@@ -40,7 +40,7 @@ import { MessageIdCacheModelModule } from './message-id-cache-model/message-id-c
 
     GlobalModule,
 
-    MessageIdCacheModelModule,
+    DiscordMessageDeleteWatcher,
   ],
 })
 export class AppModule {}

@@ -8,17 +8,17 @@ import {
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common'
 import { fromEvent } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
-import { WrappedRedisClient } from 'src/message-id-cache-model/utils/wrapped-redis-client.class'
+import { WrappedRedisClient } from 'src/discord-message-delete-watcher/wrapped-redis-client.class'
 import {
-  CACHE_REDUCERS,
+  WATCHED_MESSAGES_REDUCERS,
   serializePosition,
-} from 'src/message-id-cache-model/reducers'
+} from 'src/discord-message-delete-watcher/watched-messages.reducers'
 
 const POSITION_KEY = 'POSITION'
 const READ_MAX_COUNT = 1000
 
 @Injectable()
-export class CacheCatchUpService implements OnApplicationBootstrap {
+export class WatchedMessagesCatchUp implements OnApplicationBootstrap {
   private currentPosition: Position
 
   constructor(
@@ -50,7 +50,7 @@ export class CacheCatchUpService implements OnApplicationBootstrap {
       return
     }
 
-    const reducerFn = CACHE_REDUCERS[type]
+    const reducerFn = WATCHED_MESSAGES_REDUCERS[type]
     if (!reducerFn) {
       await this.redis.set(POSITION_KEY, serializePosition(position))
       return
@@ -115,14 +115,14 @@ export class CacheCatchUpService implements OnApplicationBootstrap {
   async onApplicationBootstrap() {
     this.logger.log(
       'Starting catch-up for the cache model.',
-      CacheCatchUpService.name,
+      WatchedMessagesCatchUp.name,
     )
     await this.retrievePosition()
     await this.doCatchingUp()
 
     this.logger.log(
       'Catch-up finished, now watching for live events.',
-      CacheCatchUpService.name,
+      WatchedMessagesCatchUp.name,
     )
 
     this.streamEvents()
