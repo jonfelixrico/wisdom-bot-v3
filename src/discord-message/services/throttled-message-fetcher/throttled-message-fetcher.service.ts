@@ -5,19 +5,12 @@ import { filter, map, mergeMap, take } from 'rxjs/operators'
 import { Message } from 'discord.js'
 import { v4 } from 'uuid'
 
-type IDoneItem =
-  | {
-      jobId: string
-      message: Message
-    }
-  | {
-      jobId: string
-      error: Error
-    }
-  | {
-      jobId: string
-      inaccessible: true
-    }
+interface IDoneItem {
+  message?: Message
+  inaccessible?: boolean
+  error?: Error
+  jobId: string
+}
 
 interface IFetchMessageInput {
   guildId: string
