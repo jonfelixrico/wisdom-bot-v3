@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common'
+import { dbProvider } from './db/db.provider'
 
-@Module({})
+@Module({
+  providers: [dbProvider],
+})
 export class DiscordMessageCacheModule {}
