@@ -6,6 +6,7 @@ import { DeleteWatcherService } from './services/delete-watcher/delete-watcher.s
 import { EventStoreModule } from 'src/event-store/event-store.module'
 import { DiscordModule } from 'src/discord/discord.module'
 import { MessageRecacheRoutineService } from './services/message-recache-routine/message-recache-routine.service'
+import { ThrottledMessageFetcherService } from './services/throttled-message-fetcher/throttled-message-fetcher.service'
 
 @Module({
   imports: [EventStoreModule, DiscordModule],
@@ -16,6 +17,7 @@ import { MessageRecacheRoutineService } from './services/message-recache-routine
     DiscordMessageCatchUpService,
     DeleteWatcherService,
     MessageRecacheRoutineService,
+    ThrottledMessageFetcherService,
   ],
 })
 export class DiscordMessageModule {}
