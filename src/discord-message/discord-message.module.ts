@@ -4,4 +4,4 @@ import { dbProvider } from './db/db.provider'
 @Module({
   providers: [dbProvider],
 })
-export class DiscordMessageCacheModule {}
+export class DiscordMessageModule {}
