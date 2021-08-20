@@ -18,7 +18,7 @@ const POSITION_KEY = 'POSITION'
 const READ_MAX_COUNT = 1000
 
 @Injectable()
-export class CacheCatchUpService implements OnApplicationBootstrap {
+export class WatchedMessagesCatchUp implements OnApplicationBootstrap {
   private currentPosition: Position
 
   constructor(
@@ -115,14 +115,14 @@ export class CacheCatchUpService implements OnApplicationBootstrap {
   async onApplicationBootstrap() {
     this.logger.log(
       'Starting catch-up for the cache model.',
-      CacheCatchUpService.name,
+      WatchedMessagesCatchUp.name,
     )
     await this.retrievePosition()
     await this.doCatchingUp()
 
     this.logger.log(
       'Catch-up finished, now watching for live events.',
-      CacheCatchUpService.name,
+      WatchedMessagesCatchUp.name,
     )
 
     this.streamEvents()
