@@ -8,7 +8,7 @@ import {
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common'
 import { fromEvent } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
-import { WrappedRedisClient } from 'src/discord-message-delete-watcher/wrapped-redis-client.class'
+import { WrappedRedisClient } from 'src/discord-message/wrapped-redis-client.class'
 import {
   WATCHED_MESSAGES_REDUCERS,
   serializePosition,

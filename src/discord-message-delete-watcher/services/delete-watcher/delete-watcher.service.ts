@@ -2,7 +2,7 @@ import { Logger, OnApplicationBootstrap } from '@nestjs/common'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { Client, Message } from 'discord.js'
 import { SuspendDeleteWatchCommand } from 'src/discord-message-delete-watcher/suspend-delete-watch.command'
-import { WrappedRedisClient } from 'src/discord-message-delete-watcher/wrapped-redis-client.class'
+import { WrappedRedisClient } from 'src/discord-message/wrapped-redis-client.class'
 
 @CommandHandler(SuspendDeleteWatchCommand)
 export class DeleteWatcherService
