@@ -9,6 +9,7 @@ import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common'
 import { EventBus } from '@nestjs/cqrs'
 import { fromEvent } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
+import { QuoteExpirationCatchUpFinishedEvent } from 'src/quote-expiration/quote-expiration-catch-up-finished.event'
 import { EventConsumedEvent } from 'src/read-model-catch-up/event-consumed.event'
 import { MapTypeormEntity } from 'src/typeorm/entities/map.typeorm-entity'
 import { Connection, EntityManager } from 'typeorm'
@@ -148,6 +149,8 @@ export class QuoteExpirationCatchUpService implements OnApplicationBootstrap {
     )
     await this.retrievePosition()
     await this.doCatchingUp()
+
+    this.eventBus.publish(new QuoteExpirationCatchUpFinishedEvent())
 
     logger.log('Done with catching-up.', QuoteExpirationCatchUpService.name)
     this.streamEvents()
