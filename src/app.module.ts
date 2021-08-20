@@ -17,6 +17,7 @@ import { DiscordWatchersModule } from './discord-watchers/discord-watchers.modul
 import { DiscordInteractionsModule } from './discord-interactions/discord-interactions.module'
 import { DiscordMessageDeleteWatcher } from './discord-message-delete-watcher/discord-message-delete-watcher.module'
 import { QuoteExpirationModule } from './quote-expiration/quote-expiration.module'
+import { DiscordMessageCacheModule } from './discord-message-cache/discord-message-cache.module'
 
 @Module({
   imports: [
@@ -44,6 +45,8 @@ import { QuoteExpirationModule } from './quote-expiration/quote-expiration.modul
     DiscordMessageDeleteWatcher,
 
     QuoteExpirationModule,
+
+    DiscordMessageCacheModule,
   ],
 })
 export class AppModule {}
