@@ -5,6 +5,7 @@ import { DiscordMessageCatchUpService } from './event-sourcing/discord-message-c
 import { DeleteWatcherService } from './services/delete-watcher/delete-watcher.service'
 import { EventStoreModule } from 'src/event-store/event-store.module'
 import { DiscordModule } from 'src/discord/discord.module'
+import { MessageRecacheRoutineService } from './services/message-recache-routine/message-recache-routine.service'
 
 @Module({
   imports: [EventStoreModule, DiscordModule],
@@ -14,6 +15,7 @@ import { DiscordModule } from 'src/discord/discord.module'
     ...redisProviders,
     DiscordMessageCatchUpService,
     DeleteWatcherService,
+    MessageRecacheRoutineService,
   ],
 })
 export class DiscordMessageModule {}
