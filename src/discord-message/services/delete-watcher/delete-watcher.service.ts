@@ -1,8 +1,9 @@
 import { Logger, OnApplicationBootstrap } from '@nestjs/common'
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
+import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { Client, Message } from 'discord.js'
 import { SuspendDeleteWatchCommand } from 'src/discord-message/suspend-delete-watch.command'
 import { WrappedRedisClient } from 'src/discord-message/utils/wrapped-redis-client.class'
+import { RegeneratePendingQuoteMessageCommand } from 'src/infrastructure/commands/regenerate-pending-quote-message.command'
 
 @CommandHandler(SuspendDeleteWatchCommand)
 export class DeleteWatcherService
@@ -14,6 +15,7 @@ export class DeleteWatcherService
     private logger: Logger,
     private discord: Client,
     private redis: WrappedRedisClient,
+    private commandBus: CommandBus,
   ) {}
 
   async execute({ payload }: SuspendDeleteWatchCommand) {
@@ -30,7 +32,7 @@ export class DeleteWatcherService
   }
 
   private async handleMessageDelete(message: Message) {
-    const { logger, ignoredMessageIds, redis } = this
+    const { logger, ignoredMessageIds, redis, commandBus } = this
 
     const messageId = message.id
     const quoteId = await redis.get(message.id)
@@ -49,7 +51,9 @@ export class DeleteWatcherService
       return
     }
 
-    // TODO send regeneration command
+    await commandBus.execute(
+      new RegeneratePendingQuoteMessageCommand({ quoteId }),
+    )
   }
 
   onApplicationBootstrap() {
