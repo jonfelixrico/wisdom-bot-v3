@@ -12,4 +12,4 @@ import { WatchedMessageQueryHandlerService } from './handlers/watched-message-qu
     WatchedMessageQueryHandlerService,
   ],
 })
-export class MessageIdCacheModelModule {}
+export class DiscordMessageDeleteWatcher {}

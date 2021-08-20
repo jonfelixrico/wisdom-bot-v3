@@ -8,11 +8,11 @@ import {
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common'
 import { fromEvent } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
-import { WrappedRedisClient } from 'src/message-id-cache-model/utils/wrapped-redis-client.class'
+import { WrappedRedisClient } from 'src/discord-message-delete-watcher/utils/wrapped-redis-client.class'
 import {
   CACHE_REDUCERS,
   serializePosition,
-} from 'src/message-id-cache-model/reducers'
+} from 'src/discord-message-delete-watcher/reducers'
 
 const POSITION_KEY = 'POSITION'
 const READ_MAX_COUNT = 1000

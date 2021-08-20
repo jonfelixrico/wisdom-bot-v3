@@ -1,5 +1,5 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
-import { WrappedRedisClient } from 'src/message-id-cache-model/utils/wrapped-redis-client.class'
+import { WrappedRedisClient } from 'src/discord-message-delete-watcher/utils/wrapped-redis-client.class'
 import {
   IWatchedMessageQueryOutput,
   WatchedMessageQuery,
