@@ -4,10 +4,11 @@ import { from, timer } from 'rxjs'
 import { groupBy, mergeMap, take } from 'rxjs/operators'
 import { QuoteMessageTypeormEntity } from 'src/discord-message/db/quote-message.typeorm-entity'
 import { DiscordMessageCatchUpFinishedEvent } from 'src/discord-message/event-sourcing/discord-message-catch-up-finished.event'
+import { RegeneratePendingQuoteMessageCommand } from 'src/infrastructure/commands/regenerate-pending-quote-message.command'
 import { Connection } from 'typeorm'
+import { ThrottledMessageFetcherService } from '../throttled-message-fetcher/throttled-message-fetcher.service'
 
 const ROUTINE_INTERVAL = 60 * 1000 * 60 // run every hour
-const CONCURRENCY_LIMIT = 10
 const PER_CHANNEL_CONCURRENCY = 1
 
 @Injectable()
@@ -17,10 +18,35 @@ export class MessageRecacheRoutineService implements OnModuleInit {
     private logger: Logger,
     private conn: Connection,
     private commandBus: CommandBus,
+    private fetcher: ThrottledMessageFetcherService,
   ) {}
 
-  private async processQuote(quote: QuoteMessageTypeormEntity) {
-    // NOOP
+  private async processQuote({
+    channelId,
+    quoteId,
+    guildId,
+    messageId,
+  }: QuoteMessageTypeormEntity) {
+    const { message, error, inaccessible } = await this.fetcher.fetchMessage({
+      channelId,
+      messageId,
+      guildId,
+    })
+
+    if (inaccessible) {
+      // TODO add error logging
+      return
+    } else if (error) {
+      // TODO add error logging
+      return
+    } else if (!message) {
+      // TODO add info logging
+      await this.commandBus.execute(
+        new RegeneratePendingQuoteMessageCommand({ quoteId }),
+      )
+    }
+
+    // TODO add verbose logging
   }
 
   private async runRoutine() {
