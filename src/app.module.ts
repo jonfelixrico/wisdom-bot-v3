@@ -15,7 +15,6 @@ import { EsdbBackupModule } from './esdb-backup/esdb-backup.module'
 import { StatsModelModule } from './stats-model/stats-model.module'
 import { DiscordWatchersModule } from './discord-watchers/discord-watchers.module'
 import { DiscordInteractionsModule } from './discord-interactions/discord-interactions.module'
-import { DiscordMessageDeleteWatcher } from './discord-message-delete-watcher/discord-message-delete-watcher.module'
 import { QuoteExpirationModule } from './quote-expiration/quote-expiration.module'
 import { DiscordMessageModule } from './discord-message/discord-message.module'
 
@@ -42,10 +41,7 @@ import { DiscordMessageModule } from './discord-message/discord-message.module'
 
     GlobalModule,
 
-    DiscordMessageDeleteWatcher,
-
     QuoteExpirationModule,
-
     DiscordMessageModule,
   ],
 })
