@@ -100,7 +100,7 @@ const {
   QUOTE_MESSAGE_DETAILS_UPDATED,
 } = DomainEventNames
 
-export const CACHE_REDUCERS: CacheReducerMap = {
+export const WATCHED_MESSAGES_REDUCERS: CacheReducerMap = {
   [QUOTE_SUBMITTED]: onSubmit,
   [QUOTE_MESSAGE_DETAILS_UPDATED]: onUpdate,
   [PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED]: onPendingEnd,

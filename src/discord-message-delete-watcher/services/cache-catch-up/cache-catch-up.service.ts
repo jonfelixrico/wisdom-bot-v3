@@ -10,9 +10,9 @@ import { fromEvent } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
 import { WrappedRedisClient } from 'src/discord-message-delete-watcher/utils/wrapped-redis-client.class'
 import {
-  CACHE_REDUCERS,
+  WATCHED_MESSAGES_REDUCERS,
   serializePosition,
-} from 'src/discord-message-delete-watcher/reducers'
+} from 'src/discord-message-delete-watcher/watched-messages.reducers'
 
 const POSITION_KEY = 'POSITION'
 const READ_MAX_COUNT = 1000
@@ -50,7 +50,7 @@ export class CacheCatchUpService implements OnApplicationBootstrap {
       return
     }
 
-    const reducerFn = CACHE_REDUCERS[type]
+    const reducerFn = WATCHED_MESSAGES_REDUCERS[type]
     if (!reducerFn) {
       await this.redis.set(POSITION_KEY, serializePosition(position))
       return
