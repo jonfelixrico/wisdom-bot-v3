@@ -16,6 +16,7 @@ import { StatsModelModule } from './stats-model/stats-model.module'
 import { DiscordWatchersModule } from './discord-watchers/discord-watchers.module'
 import { DiscordInteractionsModule } from './discord-interactions/discord-interactions.module'
 import { DiscordMessageDeleteWatcher } from './discord-message-delete-watcher/discord-message-delete-watcher.module'
+import { QuoteExpirationModule } from './quote-expiration/quote-expiration.module'
 
 @Module({
   imports: [
@@ -41,6 +42,8 @@ import { DiscordMessageDeleteWatcher } from './discord-message-delete-watcher/di
     GlobalModule,
 
     DiscordMessageDeleteWatcher,
+
+    QuoteExpirationModule,
   ],
 })
 export class AppModule {}
