@@ -31,7 +31,7 @@ export class ExpiredQuoteWatcherService implements OnModuleInit {
    * @param date The date to compare each record's expireDt against.
    */
   private async checkForExpiredQuotes(date: Date) {
-    const { conn, logger } = this
+    const { conn, logger, inTransit } = this
 
     try {
       const expired = await conn
@@ -42,7 +42,8 @@ export class ExpiredQuoteWatcherService implements OnModuleInit {
           },
         })
 
-      const expireCount = expired.length
+      const filtered = expired.filter(({ quoteId }) => !inTransit.has(quoteId))
+      const expireCount = filtered.length
 
       if (!expireCount) {
         return
@@ -53,7 +54,7 @@ export class ExpiredQuoteWatcherService implements OnModuleInit {
         ExpiredQuoteWatcherService.name,
       )
 
-      expired.forEach(({ quoteId }) => {
+      filtered.forEach(({ quoteId }) => {
         // intentionally did not use `await` because we want this to run asynchronously
         this.flagAsExpired(quoteId)
       })
