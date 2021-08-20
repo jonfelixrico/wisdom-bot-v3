@@ -10,10 +10,10 @@ import { Multi, RedisClient } from 'redis'
 import { fromEvent } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
 import { QuoteMessageTypeormEntity } from 'src/discord-message/db/quote-message.typeorm-entity'
-import { CatchUpFinishedEvent } from 'src/read-model-catch-up/catch-up-finished.event'
 import { MapTypeormEntity } from 'src/typeorm/entities/map.typeorm-entity'
 import { Connection, EntityManager } from 'typeorm'
 import { promisify } from 'util'
+import { DiscordMessageCatchUpFinishedEvent } from '../discord-message-catch-up-finished.event'
 import { MESSAGE_REDUCERS } from '../discord-message.reducers'
 
 const POSITION_KEY = 'POSITION'
@@ -165,7 +165,7 @@ export class DiscordMessageCatchUpService implements OnApplicationBootstrap {
 
     logger.log('Done with catching-up.', DiscordMessageCatchUpService.name)
 
-    this.eventBus.publish(new CatchUpFinishedEvent())
+    this.eventBus.publish(new DiscordMessageCatchUpFinishedEvent())
     this.streamEvents()
   }
 }
