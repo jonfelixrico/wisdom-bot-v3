@@ -1,4 +1,3 @@
-import { SlashCommandBuilder } from '@discordjs/builders'
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common'
 import { REST } from '@discordjs/rest'
 import { ConfigService } from '@nestjs/config'
