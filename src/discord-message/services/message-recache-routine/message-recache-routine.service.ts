@@ -80,7 +80,10 @@ export class MessageRecacheRoutineService implements OnModuleInit {
         })
     })
 
-    logger.log(`Recached ${quotes} messages`, MessageRecacheRoutineService.name)
+    logger.log(
+      `Recached ${quotes.length} messages`,
+      MessageRecacheRoutineService.name,
+    )
   }
 
   onModuleInit() {
