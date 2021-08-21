@@ -7,6 +7,7 @@ import { DiscordMessageCatchUpFinishedEvent } from 'src/discord-message/event-so
 import { RegeneratePendingQuoteMessageCommand } from 'src/infrastructure/commands/regenerate-pending-quote-message.command'
 import { Connection } from 'typeorm'
 import { ThrottledMessageFetcherService } from '../throttled-message-fetcher/throttled-message-fetcher.service'
+import { sprintf } from 'sprintf-js'
 
 const ROUTINE_INTERVAL = 60 * 1000 * 60 // run every hour
 const PER_CHANNEL_CONCURRENCY = 1
@@ -27,26 +28,63 @@ export class MessageRecacheRoutineService implements OnModuleInit {
     guildId,
     messageId,
   }: QuoteMessageTypeormEntity) {
-    const { message, error, inaccessible } = await this.fetcher.fetchMessage({
+    const { logger, fetcher } = this
+
+    if (!channelId || !messageId) {
+      logger.verbose(
+        sprintf(
+          'Skipped quote %s since channel or message ids were not found from the quote data',
+          quoteId,
+        ),
+        MessageRecacheRoutineService.name,
+      )
+      return
+    }
+
+    const { message, error, inaccessible } = await fetcher.fetchMessage({
       channelId,
       messageId,
       guildId,
     })
 
     if (inaccessible) {
-      // TODO add error logging
+      logger.warn(
+        sprintf(
+          'Message %s from channel %s of guild %s is inaccessible.',
+          messageId,
+          channelId,
+          guildId,
+        ),
+        MessageRecacheRoutineService.name,
+      )
       return
     } else if (error) {
-      // TODO add error logging
+      logger.error(
+        sprintf(
+          'Encountered error while fetching message %s: %s.',
+          messageId,
+          error.message,
+        ),
+        error.stack,
+        MessageRecacheRoutineService.name,
+      )
       return
     } else if (!message) {
-      // TODO add info logging
+      logger.log(
+        sprintf("Can't find message %s, regenerating.", messageId),
+        MessageRecacheRoutineService.name,
+      )
+
       await this.commandBus.execute(
         new RegeneratePendingQuoteMessageCommand({ quoteId }),
       )
+      return
     }
 
-    // TODO add verbose logging
+    logger.verbose(
+      sprintf('Recached message %s', messageId),
+      MessageRecacheRoutineService.name,
+    )
   }
 
   private async runRoutine() {
