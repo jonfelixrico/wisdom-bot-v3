@@ -9,6 +9,7 @@ import { GuildTopReceiversQueryHandlerService } from './queries/handlers/guild-t
 import { GuildTopReceivedQuotesQueryHandlerService } from './queries/handlers/guild-top-received-quotes-query-handler/guild-top-received-quotes-query-handler.service'
 import { GuildTopReceivedAuthorsQueryHandlerService } from './queries/handlers/guild-top-received-authors-query-handler/guild-top-received-authors-query-handler.service'
 import { AuthorTopReceivedQuotesQueryHandlerService } from './queries/handlers/author-top-received-quotes-query-handler/author-top-received-quotes-query-handler.service'
+import { GuildStatsQueryHandlerService } from './queries/handlers/guild-stats-query-handler/guild-stats-query-handler.service'
 
 @Module({
   imports: [EventStoreModule],
@@ -22,6 +23,7 @@ import { AuthorTopReceivedQuotesQueryHandlerService } from './queries/handlers/a
     GuildTopReceivedQuotesQueryHandlerService,
     GuildTopReceivedAuthorsQueryHandlerService,
     AuthorTopReceivedQuotesQueryHandlerService,
+    GuildStatsQueryHandlerService,
   ],
 })
 export class StatsModelModule {}
