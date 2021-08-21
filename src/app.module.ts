@@ -7,7 +7,6 @@ import { GlobalModule } from './global/global.module'
 import { EventStoreModule } from './event-store/event-store.module'
 import { WriteRepositoriesModule } from './write-repositories/write-repositories.module'
 import { ReadModelCatchUpModule } from './read-model-catch-up/read-model-catch-up.module'
-import { ServicesModule } from './services/services.module'
 import { InfrastructureModule } from './infrastructure/infrastructure.module'
 import { ReadModelQueryModule } from './read-model-query/read-model-query.module'
 import { EventHandlersModule } from './event-handlers/event-handlers.module'
@@ -30,7 +29,6 @@ import { DiscordMessageModule } from './discord-message/discord-message.module'
     EventStoreModule,
     WriteRepositoriesModule,
     ReadModelCatchUpModule,
-    ServicesModule,
     InfrastructureModule,
     ReadModelQueryModule,
     EventHandlersModule,
