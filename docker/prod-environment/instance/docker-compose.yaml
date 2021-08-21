@@ -4,7 +4,6 @@ services:
   discord.client:
     depends_on:
       - postgres.db
-      - redis.db
     # points to the root of this repository
     build: ../../../.
     restart: unless-stopped
@@ -20,8 +19,6 @@ services:
       - BACKUP_DB_SYNC=true
       - LOGGING_LEVEL=debug
 
-      - REDIS_URL=redis://redis.db:6379
-
   postgres.db:
     image: postgres
     restart: unless-stopped
@@ -36,16 +33,5 @@ services:
         target: /var/lib/postgresql/data
       - ../../common/postgres-init:/docker-entrypoint-initdb.d
 
-  redis.db:
-    image: redis:6.2.5-alpine
-    restart: unless-stopped
-    ports:
-      - '6379:6379'
-    volumes:
-      - type: volume
-        source: redis-volume-data
-        target: /data
-
 volumes:
   postgres-volume-data:
-  redis-volume-data:
