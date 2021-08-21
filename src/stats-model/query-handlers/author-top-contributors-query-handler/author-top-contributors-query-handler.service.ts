@@ -3,7 +3,7 @@ import {
   AuthorTopContributorsQuery,
   IAuthorTopContributorsQueryOutput,
 } from 'src/queries/author-top-contributor.query'
-import { GuildMemberInteractionTypeormEntity } from 'src/stats-model/typeorm/entities/guild-member-interaction.typeorm-entity'
+import { GuildMemberInteractionTypeormEntity } from 'src/stats-model/db/entities/guild-member-interaction.typeorm-entity'
 import { Connection, MoreThan } from 'typeorm'
 
 @QueryHandler(AuthorTopContributorsQuery)

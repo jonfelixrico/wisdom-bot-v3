@@ -53,14 +53,13 @@ export class Guild extends DomainEntity implements IGuildEntity {
 
   submitQuote(quote: ISubmittedQuote) {
     const { guildId, quoteSettings } = this
-    const { upvoteCount, upvoteEmoji, upvoteWindow } = quoteSettings
+    const { upvoteCount, upvoteWindow } = quoteSettings
 
     const submitDt = new Date()
     const expireDt = new Date(submitDt.getTime() + upvoteWindow)
 
     const newQuote = {
       ...quote,
-      upvoteEmoji,
       upvoteCount,
       guildId,
       submitDt,

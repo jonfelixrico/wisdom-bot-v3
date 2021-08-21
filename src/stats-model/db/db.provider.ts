@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import { MapTypeormEntity } from 'src/typeorm/entities/map.typeorm-entity'
 import { Connection, createConnection } from 'typeorm'
 
-export const statsModelTypeormProvider: Provider = {
+export const dbProvider: Provider = {
   provide: Connection,
   useFactory: async (cfg: ConfigService) =>
     await createConnection({

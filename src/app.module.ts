@@ -7,12 +7,9 @@ import { GlobalModule } from './global/global.module'
 import { EventStoreModule } from './event-store/event-store.module'
 import { WriteRepositoriesModule } from './write-repositories/write-repositories.module'
 import { ReadModelCatchUpModule } from './read-model-catch-up/read-model-catch-up.module'
-import { InfrastructureModule } from './infrastructure/infrastructure.module'
 import { ReadModelQueryModule } from './read-model-query/read-model-query.module'
-import { EventHandlersModule } from './event-handlers/event-handlers.module'
 import { EsdbBackupModule } from './esdb-backup/esdb-backup.module'
 import { StatsModelModule } from './stats-model/stats-model.module'
-import { DiscordWatchersModule } from './discord-watchers/discord-watchers.module'
 import { DiscordInteractionsModule } from './discord-interactions/discord-interactions.module'
 import { QuoteExpirationModule } from './quote-expiration/quote-expiration.module'
 
@@ -28,12 +25,9 @@ import { QuoteExpirationModule } from './quote-expiration/quote-expiration.modul
     EventStoreModule,
     WriteRepositoriesModule,
     ReadModelCatchUpModule,
-    InfrastructureModule,
     ReadModelQueryModule,
-    EventHandlersModule,
     EsdbBackupModule,
     StatsModelModule,
-    DiscordWatchersModule,
     DiscordInteractionsModule,
 
     GlobalModule,

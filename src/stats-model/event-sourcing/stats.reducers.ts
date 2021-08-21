@@ -5,8 +5,8 @@ import {
   TypeormReducer,
   TypeormReducerMap,
 } from 'src/types/typeorm-reducers.types'
-import { GuildMemberInteractionTypeormEntity } from './typeorm/entities/guild-member-interaction.typeorm-entity'
-import { QuoteInfoTypeormEntity } from './typeorm/entities/quote-info.typeorm-entity'
+import { GuildMemberInteractionTypeormEntity } from '../db/entities/guild-member-interaction.typeorm-entity'
+import { QuoteInfoTypeormEntity } from '../db/entities/quote-info.typeorm-entity'
 
 const submit: TypeormReducer<IQuoteSubmittedEventPayload> = async (
   { data },
