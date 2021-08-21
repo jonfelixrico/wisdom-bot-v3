@@ -5,8 +5,9 @@ import { Routes } from 'discord-api-types/v9'
 import { Client } from 'discord.js'
 import { RECEIVE_COMMAND } from './receive.discord-command'
 import { SUBMIT_COMMAND } from './submit.discord-command'
+import { STATS_COMMAND } from './stats.discord-command'
 
-const COMMANDS_TO_REGISTER = [RECEIVE_COMMAND, SUBMIT_COMMAND]
+const COMMANDS_TO_REGISTER = [RECEIVE_COMMAND, SUBMIT_COMMAND, STATS_COMMAND]
 
 @Injectable()
 export class CommandManagerService implements OnApplicationBootstrap {
