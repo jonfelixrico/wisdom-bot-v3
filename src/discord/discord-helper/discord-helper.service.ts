@@ -125,7 +125,12 @@ export class DiscordHelperService {
     }
   }
 
-  async getMessage(guildId: string, channelId: string, messageId: string) {
+  async getMessage(
+    guildId: string,
+    channelId: string,
+    messageId: string,
+    force?: boolean,
+  ) {
     const guild = await this.getGuild(guildId)
 
     if (!guild || !guild.available) {
@@ -145,7 +150,7 @@ export class DiscordHelperService {
 
     const { messages } = channel
     try {
-      return await messages.fetch(messageId)
+      return await messages.fetch(messageId, { force })
     } catch (e) {
       if (is404Error(e)) {
         return null
