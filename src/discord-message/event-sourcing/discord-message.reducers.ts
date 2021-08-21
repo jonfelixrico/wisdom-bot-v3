@@ -19,11 +19,6 @@ const onSubmit: DiscordMessageReducer<IQuoteSubmittedEventPayload> = async (
   repo,
   multi,
 ) => {
-  if (!messageId || !channelId) {
-    // we wouldn't bother with quotes with incomplete details
-    return true
-  }
-
   await repo.insert({
     quoteId,
     guildId,
@@ -38,11 +33,6 @@ const onSubmit: DiscordMessageReducer<IQuoteSubmittedEventPayload> = async (
 
 const onUpdate: DiscordMessageReducer<IQuoteMessageDetailsUpdatedPayload> =
   async ({ quoteId, messageId, channelId }, repo, multi) => {
-    if (!messageId || !channelId) {
-      // we wouldn't bother dealing with this types of quotes
-      return true
-    }
-
     const quote = await repo.findOne({ where: { quoteId } })
 
     if (!quote) {
