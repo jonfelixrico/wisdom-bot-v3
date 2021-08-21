@@ -16,7 +16,7 @@ import {
 import { ReadModelSyncedEvent } from 'src/read-model-catch-up/read-model-synced.event'
 
 @Injectable()
-export class QuoteAcceptedAnnouncerService implements OnModuleInit {
+export class QuoteExpiredAnnouncerService implements OnModuleInit {
   constructor(
     private eventBus: EventBus,
     private logger: Logger,
@@ -36,7 +36,7 @@ export class QuoteAcceptedAnnouncerService implements OnModuleInit {
 
     const embed: MessageEmbedOptions = {
       author: {
-        name: 'Quote Accepted',
+        name: 'Quote Expired',
         icon_url: await helper.getGuildMemberAvatarUrl(guildId, submitterId),
       },
       description: [
@@ -61,7 +61,7 @@ export class QuoteAcceptedAnnouncerService implements OnModuleInit {
     )) as IPendingQuoteQueryOutput
 
     if (!quote) {
-      logger.warn(`Unkown quote ${quoteId}`, QuoteAcceptedAnnouncerService.name)
+      logger.warn(`Unkown quote ${quoteId}`, QuoteExpiredAnnouncerService.name)
       return
     }
 
@@ -71,7 +71,7 @@ export class QuoteAcceptedAnnouncerService implements OnModuleInit {
     if (!guild.available) {
       logger.warn(
         `Can't announce in guild ${guildId} because we have no permissions.`,
-        QuoteAcceptedAnnouncerService.name,
+        QuoteExpiredAnnouncerService.name,
       )
       return
     }
@@ -82,7 +82,7 @@ export class QuoteAcceptedAnnouncerService implements OnModuleInit {
     if (!channel) {
       logger.warn(
         `Cant find channel ${channelId} of guild ${guildId}.`,
-        QuoteAcceptedAnnouncerService.name,
+        QuoteExpiredAnnouncerService.name,
       )
     }
 
@@ -112,7 +112,9 @@ export class QuoteAcceptedAnnouncerService implements OnModuleInit {
       return
     }
 
-    await oldMessage.reply('This quote has been accepted 🎉')
+    await oldMessage.reply(
+      'This quote failed to get the required upvotes before the deadline 🗑️',
+    )
     // TODO add logging here
   }
 
@@ -122,7 +124,8 @@ export class QuoteAcceptedAnnouncerService implements OnModuleInit {
         ofType(ReadModelSyncedEvent),
         filter(
           ({ event }) =>
-            event.eventName === DomainEventNames.PENDING_QUOTE_ACCEPTED,
+            event.eventName ===
+            DomainEventNames.PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED,
         ),
         map(({ event }) => event.aggregateId),
       )

@@ -9,13 +9,13 @@ export class GuildMemberInteractionTypeormEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column()
+  @Column('varchar')
   userId: string
 
-  @Column()
+  @Column('varchar')
   targetUserId: string
 
-  @Column()
+  @Column('varchar')
   guildId: string
 
   @Column({

@@ -125,15 +125,32 @@ export class DiscordHelperService {
     }
   }
 
-  async getMessage(guildId: string, channelId: string, messageId: string) {
-    const channel = await this.getTextChannel(guildId, channelId)
+  async getMessage(
+    guildId: string,
+    channelId: string,
+    messageId: string,
+    force?: boolean,
+  ) {
+    const guild = await this.getGuild(guildId)
+
+    if (!guild || !guild.available) {
+      return null
+    }
+
+    const [channel, permissions] =
+      (await this.getTextChannelAndPermissions(guildId, channelId)) || []
+
     if (!channel) {
+      return null
+    }
+
+    if (!permissions.has('READ_MESSAGE_HISTORY')) {
       return null
     }
 
     const { messages } = channel
     try {
-      return await messages.fetch(messageId)
+      return await messages.fetch(messageId, { force })
     } catch (e) {
       if (is404Error(e)) {
         return null
