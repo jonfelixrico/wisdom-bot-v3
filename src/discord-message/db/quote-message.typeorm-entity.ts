@@ -5,10 +5,18 @@ export class QuoteMessageTypeormEntity {
   @PrimaryColumn('uuid')
   quoteId: string
 
-  @Column('varchar')
+  // These two columns are made nullable because some legacy events have them as null
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
   messageId: string
 
-  @Column('varchar')
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
   channelId: string
 
   @Column('varchar')
