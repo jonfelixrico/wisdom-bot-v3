@@ -11,18 +11,11 @@ const COMMANDS_TO_REGISTER = [RECEIVE_COMMAND, SUBMIT_COMMAND]
 
 @Injectable()
 export class CommandManagerService implements OnApplicationBootstrap {
-  private commandsToRegister: SlashCommandBuilder[] = []
-
   constructor(
     private config: ConfigService,
     private logger: Logger,
     private client: Client,
   ) {}
-
-  // TODO deprecate
-  registerCommand(command: SlashCommandBuilder) {
-    this.commandsToRegister.push(command)
-  }
 
   private get getRegistrationRoute() {
     const { client, config } = this
