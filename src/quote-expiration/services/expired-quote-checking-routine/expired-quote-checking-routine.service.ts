@@ -14,7 +14,7 @@ const CHECKING_INTERVAL = 30 * 1000 // check for expired quotes every 30 seconds
  * Periodically checks expired quotes. Interval can be set via the CHECKING_INTERVAL constant.
  */
 @Injectable()
-export class ExpiredQuoteWatcherService implements OnModuleInit {
+export class ExpiredQuoteCheckingRoutineService implements OnModuleInit {
   private inTransit = new Set<string>()
 
   constructor(
@@ -51,7 +51,7 @@ export class ExpiredQuoteWatcherService implements OnModuleInit {
 
       logger.debug(
         `Found ${expireCount} expired quotes.`,
-        ExpiredQuoteWatcherService.name,
+        ExpiredQuoteCheckingRoutineService.name,
       )
 
       filtered.forEach(({ quoteId }) => {
@@ -62,7 +62,7 @@ export class ExpiredQuoteWatcherService implements OnModuleInit {
       logger.error(
         `An error occurred while trying to find expired quotes: ${e.message}.`,
         e.stack,
-        ExpiredQuoteWatcherService.name,
+        ExpiredQuoteCheckingRoutineService.name,
       )
       return
     }
@@ -88,13 +88,13 @@ export class ExpiredQuoteWatcherService implements OnModuleInit {
       )
       logger.log(
         `Flagged quote ${quoteId} as expired.`,
-        ExpiredQuoteWatcherService.name,
+        ExpiredQuoteCheckingRoutineService.name,
       )
     } catch (e) {
       logger.error(
         `Failed to flag quote ${quoteId} as expired: ${e.message}.`,
         e.stack,
-        ExpiredQuoteWatcherService.name,
+        ExpiredQuoteCheckingRoutineService.name,
       )
 
       // intentionally suppressed error
