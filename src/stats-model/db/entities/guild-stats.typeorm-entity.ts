@@ -6,13 +6,11 @@ export class GuildStatsTypeormEntity {
   guildId: string
 
   @Column({
-    type: 'long',
     default: 0,
   })
   receives: number
 
   @Column({
-    type: 'long',
     default: 0,
   })
   submitted: number
