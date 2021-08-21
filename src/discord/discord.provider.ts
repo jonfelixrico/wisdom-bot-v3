@@ -1,6 +1,7 @@
 import { Provider } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Client, Intents } from 'discord.js'
+import { DISCORD_PROVIDER } from './discord.provider-token'
 
 export const discordProviders: Provider[] = [
   {
@@ -21,5 +22,10 @@ export const discordProviders: Provider[] = [
         }
       }),
     inject: [ConfigService],
+  },
+  {
+    inject: [Client],
+    useFactory: (client: Client) => client,
+    provide: DISCORD_PROVIDER,
   },
 ]

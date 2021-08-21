@@ -52,19 +52,8 @@ services:
         source: eventstore-volume-logs
         target: /var/log/eventstore
 
-  redis.db:
-    image: redis:6.2.5-alpine
-    restart: unless-stopped
-    ports:
-      - '6379:6379'
-    volumes:
-      - type: volume
-        source: redis-volume-data
-        target: /data
-
 volumes:
   eventstore-volume-data:
   eventstore-volume-logs:
   mysql-volume-data:
   postgres-volume-data:
-  redis-volume-data:
