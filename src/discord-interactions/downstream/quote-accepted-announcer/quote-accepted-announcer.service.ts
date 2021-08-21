@@ -112,9 +112,7 @@ export class QuoteAcceptedAnnouncerService implements OnModuleInit {
       return
     }
 
-    await oldMessage.reply({
-      content: 'This quote has been accepted 🎉.',
-    })
+    await oldMessage.reply('This quote has been accepted 🎉')
     // TODO add logging here
   }
 

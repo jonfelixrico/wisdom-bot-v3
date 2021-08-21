@@ -112,9 +112,9 @@ export class QuoteExpiredAnnouncerService implements OnModuleInit {
       return
     }
 
-    await oldMessage.reply({
-      content: 'Quote has expired.',
-    })
+    await oldMessage.reply(
+      'This quote failed to get the required upvotes before the deadline 🗑️',
+    )
     // TODO add logging here
   }
 
