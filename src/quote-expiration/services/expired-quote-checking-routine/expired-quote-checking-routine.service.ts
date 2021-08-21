@@ -33,6 +33,11 @@ export class ExpiredQuoteCheckingRoutineService implements OnModuleInit {
   private async checkForExpiredQuotes(date: Date) {
     const { conn, logger, inTransit } = this
 
+    logger.debug(
+      'Checking for checking for expired quotes.',
+      ExpiredQuoteCheckingRoutineService.name,
+    )
+
     try {
       const expired = await conn
         .getRepository(PerishableQuoteTypeormEntity)
