@@ -1,16 +1,19 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
-import { GuildTopReceiversQuery } from 'src/queries/guild-top-receivers.query'
 import { GuildMemberInteractionTypeormEntity } from 'src/stats-model/db/entities/guild-member-interaction.typeorm-entity'
 import { Connection } from 'typeorm'
+import {
+  GuildTopContributorsQuery,
+  IGuildTopContributorsQueryOutput,
+} from '../../guild-top-contributors.query'
 
 interface IResult {
   userId: string
-  receives: number
+  contributions: number
 }
 
-@QueryHandler(GuildTopReceiversQuery)
-export class GuildTopReceiversQueryHandlerService
-  implements IQueryHandler<GuildTopReceiversQuery>
+@QueryHandler(GuildTopContributorsQuery)
+export class GuildTopContributorsQueryHandlerService
+  implements IQueryHandler<GuildTopContributorsQuery>
 {
   constructor(private conn: Connection) {}
 
@@ -18,17 +21,19 @@ export class GuildTopReceiversQueryHandlerService
     return this.conn.getRepository(GuildMemberInteractionTypeormEntity)
   }
 
-  async execute({ input }: GuildTopReceiversQuery): Promise<any> {
+  async execute({
+    input,
+  }: GuildTopContributorsQuery): Promise<IGuildTopContributorsQueryOutput> {
     const { guildId, limit } = input
 
     const results = await this.repo
       .createQueryBuilder()
       .select('"userId"')
-      .addSelect('SUM("receives")', 'receives')
+      .addSelect('SUM("submitted")', 'contributions')
       .where('"guildId" = :guildId', { guildId })
       .groupBy('"userId"')
-      .having('SUM("receives") > 0')
-      .orderBy('receives', 'DESC')
+      .having('SUM("submitted") > 0')
+      .orderBy('contributions', 'DESC')
       .limit(limit)
       .getRawMany<IResult>()
 

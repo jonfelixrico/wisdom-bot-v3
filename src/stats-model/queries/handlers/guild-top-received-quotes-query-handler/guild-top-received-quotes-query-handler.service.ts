@@ -1,25 +1,25 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
-import {
-  AuthorTopReceivedQuotesQuery,
-  IAuthorTopReceivedQuotesQueryOutput,
-} from 'src/queries/author-top-received-quotes.query'
 import { QuoteInfoTypeormEntity } from 'src/stats-model/db/entities/quote-info.typeorm-entity'
 import { Connection, MoreThan } from 'typeorm'
+import {
+  GuildTopReceivedQuotesQuery,
+  IGuildTopReceivedQuotesQueryOutput,
+} from '../../guild-top-received-quotes.query'
 
-@QueryHandler(AuthorTopReceivedQuotesQuery)
-export class AuthorTopReceivedQuotesQueryHandlerService
-  implements IQueryHandler<AuthorTopReceivedQuotesQuery>
+@QueryHandler(GuildTopReceivedQuotesQuery)
+export class GuildTopReceivedQuotesQueryHandlerService
+  implements IQueryHandler<GuildTopReceivedQuotesQuery>
 {
   constructor(private conn: Connection) {}
 
   async execute({
     input,
-  }: AuthorTopReceivedQuotesQuery): Promise<IAuthorTopReceivedQuotesQueryOutput> {
-    const { guildId, limit, authorId } = input
+  }: GuildTopReceivedQuotesQuery): Promise<IGuildTopReceivedQuotesQueryOutput> {
+    const { guildId, limit } = input
 
     const results = await this.conn.getRepository(QuoteInfoTypeormEntity).find({
       take: limit,
-      where: { guildId, receives: MoreThan(0), authorId },
+      where: { guildId, receives: MoreThan(0) },
       order: {
         receives: 'DESC',
       },
