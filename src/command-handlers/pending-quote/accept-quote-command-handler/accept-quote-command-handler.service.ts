@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common'
-import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { AcceptPendingQuoteCommand } from 'src/domain/commands/accept-pending-quote.command'
 import { PendingQuoteWriteRepository } from 'src/write-repositories/abstract/pending-quote-write-repository.abstract'
 
@@ -10,7 +10,6 @@ export class AcceptQuoteCommandHandlerService
   constructor(
     private logger: Logger,
     private repo: PendingQuoteWriteRepository,
-    private commandBus: CommandBus,
   ) {}
 
   async execute({ payload: quoteId }: AcceptPendingQuoteCommand): Promise<any> {
