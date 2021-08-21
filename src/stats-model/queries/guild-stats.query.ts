@@ -4,9 +4,12 @@ export interface IGuildStatsQueryOutput {
   guildId: string
   quotes: number
   receives: number
-  // TODO add reactions
+}
+
+export interface IGuildStatsQueryInput {
+  guildId: string
 }
 
 export class GuildStatsQuery implements IQuery {
-  constructor(readonly guildId: string) {}
+  constructor(readonly input: IGuildStatsQueryInput) {}
 }
