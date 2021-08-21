@@ -42,8 +42,4 @@ export class ReceiveTypeormEntity {
     },
   })
   revision: bigint
-
-  // This is here to avoid joining tables when retrieving the total number of retrieves of an author
-  @Column()
-  parentQuoteAuthorId: string
 }

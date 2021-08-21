@@ -40,7 +40,6 @@ const created: TypeormReducer<IReceiveCreatedPayload> = async (
     receiveDt,
     userId,
     revision,
-    parentQuoteAuthorId: quote.authorId,
   })
 
   return true
@@ -82,7 +81,6 @@ const reacted: TypeormReducer<IReceiveReactedPayload> = async (
     userId,
     receiveId,
     guildId: receive.guildId,
-    parentQuoteAuthorId: receive.parentQuoteAuthorId,
   })
 
   return true
