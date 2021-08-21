@@ -2,6 +2,7 @@ import { Logger } from '@nestjs/common'
 import { CommandBus, EventsHandler, IEventHandler } from '@nestjs/cqrs'
 import { MessageEmbed, MessageEmbedOptions, Util } from 'discord.js'
 import { DiscordInteractionEvent } from 'src/discord-interactions/types/discord-interaction.event'
+import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 import { ReceiveQuoteCommand } from 'src/domain/commands/receive-quote.command'
 import { QuoteQueryService } from 'src/read-model-query/quote-query/quote-query.service'
 import { SPACE_CHARACTER } from 'src/types/discord.constants'
@@ -14,6 +15,7 @@ export class ReceiveInteractionHandlerService
     private logger: Logger,
     private quoteQuery: QuoteQueryService,
     private commandBus: CommandBus,
+    private helper: DiscordHelperService,
   ) {}
 
   async handle({ interaction }: DiscordInteractionEvent) {
@@ -40,8 +42,8 @@ export class ReceiveInteractionHandlerService
       return await interaction.editReply('No quotes available.')
     }
 
-    const { year, content, authorId, receiveCount } =
-      await quoteQuery.getQuoteData(quoteId)
+    const quoteData = await quoteQuery.getQuoteData(quoteId)
+    const { year, content, authorId, receiveCount } = quoteData
     const newReceiveCount = receiveCount + 1
 
     await commandBus.execute(
@@ -79,7 +81,10 @@ export class ReceiveInteractionHandlerService
       timestamp: new Date(),
 
       thumbnail: {
-        url: author && (await author.displayAvatarURL({ format: 'png' })),
+        url: await this.helper.getGuildMemberAvatarUrl(
+          interaction.guildId,
+          quoteData.authorId,
+        ),
       },
     }
 
