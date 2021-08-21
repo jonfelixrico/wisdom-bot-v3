@@ -8,7 +8,7 @@ import {
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common'
 import { fromEvent } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
-import { STATS_REDUCERS } from 'src/stats-model/stats.reducers'
+import { STATS_REDUCERS } from 'src/stats-model/event-sourcing/stats.reducers'
 import { MapTypeormEntity } from 'src/typeorm/entities/map.typeorm-entity'
 import { Connection, EntityManager } from 'typeorm'
 

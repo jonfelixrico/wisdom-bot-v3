@@ -3,7 +3,7 @@ import {
   GuildTopContributorsQuery,
   IGuildTopContributorsQueryOutput,
 } from 'src/queries/guild-top-contributors.query'
-import { GuildMemberInteractionTypeormEntity } from 'src/stats-model/typeorm/entities/guild-member-interaction.typeorm-entity'
+import { GuildMemberInteractionTypeormEntity } from 'src/stats-model/db/entities/guild-member-interaction.typeorm-entity'
 import { Connection } from 'typeorm'
 
 interface IResult {

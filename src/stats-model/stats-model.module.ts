@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 import { EventStoreModule } from 'src/event-store/event-store.module'
-import { statsModelTypeormProvider } from './typeorm/stats-model-typeorm.provider'
-import { StatsModelCatchUpService } from './services/catch-up/stats-model-catch-up.service'
+import { dbProvider } from './db/db.provider'
+import { StatsModelCatchUpService } from './event-sourcing/stats-model-catch-up/stats-model-catch-up.service'
 import { GuildTopContributorsQueryHandlerService } from './query-handlers/guild-top-contributors-query-handler/guild-top-contributors-query-handler.service'
 import { AuthorTopContributorsQueryHandlerService } from './query-handlers/author-top-contributors-query-handler/author-top-contributors-query-handler.service'
 import { AuthorTopReceiversQueryHandlerService } from './query-handlers/author-top-receivers-query-handler/author-top-receivers-query-handler.service'
@@ -13,7 +13,7 @@ import { AuthorTopReceivedQuotesQueryHandlerService } from './query-handlers/aut
 @Module({
   imports: [EventStoreModule],
   providers: [
-    statsModelTypeormProvider,
+    dbProvider,
     StatsModelCatchUpService,
     GuildTopContributorsQueryHandlerService,
     AuthorTopContributorsQueryHandlerService,
