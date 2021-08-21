@@ -1,7 +1,6 @@
 import { Logger } from '@nestjs/common'
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { AcceptPendingQuoteCommand } from 'src/domain/commands/accept-pending-quote.command'
-import { SendQuoteAcceptedMessageCommand } from 'src/infrastructure/commands/send-quote-accepted-notification.command'
 import { PendingQuoteWriteRepository } from 'src/write-repositories/abstract/pending-quote-write-repository.abstract'
 
 @CommandHandler(AcceptPendingQuoteCommand)
@@ -34,30 +33,6 @@ export class AcceptQuoteCommandHandlerService
     this.logger.log(
       `Accepted quote ${quoteId}.`,
       AcceptQuoteCommandHandlerService.name,
-    )
-
-    const {
-      authorId,
-      messageId,
-      submitterId,
-      content,
-      channelId,
-      guildId,
-      submitDt,
-    } = entity
-
-    this.commandBus.execute(
-      new SendQuoteAcceptedMessageCommand({
-        messageId,
-        channelId,
-        guildId,
-        quote: {
-          authorId,
-          submitterId,
-          content,
-          year: submitDt.getFullYear(),
-        },
-      }),
     )
   }
 }
