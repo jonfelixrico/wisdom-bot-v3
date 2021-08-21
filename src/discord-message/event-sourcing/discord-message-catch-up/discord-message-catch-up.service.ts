@@ -53,6 +53,10 @@ export class DiscordMessageCatchUpService implements OnApplicationBootstrap {
     }
 
     const reducerFn = MESSAGE_REDUCERS[type]
+    if (!reducerFn) {
+      return false
+    }
+
     const isConsumed = await reducerFn(
       data,
       manager.getRepository(QuoteMessageTypeormEntity),
@@ -78,6 +82,7 @@ export class DiscordMessageCatchUpService implements OnApplicationBootstrap {
         await runner.rollbackTransaction()
       }
     } catch (e) {
+      this.logger.error(e.message, e.stack, DiscordMessageCatchUpService.name)
       await runner.rollbackTransaction()
     } finally {
       await runner.release()
