@@ -50,7 +50,7 @@ export class QuoteAcceptedAnnouncerService implements OnModuleInit {
       },
     }
 
-    return { embeds: [new MessageEmbed(embed)] }
+    return { embeds: [new MessageEmbed(embed)], components: [] }
   }
 
   private async handle(quoteId: string) {
@@ -62,12 +62,6 @@ export class QuoteAcceptedAnnouncerService implements OnModuleInit {
 
     if (!quote) {
       logger.warn(`Unkown quote ${quoteId}`, QuoteAcceptedAnnouncerService.name)
-      return
-    } else if (quote.upvoteCount <= 0) {
-      logger.debug(
-        `Skipped quote ${quoteId} because it has no required upvoteCount.`,
-        QuoteAcceptedAnnouncerService.name,
-      )
       return
     }
 
@@ -92,58 +86,36 @@ export class QuoteAcceptedAnnouncerService implements OnModuleInit {
       )
     }
 
-    if (permissions.has('SEND_MESSAGES')) {
-      await channel.send(await this.generateResponse(quote))
-      logger.log(
-        `Announced acceptance of quote ${quoteId} in guild ${guildId} channel ${channelId}`,
-        QuoteAcceptedAnnouncerService.name,
-      )
-    } else {
-      logger.warn(
-        `Can't announce acceptance of quote ${quoteId} in guild ${guildId} channel ${channelId} because we have no SEND_MESSAGES permission.`,
-        QuoteAcceptedAnnouncerService.name,
-      )
-    }
+    const announcementContent = await this.generateResponse(quote)
 
-    if (!messageId) {
-      logger.verbose(
-        `No message associated with ${quoteId}; skipping cleanup phase.`,
-        QuoteAcceptedAnnouncerService.name,
-      )
-      return
-    }
-
-    if (!permissions.has('READ_MESSAGE_HISTORY')) {
-      logger.warn(
-        `Can't clean up pending quote message of ${quoteId} in guild ${guildId} channel ${channelId} because we have no READ_MESSAGE_HISTORY permission.`,
-        QuoteAcceptedAnnouncerService.name,
-      )
-      return
-    }
-
-    const message = await helper.getMessage(guildId, channelId, messageId)
-
-    if (!message) {
-      logger.warn(
-        `Message ${messageId} not found.`,
-        QuoteAcceptedAnnouncerService.name,
-      )
-      return
-    }
-
-    if (!message.deletable || message.deleted) {
-      logger.warn(
-        `Message ${messageId} is already flagged as undeletable.`,
-        QuoteAcceptedAnnouncerService.name,
-      )
-      return
-    }
-
-    await message.delete()
-    logger.log(
-      `Cleaned up message ${messageId} due to ${quoteId} being accepted.`,
-      QuoteAcceptedAnnouncerService.name,
+    const oldMessage = await helper.getMessage(
+      guildId,
+      channelId,
+      messageId,
+      true,
     )
+
+    if (!oldMessage || oldMessage.deleted) {
+      if (!permissions.has('SEND_MESSAGES')) {
+        // TODO add logging here
+        return
+      }
+
+      await channel.send(announcementContent)
+      // TODO add logging here
+      return
+    }
+
+    await oldMessage.edit(announcementContent)
+    if (!permissions.has('SEND_MESSAGES')) {
+      // TODO add logging here
+      return
+    }
+
+    await oldMessage.reply({
+      content: 'This quote has been accepted 🎉.',
+    })
+    // TODO add logging here
   }
 
   onModuleInit() {
