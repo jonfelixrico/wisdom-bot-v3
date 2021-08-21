@@ -1,8 +1,9 @@
-import { Logger, OnApplicationBootstrap } from '@nestjs/common'
+import { Inject, Logger, OnApplicationBootstrap } from '@nestjs/common'
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { Client, Message } from 'discord.js'
 import { SuspendDeleteWatchCommand } from 'src/discord-message/suspend-delete-watch.command'
 import { WrappedRedisClient } from 'src/discord-message/utils/wrapped-redis-client.class'
+import { DISCORD_PROVIDER } from 'src/discord/discord.provider-token'
 import { RegeneratePendingQuoteMessageCommand } from 'src/infrastructure/commands/regenerate-pending-quote-message.command'
 
 @CommandHandler(SuspendDeleteWatchCommand)
@@ -12,8 +13,8 @@ export class DeleteWatcherService
   private ignoredMessageIds = new Set<string>()
 
   constructor(
+    @Inject(DISCORD_PROVIDER) private discord: Client,
     private logger: Logger,
-    private discord: Client,
     private redis: WrappedRedisClient,
     private commandBus: CommandBus,
   ) {}
