@@ -62,21 +62,5 @@ export class SubmitQuoteCommandHandlerService
       `Created quote ${quoteId}.`,
       SubmitQuoteCommandHandlerService.name,
     )
-
-    // TODO remove these commented-out code
-
-    // const { channelId, messageId } = payload
-    // const message = await this.discordHelper.getMessage(
-    //   guildId,
-    //   channelId,
-    //   messageId,
-    // )
-
-    // await this.commandBus.execute(
-    //   new WatchPendingQuoteCommand({
-    //     ...submitted,
-    //     message,
-    //   }),
-    // )
   }
 }
