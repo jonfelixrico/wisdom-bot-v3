@@ -82,7 +82,7 @@ export class MessageRecacheRoutineService implements OnModuleInit {
     }
 
     logger.verbose(
-      sprintf('Recached message %s', messageId),
+      sprintf('Recached message %s for quote %s', messageId, quoteId),
       MessageRecacheRoutineService.name,
     )
   }
