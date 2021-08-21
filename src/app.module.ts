@@ -15,7 +15,6 @@ import { StatsModelModule } from './stats-model/stats-model.module'
 import { DiscordWatchersModule } from './discord-watchers/discord-watchers.module'
 import { DiscordInteractionsModule } from './discord-interactions/discord-interactions.module'
 import { QuoteExpirationModule } from './quote-expiration/quote-expiration.module'
-import { DiscordMessageModule } from './discord-message/discord-message.module'
 
 @Module({
   imports: [
@@ -40,7 +39,6 @@ import { DiscordMessageModule } from './discord-message/discord-message.module'
     GlobalModule,
 
     QuoteExpirationModule,
-    DiscordMessageModule,
   ],
 })
 export class AppModule {}
