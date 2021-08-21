@@ -2,7 +2,7 @@ import { IQuery } from '@nestjs/cqrs'
 
 export interface IGuildStatsQueryOutput {
   guildId: string
-  quotes: number
+  submitted: number
   receives: number
 }
 

@@ -9,7 +9,7 @@ export class GuildStatsTypeormEntity {
     type: 'long',
     default: 0,
   })
-  recieves: number
+  receives: number
 
   @Column({
     type: 'long',
