@@ -126,8 +126,20 @@ export class DiscordHelperService {
   }
 
   async getMessage(guildId: string, channelId: string, messageId: string) {
-    const channel = await this.getTextChannel(guildId, channelId)
+    const guild = await this.getGuild(guildId)
+
+    if (!guild || !guild.available) {
+      return null
+    }
+
+    const [channel, permissions] =
+      (await this.getTextChannelAndPermissions(guildId, channelId)) || []
+
     if (!channel) {
+      return null
+    }
+
+    if (!permissions.has('READ_MESSAGE_HISTORY')) {
       return null
     }
 
