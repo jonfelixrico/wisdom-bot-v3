@@ -1,5 +1,5 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
-import { GuildMemeberTypeormEntity } from 'src/stats-model/db/entities/guild-member.typeorm-entity'
+import { GuildMemberTypeormEntity } from 'src/stats-model/db/entities/guild-member.typeorm-entity'
 import { Connection } from 'typeorm'
 import {
   GuildTopReceiversQuery,
@@ -18,7 +18,7 @@ export class GuildTopReceiversQueryHandlerService
     const { guildId, limit } = input
 
     const topReceivers = await this.conn
-      .getRepository(GuildMemeberTypeormEntity)
+      .getRepository(GuildMemberTypeormEntity)
       .find({
         where: { guildId },
         order: {

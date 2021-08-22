@@ -7,7 +7,7 @@ import {
 } from 'src/types/typeorm-reducers.types'
 import { EntityManager } from 'typeorm'
 import { GuildMemberInteractionTypeormEntity } from '../db/entities/guild-member-interaction.typeorm-entity'
-import { GuildMemeberTypeormEntity } from '../db/entities/guild-member.typeorm-entity'
+import { GuildMemberTypeormEntity } from '../db/entities/guild-member.typeorm-entity'
 import { QuoteInfoTypeormEntity } from '../db/entities/quote-info.typeorm-entity'
 
 interface IIncrementGuildMemeberPropertyInput {
@@ -20,7 +20,7 @@ async function incrementGuildMemberProperty(
   { guildId, userId, propertyToIncrement }: IIncrementGuildMemeberPropertyInput,
   manager: EntityManager,
 ) {
-  const repo = manager.getRepository(GuildMemeberTypeormEntity)
+  const repo = manager.getRepository(GuildMemberTypeormEntity)
 
   const record = await repo.findOne({ where: { guildId, userId } })
 

@@ -1,6 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
 import { omit } from 'lodash'
-import { GuildMemeberTypeormEntity } from 'src/stats-model/db/entities/guild-member.typeorm-entity'
+import { GuildMemberTypeormEntity } from 'src/stats-model/db/entities/guild-member.typeorm-entity'
 import { Connection } from 'typeorm'
 import { IUserStatsQueryOutput, UserStatsQuery } from '../../user-stats.query'
 
@@ -15,7 +15,7 @@ export class UserStatsQueryHandlerService
     const { conn } = this
 
     const stats = await conn
-      .getRepository(GuildMemeberTypeormEntity)
+      .getRepository(GuildMemberTypeormEntity)
       .findOne({ userId, guildId })
 
     if (!stats) {
