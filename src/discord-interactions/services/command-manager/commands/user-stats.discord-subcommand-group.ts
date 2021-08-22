@@ -34,7 +34,7 @@ export const USER_STATS_SUBCOMMAND_GROUP =
     .addSubcommand((subcommand) =>
       subcommand
         .setName('topreceivers')
-        .setDescription('Get the top receivers for a user')
+        .setDescription('Show the top receivers of a user')
         .addUserOption((option) =>
           option
             .setName('user')
