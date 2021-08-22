@@ -1,10 +1,12 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
-import { GuildStatsTypeormEntity } from 'src/stats-model/db/entities/guild-stats.typeorm-entity'
+import { GuildMemeberTypeormEntity } from 'src/stats-model/db/entities/guild-member.typeorm-entity'
 import { Connection } from 'typeorm'
 import {
   GuildStatsQuery,
   IGuildStatsQueryOutput,
 } from '../../guild-stats.query'
+
+type ReduceResults = Omit<IGuildStatsQueryOutput, 'guildId' | 'userCount'>
 
 @QueryHandler(GuildStatsQuery)
 export class GuildStatsQueryHandlerService
@@ -16,10 +18,28 @@ export class GuildStatsQueryHandlerService
     const { guildId } = input
     const { conn } = this
 
-    const guild = await conn.getRepository(GuildStatsTypeormEntity).findOne({
-      where: { guildId },
-    })
+    const memberStats = await conn
+      .getRepository(GuildMemeberTypeormEntity)
+      .find({
+        where: { guildId },
+      })
 
-    return guild || null
+    const reduced = memberStats.reduce(
+      (results, entity) => {
+        results.receives += entity.receives
+        results.submissions += entity.submissions
+        return results
+      },
+      {
+        receives: 0,
+        submissions: 0,
+      } as ReduceResults,
+    )
+
+    return {
+      guildId,
+      userCount: memberStats.length,
+      ...reduced,
+    }
   }
 }
