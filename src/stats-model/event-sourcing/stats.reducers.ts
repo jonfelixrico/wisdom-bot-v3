@@ -10,10 +10,10 @@ import { GuildMemberInteractionTypeormEntity } from '../db/entities/guild-member
 import { GuildMemeberTypeormEntity } from '../db/entities/guild-member.typeorm-entity'
 import { QuoteInfoTypeormEntity } from '../db/entities/quote-info.typeorm-entity'
 
-async function incrementGuildMemberStats(
+async function incrementGuildMemberProperty(
   guildId: string,
   userId: string,
-  propertyToUpdate: 'receives' | 'submissions',
+  propertyToIncrement: 'receives' | 'submissions',
   manager: EntityManager,
 ) {
   const repo = manager.getRepository(GuildMemeberTypeormEntity)
@@ -24,7 +24,7 @@ async function incrementGuildMemberStats(
     await repo.insert({
       guildId,
       userId,
-      [propertyToUpdate]: 1,
+      [propertyToIncrement]: 1,
     })
     return
   }
@@ -32,7 +32,7 @@ async function incrementGuildMemberStats(
   await repo.update(
     { guildId, userId },
     {
-      [propertyToUpdate]: repo[propertyToUpdate] + 1,
+      [propertyToIncrement]: repo[propertyToIncrement] + 1,
     },
   )
 }
@@ -78,7 +78,12 @@ const submit: TypeormReducer<IQuoteSubmittedEventPayload> = async (
     })
   }
 
-  await incrementGuildMemberStats(guildId, submitterId, 'submissions', manager)
+  await incrementGuildMemberProperty(
+    guildId,
+    submitterId,
+    'submissions',
+    manager,
+  )
 
   return true
 }
@@ -140,7 +145,7 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
     })
   }
 
-  await incrementGuildMemberStats(guildId, userId, 'receives', manager)
+  await incrementGuildMemberProperty(guildId, userId, 'receives', manager)
   return true
 }
 
