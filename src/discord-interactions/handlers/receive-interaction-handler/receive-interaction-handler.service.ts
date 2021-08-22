@@ -1,47 +1,25 @@
-import { Logger, OnModuleInit } from '@nestjs/common'
+import { Logger } from '@nestjs/common'
 import { CommandBus, EventsHandler, IEventHandler } from '@nestjs/cqrs'
 import { MessageEmbed, MessageEmbedOptions, Util } from 'discord.js'
 import { DiscordInteractionEvent } from 'src/discord-interactions/types/discord-interaction.event'
+import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 import { ReceiveQuoteCommand } from 'src/domain/commands/receive-quote.command'
 import { QuoteQueryService } from 'src/read-model-query/quote-query/quote-query.service'
 import { SPACE_CHARACTER } from 'src/types/discord.constants'
-import { SlashCommandBuilder } from '@discordjs/builders'
-import { CommandManagerService } from 'src/discord-interactions/services/command-manager/command-manager.service'
-
-const COMMAND_NAME = 'receive'
-const AUTHOR_OPTION_NAME = 'author'
 
 @EventsHandler(DiscordInteractionEvent)
 export class ReceiveInteractionHandlerService
-  implements IEventHandler<DiscordInteractionEvent>, OnModuleInit
+  implements IEventHandler<DiscordInteractionEvent>
 {
   constructor(
     private logger: Logger,
     private quoteQuery: QuoteQueryService,
     private commandBus: CommandBus,
-    private manager: CommandManagerService,
+    private helper: DiscordHelperService,
   ) {}
 
-  onModuleInit() {
-    const command = new SlashCommandBuilder()
-      .setName(COMMAND_NAME)
-      .setDescription('Gives you a random quote.')
-      .addUserOption(
-        (option) =>
-          option
-            .setName(AUTHOR_OPTION_NAME)
-            .setDescription(
-              'You can filter the author of the random quote by providing a mention.',
-            )
-            .setRequired(false), // explicitly set this to false
-      )
-
-    this.manager.registerCommand(command as SlashCommandBuilder)
-  }
-
   async handle({ interaction }: DiscordInteractionEvent) {
-    // TODO get the string literal "receive" from an enum or something
-    if (!interaction.isCommand() || interaction.commandName !== COMMAND_NAME) {
+    if (!interaction.isCommand() || interaction.commandName !== 'receive') {
       return
     }
 
@@ -50,8 +28,7 @@ export class ReceiveInteractionHandlerService
 
     await interaction.deferReply()
 
-    // TODO get the string literal "author" from an enum
-    const author = options.getUser(AUTHOR_OPTION_NAME)
+    const author = options.getUser('author')
 
     const quoteId = await quoteQuery.getRandomQuoteId(guild.id, author?.id)
     if (!quoteId) {
@@ -65,8 +42,8 @@ export class ReceiveInteractionHandlerService
       return await interaction.editReply('No quotes available.')
     }
 
-    const { year, content, authorId, receiveCount } =
-      await quoteQuery.getQuoteData(quoteId)
+    const quoteData = await quoteQuery.getQuoteData(quoteId)
+    const { year, content, authorId, receiveCount } = quoteData
     const newReceiveCount = receiveCount + 1
 
     await commandBus.execute(
@@ -104,7 +81,10 @@ export class ReceiveInteractionHandlerService
       timestamp: new Date(),
 
       thumbnail: {
-        url: author && (await author.displayAvatarURL({ format: 'png' })),
+        url: await this.helper.getGuildMemberAvatarUrl(
+          interaction.guildId,
+          quoteData.authorId,
+        ),
       },
     }
 

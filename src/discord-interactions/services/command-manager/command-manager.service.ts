@@ -1,23 +1,21 @@
-import { SlashCommandBuilder } from '@discordjs/builders'
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common'
 import { REST } from '@discordjs/rest'
 import { ConfigService } from '@nestjs/config'
 import { Routes } from 'discord-api-types/v9'
 import { Client } from 'discord.js'
+import { RECEIVE_COMMAND } from './commands/receive.discord-command'
+import { SUBMIT_COMMAND } from './commands/submit.discord-command'
+import { STATS_COMMAND } from './commands/stats.discord-command'
+
+const COMMANDS_TO_REGISTER = [RECEIVE_COMMAND, SUBMIT_COMMAND, STATS_COMMAND]
 
 @Injectable()
 export class CommandManagerService implements OnApplicationBootstrap {
-  private commandsToRegister: SlashCommandBuilder[] = []
-
   constructor(
     private config: ConfigService,
     private logger: Logger,
     private client: Client,
   ) {}
-
-  registerCommand(command: SlashCommandBuilder) {
-    this.commandsToRegister.push(command)
-  }
 
   private get getRegistrationRoute() {
     const { client, config } = this
@@ -32,22 +30,24 @@ export class CommandManagerService implements OnApplicationBootstrap {
   }
 
   async onApplicationBootstrap() {
-    const { commandsToRegister, logger, client } = this
+    const { logger, client } = this
 
-    if (!commandsToRegister.length) {
+    if (!COMMANDS_TO_REGISTER.length) {
       logger.verbose(
         'Skipped command registration because there are no commands provided.',
         CommandManagerService.name,
       )
     }
 
-    const commandsAsJson = commandsToRegister.map((builder) => builder.toJSON())
+    const commandsAsJson = COMMANDS_TO_REGISTER.map((builder) =>
+      builder.toJSON(),
+    )
 
     const rest = new REST({ version: '9' }).setToken(client.token)
 
     try {
       logger.verbose(
-        `Initializing registration of ${commandsToRegister.length} commands.`,
+        `Initializing registration of ${COMMANDS_TO_REGISTER.length} commands.`,
         CommandManagerService.name,
       )
 
@@ -56,7 +56,7 @@ export class CommandManagerService implements OnApplicationBootstrap {
       })
 
       logger.verbose(
-        `Successfully initialized ${commandsToRegister.length} commands.`,
+        `Successfully initialized ${COMMANDS_TO_REGISTER.length} commands.`,
         CommandManagerService.name,
       )
     } catch (e) {

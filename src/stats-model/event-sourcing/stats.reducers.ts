@@ -22,9 +22,9 @@ async function incrementGuildMemberProperty(
 ) {
   const repo = manager.getRepository(GuildMemberTypeormEntity)
 
-  const record = await repo.findOne({ where: { guildId, userId } })
+  const guildMember = await repo.findOne({ where: { guildId, userId } })
 
-  if (!record) {
+  if (!guildMember) {
     await repo.insert({
       guildId,
       userId,
@@ -36,7 +36,7 @@ async function incrementGuildMemberProperty(
   await repo.update(
     { guildId, userId },
     {
-      [propertyToIncrement]: repo[propertyToIncrement] + 1,
+      [propertyToIncrement]: guildMember[propertyToIncrement] + 1,
     },
   )
 }
