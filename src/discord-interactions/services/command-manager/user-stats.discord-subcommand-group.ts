@@ -33,8 +33,8 @@ export const USER_STATS_SUBCOMMAND_GROUP =
     )
     .addSubcommand((subcommand) =>
       subcommand
-        .setName('topquotes')
-        .setDescription('Get the top 10 quotes received by the user')
+        .setName('topauthoredquotes')
+        .setDescription('Get the top 10 quotes authored by a user')
         .addUserOption(userOptionFn),
     )
     .addSubcommand((subcommand) =>
