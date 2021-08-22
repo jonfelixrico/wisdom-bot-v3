@@ -13,7 +13,7 @@ import { QuoteInfoTypeormEntity } from '../db/entities/quote-info.typeorm-entity
 interface IIncrementGuildMemberPropertyInput {
   guildId: string
   userId: string
-  propertyToIncrement: 'receives' | 'submissions'
+  propertyToIncrement: 'receives' | 'submissions' | 'quoteReceives'
 }
 
 async function incrementGuildMemberProperty(
@@ -169,6 +169,16 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
     },
     manager,
   )
+
+  await incrementGuildMemberProperty(
+    {
+      guildId,
+      userId: authorId,
+      propertyToIncrement: 'quoteReceives',
+    },
+    manager,
+  )
+
   return true
 }
 
