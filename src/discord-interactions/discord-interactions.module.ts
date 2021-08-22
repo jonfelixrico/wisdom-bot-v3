@@ -10,6 +10,7 @@ import { PendingQuoteVoteChangeMessageUpdaterService } from './downstream/pendin
 import { PendingQuoteResponseGeneratorService } from './services/pending-quote-response-generator/pending-quote-response-generator.service'
 import { QuoteAcceptedAnnouncerService } from './downstream/quote-accepted-announcer/quote-accepted-announcer.service'
 import { QuoteExpiredAnnouncerService } from './downstream/quote-expired-announcer/quote-expired-announcer.service'
+import { ServerGeneralStatsInteractionHandlerService } from './handlers/server-general-stats-interaction-handler/server-general-stats-interaction-handler.service'
 
 @Module({
   imports: [DiscordModule, ReadModelQueryModule],
@@ -23,6 +24,7 @@ import { QuoteExpiredAnnouncerService } from './downstream/quote-expired-announc
     PendingQuoteResponseGeneratorService,
     QuoteAcceptedAnnouncerService,
     QuoteExpiredAnnouncerService,
+    ServerGeneralStatsInteractionHandlerService,
   ],
 })
 export class DiscordInteractionsModule {}
