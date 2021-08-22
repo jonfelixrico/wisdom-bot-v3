@@ -10,11 +10,11 @@ import { PendingQuoteVoteChangeMessageUpdaterService } from './downstream/pendin
 import { PendingQuoteResponseGeneratorService } from './services/pending-quote-response-generator/pending-quote-response-generator.service'
 import { QuoteAcceptedAnnouncerService } from './downstream/quote-accepted-announcer/quote-accepted-announcer.service'
 import { QuoteExpiredAnnouncerService } from './downstream/quote-expired-announcer/quote-expired-announcer.service'
-import { ServerStatsGeneralInteractionHandlerService } from './handlers/server-general-stats-interaction-handler/server-stats-general-interaction-handler.service'
-import { ServerStatsTopcontributorsInteractionHandlerService } from './handlers/server-stats-topcontributors-interaction-handler/server-stats-topcontributors-interaction-handler.service'
-import { ServerStatsTopreceiversInteractionHandlerService } from './handlers/server-stats-topreceivers-interaction-handler/server-stats-topreceivers-interaction-handler.service'
-import { ServerStatsTopauthorsInteractionHandlerService } from './handlers/server-stats-topauthors-interaction-handler/server-stats-topauthors-interaction-handler.service'
-import { ServerStatsTopquotesInteractionHandlerService } from './handlers/server-stats-topquotes-interaction-handler/server-stats-topquotes-interaction-handler.service'
+import { StatsServerGeneralInteractionHandlerService } from './handlers/stats-server-general-interaction-handler/stats-server-general-interaction-handler.service'
+import { StatsServerTopcontributorsInteractionHandlerService } from './handlers/stats-server-topcontributors-interaction-handler/stats-server-topcontributors-interaction-handler.service'
+import { StatsServerTopreceiversInteractionHandlerService } from './handlers/stats-server-topreceivers-interaction-handler/stats-server-topreceivers-interaction-handler.service'
+import { StatsServerTopauthorsInteractionHandlerService } from './handlers/stats-server-topauthors-interaction-handler/stats-server-topauthors-interaction-handler.service'
+import { StatsServerTopquotesInteractionHandlerService } from './handlers/stats-server-topquotes-interaction-handler/stats-server-topquotes-interaction-handler.service'
 import { UserStatsTopauthoredquotesInteractionHandlerService } from './handlers/user-stats-topquotes-interaction-handler/user-stats-topauthoredquotes-interaction-handler.service'
 
 @Module({
@@ -29,11 +29,11 @@ import { UserStatsTopauthoredquotesInteractionHandlerService } from './handlers/
     PendingQuoteResponseGeneratorService,
     QuoteAcceptedAnnouncerService,
     QuoteExpiredAnnouncerService,
-    ServerStatsGeneralInteractionHandlerService,
-    ServerStatsTopcontributorsInteractionHandlerService,
-    ServerStatsTopreceiversInteractionHandlerService,
-    ServerStatsTopauthorsInteractionHandlerService,
-    ServerStatsTopquotesInteractionHandlerService,
+    StatsServerGeneralInteractionHandlerService,
+    StatsServerTopcontributorsInteractionHandlerService,
+    StatsServerTopreceiversInteractionHandlerService,
+    StatsServerTopauthorsInteractionHandlerService,
+    StatsServerTopquotesInteractionHandlerService,
     UserStatsTopauthoredquotesInteractionHandlerService,
   ],
 })

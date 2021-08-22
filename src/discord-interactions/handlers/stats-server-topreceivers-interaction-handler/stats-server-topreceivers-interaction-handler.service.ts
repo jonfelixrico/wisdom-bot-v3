@@ -9,7 +9,7 @@ import {
 } from 'src/stats-model/queries/guild-top-receivers.query'
 
 @EventsHandler(DiscordInteractionEvent)
-export class ServerStatsTopreceiversInteractionHandlerService
+export class StatsServerTopreceiversInteractionHandlerService
   implements IEventHandler<DiscordInteractionEvent>
 {
   constructor(private queryBus: QueryBus, private logger: Logger) {}
@@ -85,7 +85,7 @@ export class ServerStatsTopreceiversInteractionHandlerService
         'Processed server stats topreceivers call invoked by by %s',
         interaction.user.id,
       ),
-      ServerStatsTopreceiversInteractionHandlerService.name,
+      StatsServerTopreceiversInteractionHandlerService.name,
     )
   }
 }

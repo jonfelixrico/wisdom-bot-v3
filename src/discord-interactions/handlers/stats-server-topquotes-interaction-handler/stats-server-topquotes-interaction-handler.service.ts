@@ -1,15 +1,15 @@
 import { EventsHandler, IEventHandler, QueryBus } from '@nestjs/cqrs'
-import { MessageEmbedOptions } from 'discord.js'
+import { MessageEmbedOptions, Util } from 'discord.js'
 import { DiscordInteractionEvent } from 'src/discord-interactions/types/discord-interaction.event'
 import { sprintf } from 'sprintf-js'
 import { Logger } from '@nestjs/common'
 import {
-  GuildTopContributorsQuery,
-  IGuildTopContributorsQueryOutput,
-} from 'src/stats-model/queries/guild-top-contributors.query'
+  GuildTopReceivedQuotesQuery,
+  IGuildTopReceivedQuotesQueryOutput,
+} from 'src/stats-model/queries/guild-top-received-quotes.query'
 
 @EventsHandler(DiscordInteractionEvent)
-export class ServerStatsTopcontributorsInteractionHandlerService
+export class StatsServerTopquotesInteractionHandlerService
   implements IEventHandler<DiscordInteractionEvent>
 {
   constructor(private queryBus: QueryBus, private logger: Logger) {}
@@ -23,16 +23,16 @@ export class ServerStatsTopcontributorsInteractionHandlerService
 
     if (
       options.getSubcommandGroup() !== 'server' ||
-      options.getSubcommand() !== 'topcontributors'
+      options.getSubcommand() !== 'topquotes'
     ) {
       return
     }
 
     await interaction.deferReply()
 
-    const topContributors: IGuildTopContributorsQueryOutput =
+    const topQuotes: IGuildTopReceivedQuotesQueryOutput =
       await this.queryBus.execute(
-        new GuildTopContributorsQuery({
+        new GuildTopReceivedQuotesQuery({
           guildId: interaction.guildId,
           limit: 10,
         }),
@@ -42,7 +42,7 @@ export class ServerStatsTopcontributorsInteractionHandlerService
 
     const embed: MessageEmbedOptions = {
       author: {
-        name: 'Top Contributors',
+        name: 'Top Quotes',
         icon_url: await interaction.user.displayAvatarURL({ format: 'png' }),
       },
 
@@ -51,8 +51,8 @@ export class ServerStatsTopcontributorsInteractionHandlerService
       },
     }
 
-    if (!topContributors.length) {
-      embed.description = 'No contributions made to the server yet.'
+    if (!topQuotes.length) {
+      embed.description = 'No quotes received yet.'
       await interaction.editReply({
         embeds: [embed],
       })
@@ -60,20 +60,21 @@ export class ServerStatsTopcontributorsInteractionHandlerService
     }
 
     embed.description = [
-      sprintf('Top 10 contributors for %s', guild.name),
+      sprintf('Top 10 quotes for %s', guild.name),
       '',
-      ...topContributors.map((contributor, index) =>
+      ...topQuotes.map(({ receives, authorId, content }, index) =>
         sprintf(
-          '%d. <@%s> (**%d**)',
+          '%d. _"%s"_\n- <@%s> (**%d**)',
           index + 1,
-          contributor.userId,
-          contributor.contributions,
+          Util.escapeMarkdown(content),
+          authorId,
+          receives,
         ),
       ),
     ].join('\n')
 
     embed.footer = {
-      text: 'Ranking is based on the number of quote submissions (/submit)',
+      text: 'Ranking is based on the number of times the quotes were received (/receive)',
     }
 
     await interaction.editReply({
@@ -82,10 +83,10 @@ export class ServerStatsTopcontributorsInteractionHandlerService
 
     this.logger.verbose(
       sprintf(
-        'Processed server stats topcontributors call invoked by by %s',
+        'Processed server stats topquotes call invoked by by %s',
         interaction.user.id,
       ),
-      ServerStatsTopcontributorsInteractionHandlerService.name,
+      StatsServerTopquotesInteractionHandlerService.name,
     )
   }
 }
