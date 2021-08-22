@@ -22,6 +22,7 @@ export class GuildMemberInteractionTypeormEntity {
     default: 0,
     comment: 'Times user has submitted a quote authored by targetUser',
   })
+  // TODO rename submitted to submissions
   submitted: number
 
   @Column({
