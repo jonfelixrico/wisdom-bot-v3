@@ -41,3 +41,13 @@ export const USER_STATS_SUBCOMMAND_GROUP =
             .setDescription('User to have their top receivers shown'),
         ),
     )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('general')
+        .setDescription('Show the general stats of a user')
+        .addUserOption((option) =>
+          option
+            .setName('user')
+            .setDescription('The user to have their stats shown'),
+        ),
+    )
