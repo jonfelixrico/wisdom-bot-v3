@@ -12,6 +12,7 @@ import { QuoteAcceptedAnnouncerService } from './downstream/quote-accepted-annou
 import { QuoteExpiredAnnouncerService } from './downstream/quote-expired-announcer/quote-expired-announcer.service'
 import { ServerGeneralStatsInteractionHandlerService } from './handlers/server-general-stats-interaction-handler/server-general-stats-interaction-handler.service'
 import { ServerStatsTopcontributorsInteractionHandlerService } from './handlers/server-stats-topcontributors-interaction-handler/server-stats-topcontributors-interaction-handler.service'
+import { ServerStatsTopreceiversInteractionHandlerService } from './handlers/server-stats-topreceivers-interaction-handler/server-stats-topreceivers-interaction-handler.service'
 
 @Module({
   imports: [DiscordModule, ReadModelQueryModule],
@@ -27,6 +28,7 @@ import { ServerStatsTopcontributorsInteractionHandlerService } from './handlers/
     QuoteExpiredAnnouncerService,
     ServerGeneralStatsInteractionHandlerService,
     ServerStatsTopcontributorsInteractionHandlerService,
+    ServerStatsTopreceiversInteractionHandlerService,
   ],
 })
 export class DiscordInteractionsModule {}
