@@ -11,6 +11,7 @@ import { PendingQuoteResponseGeneratorService } from './services/pending-quote-r
 import { QuoteAcceptedAnnouncerService } from './downstream/quote-accepted-announcer/quote-accepted-announcer.service'
 import { QuoteExpiredAnnouncerService } from './downstream/quote-expired-announcer/quote-expired-announcer.service'
 import { ServerGeneralStatsInteractionHandlerService } from './handlers/server-general-stats-interaction-handler/server-general-stats-interaction-handler.service'
+import { ServerStatsTopcontributorsInteractionHandlerService } from './handlers/server-stats-topcontributors-interaction-handler/server-stats-topcontributors-interaction-handler.service'
 
 @Module({
   imports: [DiscordModule, ReadModelQueryModule],
@@ -25,6 +26,7 @@ import { ServerGeneralStatsInteractionHandlerService } from './handlers/server-g
     QuoteAcceptedAnnouncerService,
     QuoteExpiredAnnouncerService,
     ServerGeneralStatsInteractionHandlerService,
+    ServerStatsTopcontributorsInteractionHandlerService,
   ],
 })
 export class DiscordInteractionsModule {}
