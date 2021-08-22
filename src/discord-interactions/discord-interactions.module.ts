@@ -17,6 +17,7 @@ import { StatsServerTopauthorsInteractionHandlerService } from './handlers/stats
 import { StatsServerTopquotesInteractionHandlerService } from './handlers/stats-server-topquotes-interaction-handler/stats-server-topquotes-interaction-handler.service'
 import { StatsUserTopauthoredquotesInteractionHandlerService } from './handlers/stats-user-topquotes-interaction-handler/stats-user-topauthoredquotes-interaction-handler.service'
 import { StatsUserTopcontributorsInteractionHandlerService } from './handlers/stats-user-topcontributors-interaction-handler/stats-user-topcontributors-interaction-handler.service'
+import { StatsUserTopreceiversInteractionHandlerService } from './handlers/stats-user-topreceivers-interaction-handler/stats-user-topreceivers-interaction-handler.service'
 
 @Module({
   imports: [DiscordModule, ReadModelQueryModule],
@@ -37,6 +38,7 @@ import { StatsUserTopcontributorsInteractionHandlerService } from './handlers/st
     StatsServerTopquotesInteractionHandlerService,
     StatsUserTopauthoredquotesInteractionHandlerService,
     StatsUserTopcontributorsInteractionHandlerService,
+    StatsUserTopreceiversInteractionHandlerService,
   ],
 })
 export class DiscordInteractionsModule {}

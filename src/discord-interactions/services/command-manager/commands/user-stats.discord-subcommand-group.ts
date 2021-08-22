@@ -16,7 +16,7 @@ export const USER_STATS_SUBCOMMAND_GROUP =
     .addSubcommand((subcommand) =>
       subcommand
         .setName('topauthoredquotes')
-        .setDescription('Get the top 10 quotes authored by a user')
+        .setDescription('Lists down the top authored quotes of a user.')
         .addUserOption(userOptionFn),
     )
     .addSubcommand((subcommand) =>
@@ -29,5 +29,15 @@ export const USER_STATS_SUBCOMMAND_GROUP =
             .setDescription(
               'The target author. If none was provided, your top contributors will be displayed instead.',
             ),
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('topreceivers')
+        .setDescription('Get the top receivers for a user')
+        .addUserOption((option) =>
+          option
+            .setName('user')
+            .setDescription('User to have their top receivers shown'),
         ),
     )
