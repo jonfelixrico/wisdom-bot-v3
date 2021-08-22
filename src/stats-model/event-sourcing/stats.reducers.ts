@@ -10,10 +10,14 @@ import { GuildMemberInteractionTypeormEntity } from '../db/entities/guild-member
 import { GuildMemeberTypeormEntity } from '../db/entities/guild-member.typeorm-entity'
 import { QuoteInfoTypeormEntity } from '../db/entities/quote-info.typeorm-entity'
 
+interface IIncrementGuildMemeberPropertyInput {
+  guildId: string
+  userId: string
+  propertyToIncrement: 'receives' | 'submissions'
+}
+
 async function incrementGuildMemberProperty(
-  guildId: string,
-  userId: string,
-  propertyToIncrement: 'receives' | 'submissions',
+  { guildId, userId, propertyToIncrement }: IIncrementGuildMemeberPropertyInput,
   manager: EntityManager,
 ) {
   const repo = manager.getRepository(GuildMemeberTypeormEntity)
@@ -106,9 +110,11 @@ const submit: TypeormReducer<IQuoteSubmittedEventPayload> = async (
   )
 
   await incrementGuildMemberProperty(
-    guildId,
-    submitterId,
-    'submissions',
+    {
+      guildId,
+      userId: submitterId,
+      propertyToIncrement: 'submissions',
+    },
     manager,
   )
 
@@ -155,7 +161,14 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
     manager,
   )
 
-  await incrementGuildMemberProperty(guildId, userId, 'receives', manager)
+  await incrementGuildMemberProperty(
+    {
+      guildId,
+      userId,
+      propertyToIncrement: 'receives',
+    },
+    manager,
+  )
   return true
 }
 
