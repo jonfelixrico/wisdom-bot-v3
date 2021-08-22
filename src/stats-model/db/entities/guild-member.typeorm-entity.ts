@@ -13,8 +13,15 @@ export class GuildMemberTypeormEntity {
 
   @Column({
     default: 0,
+    comment: 'Number of times this user has used the receive command.',
   })
   receives: number
+
+  @Column({
+    default: 0,
+    comment: 'Number of times other users has received quotes from this user',
+  })
+  quoteReceives: number
 
   @Column({
     default: 0,
