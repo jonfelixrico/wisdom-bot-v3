@@ -37,6 +37,51 @@ async function incrementGuildMemberProperty(
   )
 }
 
+interface IIncrementGuildMemeberInteractionPropertyInput {
+  guildId: string
+  userId: string
+  targetUserId: string
+  // TODO rename submitted to submissions in the typeorm entity
+  propertyToIncrement: 'receives' | 'submitted'
+}
+
+async function incrementGuildMemeberInteractionProperty(
+  {
+    guildId,
+    propertyToIncrement,
+    targetUserId,
+    userId,
+  }: IIncrementGuildMemeberInteractionPropertyInput,
+  manager: EntityManager,
+) {
+  const repo = manager.getRepository(GuildMemberInteractionTypeormEntity)
+
+  const interaction = await repo.findOne({
+    where: {
+      userId,
+      targetUserId,
+      guildId,
+    },
+  })
+
+  if (interaction) {
+    await repo.update(
+      { id: interaction.id },
+      {
+        [propertyToIncrement]: interaction[propertyToIncrement] + 1,
+      },
+    )
+    return
+  }
+
+  await repo.insert({
+    userId,
+    targetUserId,
+    guildId,
+    [propertyToIncrement]: 1,
+  })
+}
+
 const submit: TypeormReducer<IQuoteSubmittedEventPayload> = async (
   { data },
   manager,
@@ -50,33 +95,15 @@ const submit: TypeormReducer<IQuoteSubmittedEventPayload> = async (
     guildId,
   })
 
-  const intRepo = manager.getRepository(GuildMemberInteractionTypeormEntity)
-
-  const interaction = await intRepo.findOne({
-    where: {
+  await incrementGuildMemeberInteractionProperty(
+    {
+      guildId,
       userId: submitterId,
       targetUserId: authorId,
-      guildId,
+      propertyToIncrement: 'submitted',
     },
-  })
-
-  if (interaction) {
-    const { id, submitted } = interaction
-    await intRepo.update(
-      { id },
-      {
-        submitted: submitted + 1,
-      },
-    )
-  } else {
-    await intRepo.insert({
-      userId: submitterId,
-      targetUserId: authorId,
-      // hardcoded to 1 because this is the first time user has interacted with target
-      submitted: 1,
-      guildId,
-    })
-  }
+    manager,
+  )
 
   await incrementGuildMemberProperty(
     guildId,
@@ -94,7 +121,6 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
 ) => {
   const { quoteId, userId, guildId } = data
 
-  const intRepo = manager.getRepository(GuildMemberInteractionTypeormEntity)
   const quoteRepo = manager.getRepository(QuoteInfoTypeormEntity)
 
   // we're looking for the author of the quote here
@@ -119,31 +145,15 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
 
   const { authorId } = quote
 
-  const interaction = await intRepo.findOne({
-    where: {
+  await incrementGuildMemeberInteractionProperty(
+    {
+      guildId,
       userId,
       targetUserId: authorId,
-      guildId,
+      propertyToIncrement: 'receives',
     },
-  })
-
-  if (interaction) {
-    const { id, receives } = interaction
-    await intRepo.update(
-      { id },
-      {
-        receives: receives + 1,
-      },
-    )
-  } else {
-    await intRepo.insert({
-      userId,
-      targetUserId: authorId,
-      // hardcoded to 1 because this is the first time user has interacted with target
-      receives: 1,
-      guildId,
-    })
-  }
+    manager,
+  )
 
   await incrementGuildMemberProperty(guildId, userId, 'receives', manager)
   return true
