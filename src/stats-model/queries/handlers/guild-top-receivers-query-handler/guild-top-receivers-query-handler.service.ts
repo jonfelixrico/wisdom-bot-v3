@@ -1,6 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
 import { GuildMemberTypeormEntity } from 'src/stats-model/db/entities/guild-member.typeorm-entity'
-import { Connection } from 'typeorm'
+import { Connection, MoreThan } from 'typeorm'
 import {
   GuildTopReceiversQuery,
   IGuildTopReceiversQueryOutput,
@@ -20,7 +20,7 @@ export class GuildTopReceiversQueryHandlerService
     const topReceivers = await this.conn
       .getRepository(GuildMemberTypeormEntity)
       .find({
-        where: { guildId },
+        where: { guildId, receives: MoreThan(0) },
         order: {
           receives: 'DESC',
         },
