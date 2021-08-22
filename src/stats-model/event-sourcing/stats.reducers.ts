@@ -10,14 +10,14 @@ import { GuildMemberInteractionTypeormEntity } from '../db/entities/guild-member
 import { GuildMemberTypeormEntity } from '../db/entities/guild-member.typeorm-entity'
 import { QuoteInfoTypeormEntity } from '../db/entities/quote-info.typeorm-entity'
 
-interface IIncrementGuildMemeberPropertyInput {
+interface IIncrementGuildMemberPropertyInput {
   guildId: string
   userId: string
   propertyToIncrement: 'receives' | 'submissions'
 }
 
 async function incrementGuildMemberProperty(
-  { guildId, userId, propertyToIncrement }: IIncrementGuildMemeberPropertyInput,
+  { guildId, userId, propertyToIncrement }: IIncrementGuildMemberPropertyInput,
   manager: EntityManager,
 ) {
   const repo = manager.getRepository(GuildMemberTypeormEntity)
