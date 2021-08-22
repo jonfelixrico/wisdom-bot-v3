@@ -3,9 +3,9 @@ import { REST } from '@discordjs/rest'
 import { ConfigService } from '@nestjs/config'
 import { Routes } from 'discord-api-types/v9'
 import { Client } from 'discord.js'
-import { RECEIVE_COMMAND } from './receive.discord-command'
-import { SUBMIT_COMMAND } from './submit.discord-command'
-import { STATS_COMMAND } from './stats.discord-command'
+import { RECEIVE_COMMAND } from './commands/receive.discord-command'
+import { SUBMIT_COMMAND } from './commands/submit.discord-command'
+import { STATS_COMMAND } from './commands/stats.discord-command'
 
 const COMMANDS_TO_REGISTER = [RECEIVE_COMMAND, SUBMIT_COMMAND, STATS_COMMAND]
 
