@@ -72,6 +72,10 @@ export class ServerStatsTopcontributorsInteractionHandlerService
       ),
     ].join('\n')
 
+    embed.footer = {
+      text: 'Ranking is based on the number of quote submissions (/submit)',
+    }
+
     await interaction.editReply({
       embeds: [embed],
     })
