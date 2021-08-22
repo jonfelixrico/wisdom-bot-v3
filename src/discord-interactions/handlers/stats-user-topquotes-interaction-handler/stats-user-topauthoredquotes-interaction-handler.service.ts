@@ -9,7 +9,7 @@ import {
 } from 'src/stats-model/queries/author-top-received-quotes.query'
 
 @EventsHandler(DiscordInteractionEvent)
-export class UserStatsTopauthoredquotesInteractionHandlerService
+export class StatsUserTopauthoredquotesInteractionHandlerService
   implements IEventHandler<DiscordInteractionEvent>
 {
   constructor(private queryBus: QueryBus, private logger: Logger) {}
@@ -89,7 +89,7 @@ export class UserStatsTopauthoredquotesInteractionHandlerService
         'Processed user stats topauthoredquotes call invoked by by %s',
         interaction.user.id,
       ),
-      UserStatsTopauthoredquotesInteractionHandlerService.name,
+      StatsUserTopauthoredquotesInteractionHandlerService.name,
     )
   }
 }
