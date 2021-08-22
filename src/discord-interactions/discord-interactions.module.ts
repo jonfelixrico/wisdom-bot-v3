@@ -10,7 +10,7 @@ import { PendingQuoteVoteChangeMessageUpdaterService } from './downstream/pendin
 import { PendingQuoteResponseGeneratorService } from './services/pending-quote-response-generator/pending-quote-response-generator.service'
 import { QuoteAcceptedAnnouncerService } from './downstream/quote-accepted-announcer/quote-accepted-announcer.service'
 import { QuoteExpiredAnnouncerService } from './downstream/quote-expired-announcer/quote-expired-announcer.service'
-import { ServerGeneralStatsInteractionHandlerService } from './handlers/server-general-stats-interaction-handler/server-general-stats-interaction-handler.service'
+import { ServerStatsGeneralInteractionHandlerService } from './handlers/server-general-stats-interaction-handler/server-stats-general-interaction-handler.service'
 import { ServerStatsTopcontributorsInteractionHandlerService } from './handlers/server-stats-topcontributors-interaction-handler/server-stats-topcontributors-interaction-handler.service'
 import { ServerStatsTopreceiversInteractionHandlerService } from './handlers/server-stats-topreceivers-interaction-handler/server-stats-topreceivers-interaction-handler.service'
 import { ServerStatsTopauthorsInteractionHandlerService } from './handlers/server-stats-topauthors-interaction-handler/server-stats-topauthors-interaction-handler.service'
@@ -29,7 +29,7 @@ import { UserStatsTopauthoredquotesInteractionHandlerService } from './handlers/
     PendingQuoteResponseGeneratorService,
     QuoteAcceptedAnnouncerService,
     QuoteExpiredAnnouncerService,
-    ServerGeneralStatsInteractionHandlerService,
+    ServerStatsGeneralInteractionHandlerService,
     ServerStatsTopcontributorsInteractionHandlerService,
     ServerStatsTopreceiversInteractionHandlerService,
     ServerStatsTopauthorsInteractionHandlerService,

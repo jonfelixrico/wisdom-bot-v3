@@ -9,7 +9,7 @@ import { sprintf } from 'sprintf-js'
 import { Logger } from '@nestjs/common'
 
 @EventsHandler(DiscordInteractionEvent)
-export class ServerGeneralStatsInteractionHandlerService
+export class ServerStatsGeneralInteractionHandlerService
   implements IEventHandler<DiscordInteractionEvent>
 {
   constructor(private queryBus: QueryBus, private logger: Logger) {}
@@ -63,7 +63,7 @@ export class ServerGeneralStatsInteractionHandlerService
         'Processed server general stats call invoked by by %s',
         interaction.user.id,
       ),
-      ServerGeneralStatsInteractionHandlerService.name,
+      ServerStatsGeneralInteractionHandlerService.name,
     )
   }
 }
