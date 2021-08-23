@@ -25,16 +25,16 @@ export class UserTopContributorsQueryHandlerService
       where: {
         guildId,
         targetUserId: authorId,
-        submitted: MoreThan(0),
+        submissions: MoreThan(0),
       },
       take: limit,
       order: {
         // TODO create tiebreaker for same `submitted` count
-        submitted: 'DESC',
+        submissions: 'DESC',
       },
     })
 
-    return results.map(({ userId, submitted }) => {
+    return results.map(({ userId, submissions: submitted }) => {
       return {
         userId,
         contributions: submitted,
