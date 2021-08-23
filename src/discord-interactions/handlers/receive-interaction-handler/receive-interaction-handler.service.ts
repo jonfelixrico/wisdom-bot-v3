@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common'
 import { CommandBus, EventsHandler, IEventHandler } from '@nestjs/cqrs'
 import { MessageEmbed, MessageEmbedOptions, Util } from 'discord.js'
+import { sprintf } from 'sprintf-js'
 import { DiscordInteractionEvent } from 'src/discord-interactions/types/discord-interaction.event'
 import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 import { ReceiveQuoteCommand } from 'src/domain/commands/receive-quote.command'
@@ -95,7 +96,7 @@ export class ReceiveInteractionHandlerService
     })
 
     logger.verbose(
-      `Processed quote receive for ${quoteId}.`,
+      sprintf('Processed interaction for %s', interaction.user.id),
       ReceiveInteractionHandlerService.name,
     )
   }

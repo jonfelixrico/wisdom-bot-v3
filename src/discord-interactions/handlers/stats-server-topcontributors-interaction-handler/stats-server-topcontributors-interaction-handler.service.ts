@@ -81,10 +81,7 @@ export class StatsServerTopcontributorsInteractionHandlerService
     })
 
     this.logger.verbose(
-      sprintf(
-        'Processed server stats topcontributors call invoked by by %s',
-        interaction.user.id,
-      ),
+      sprintf('Processed interaction for %s', interaction.user.id),
       StatsServerTopcontributorsInteractionHandlerService.name,
     )
   }

@@ -85,10 +85,7 @@ export class StatsUserTopauthoredquotesInteractionHandlerService
     })
 
     this.logger.verbose(
-      sprintf(
-        'Processed user stats topauthoredquotes call invoked by by %s',
-        interaction.user.id,
-      ),
+      sprintf('Processed interaction for %s', interaction.user.id),
       StatsUserTopauthoredquotesInteractionHandlerService.name,
     )
   }
