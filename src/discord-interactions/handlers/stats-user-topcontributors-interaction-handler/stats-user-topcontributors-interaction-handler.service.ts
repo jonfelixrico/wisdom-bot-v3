@@ -28,7 +28,7 @@ export class StatsUserTopcontributorsInteractionHandlerService
       return
     }
 
-    const targetUser = options.getUser('author') || interaction.user
+    const targetUser = options.getUser('user') || interaction.user
 
     await interaction.deferReply()
 

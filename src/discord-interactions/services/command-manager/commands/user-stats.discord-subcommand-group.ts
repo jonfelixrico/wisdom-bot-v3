@@ -1,13 +1,4 @@
-import {
-  SlashCommandSubcommandGroupBuilder,
-  SlashCommandUserOption,
-} from '@discordjs/builders'
-
-const userOptionFn = (option: SlashCommandUserOption) =>
-  option
-    .setName('user')
-    .setDescription('The user to have their stats displayed')
-    .setRequired(false)
+import { SlashCommandSubcommandGroupBuilder } from '@discordjs/builders'
 
 export const USER_STATS_SUBCOMMAND_GROUP =
   new SlashCommandSubcommandGroupBuilder()
@@ -16,19 +7,23 @@ export const USER_STATS_SUBCOMMAND_GROUP =
     .addSubcommand((subcommand) =>
       subcommand
         .setName('topauthoredquotes')
-        .setDescription('Lists down the top authored quotes of a user.')
-        .addUserOption(userOptionFn),
+        .setDescription('Show the top authored quotes of a user')
+        .addUserOption((option) =>
+          option
+            .setName('user')
+            .setDescription(
+              'The user to get to have their top authored quotes shown',
+            ),
+        ),
     )
     .addSubcommand((subcommand) =>
       subcommand
         .setName('topcontributors')
-        .setDescription('Lists down the top contributors for an author.')
+        .setDescription('Show the top contributors (submitters) of a user')
         .addUserOption((option) =>
           option
-            .setName('author')
-            .setDescription(
-              'The target author. If none was provided, your top contributors will be displayed instead.',
-            ),
+            .setName('user')
+            .setDescription('The user to have their top contributors shown'),
         ),
     )
     .addSubcommand((subcommand) =>
@@ -38,7 +33,7 @@ export const USER_STATS_SUBCOMMAND_GROUP =
         .addUserOption((option) =>
           option
             .setName('user')
-            .setDescription('User to have their top receivers shown'),
+            .setDescription('The user to have their top receivers shown'),
         ),
     )
     .addSubcommand((subcommand) =>
