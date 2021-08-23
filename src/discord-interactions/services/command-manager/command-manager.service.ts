@@ -17,20 +17,24 @@ export class CommandManagerService implements OnApplicationBootstrap {
     private client: Client,
   ) {}
 
-  private get getRegistrationRoute() {
+  private get registrationRoutes(): `/${string}`[] {
     const { client, config } = this
     const debugGuildId = config.get('DISCORD_DEBUG_GUILD_ID')
     const applicationId = client.application.id
 
-    if (!debugGuildId) {
-      return Routes.applicationCommands(applicationId)
+    const routes: `/${string}`[] = []
+
+    routes.push(Routes.applicationCommands(applicationId))
+
+    if (debugGuildId) {
+      routes.push(Routes.applicationGuildCommands(applicationId, debugGuildId))
     }
 
-    return Routes.applicationGuildCommands(applicationId, debugGuildId)
+    return routes
   }
 
   async onApplicationBootstrap() {
-    const { logger, client } = this
+    const { logger, client, registrationRoutes } = this
 
     if (!COMMANDS_TO_REGISTER.length) {
       logger.verbose(
@@ -45,23 +49,24 @@ export class CommandManagerService implements OnApplicationBootstrap {
 
     const rest = new REST({ version: '9' }).setToken(client.token)
 
-    try {
-      logger.verbose(
-        `Initializing registration of ${COMMANDS_TO_REGISTER.length} commands.`,
-        CommandManagerService.name,
-      )
+    logger.verbose(
+      `Initializing registration of ${COMMANDS_TO_REGISTER.length} commands.`,
+      CommandManagerService.name,
+    )
 
-      await rest.put(this.getRegistrationRoute, {
-        body: commandsAsJson,
-      })
-
-      logger.verbose(
-        `Successfully initialized ${COMMANDS_TO_REGISTER.length} commands.`,
-        CommandManagerService.name,
-      )
-    } catch (e) {
-      logger.error(e)
-      throw e
+    for (const route of registrationRoutes) {
+      try {
+        await rest.put(route, {
+          body: commandsAsJson,
+        })
+      } catch (e) {
+        this.logger.error(e.message, e.stack, CommandManagerService.name)
+      }
     }
+
+    logger.verbose(
+      `Initialized ${COMMANDS_TO_REGISTER.length} commands.`,
+      CommandManagerService.name,
+    )
   }
 }
