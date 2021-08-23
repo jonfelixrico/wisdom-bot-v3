@@ -7,7 +7,7 @@ import {
 } from '../../user-top-received-quotes.query'
 
 @QueryHandler(UserTopReceivedQuotesQuery)
-export class AuthorTopReceivedQuotesQueryHandlerService
+export class UserTopReceivedQuotesQueryHandlerService
   implements IQueryHandler<UserTopReceivedQuotesQuery>
 {
   constructor(private conn: Connection) {}
