@@ -3,7 +3,7 @@ import { IQuery } from '@nestjs/cqrs'
 export interface IUserTopReceiversQueryInput {
   guildId: string
   limit: number
-  authorId: string
+  userId: string
 }
 
 export type IUserTopReceiversQueryOutput = {

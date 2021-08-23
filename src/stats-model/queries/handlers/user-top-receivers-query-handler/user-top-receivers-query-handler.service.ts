@@ -19,7 +19,7 @@ export class UserTopReceiversQueryHandlerService
   async execute({
     input,
   }: UserTopReceiversQuery): Promise<IUserTopReceiversQueryOutput> {
-    const { guildId, limit, authorId } = input
+    const { guildId, limit, userId: authorId } = input
 
     const results = await this.repo.find({
       where: {

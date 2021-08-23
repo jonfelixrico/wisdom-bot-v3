@@ -35,7 +35,7 @@ export class StatsUserTopreceiversInteractionHandlerService
 
     const topQuotes: IUserTopReceiversQueryOutput = await this.queryBus.execute(
       new UserTopReceiversQuery({
-        authorId: targetUser.id,
+        userId: targetUser.id,
         guildId: interaction.guildId,
         limit: 10,
       }),
