@@ -7,7 +7,7 @@ import {
 } from '../../user-top-receivers.query'
 
 @QueryHandler(UserTopReceiversQuery)
-export class AuthorTopReceiversQueryHandlerService
+export class UserTopReceiversQueryHandlerService
   implements IQueryHandler<UserTopReceiversQuery>
 {
   constructor(private conn: Connection) {}
