@@ -1,10 +1,8 @@
 import { NO_STREAM } from '@eventstore/db-client'
 import { Logger } from '@nestjs/common'
-import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { SubmitQuoteCommand } from 'src/domain/commands/submit-quote.command'
 import { Guild } from 'src/domain/entities/guild.entity'
-import { WatchPendingQuoteCommand } from 'src/infrastructure/commands/watch-pending-quote.command'
 import { GuildWriteRepository } from 'src/write-repositories/abstract/guild-write-repository.abstract'
 import { PendingQuoteWriteRepository } from 'src/write-repositories/abstract/pending-quote-write-repository.abstract'
 
@@ -15,8 +13,6 @@ export class SubmitQuoteCommandHandlerService
   constructor(
     private logger: Logger,
     private pendingQuoteRepo: PendingQuoteWriteRepository,
-    private discordHelper: DiscordHelperService,
-    private commandBus: CommandBus,
     private guildRepo: GuildWriteRepository,
   ) {}
 
@@ -26,13 +22,13 @@ export class SubmitQuoteCommandHandlerService
     let guild = await this.guildRepo.findById(guildId)
 
     if (!guild) {
-      // TODO use a separate command for this
+      // TODO use a separate command for this -- PRIO 1
       guild = {
         entity: Guild.register({
           guildId,
           quoteSettings: {
             // TODO edit these for production, or maybe retrieve it from syspars?
-            upvoteCount: 1,
+            upvoteCount: 3,
             upvoteEmoji: '🤔',
             // 7 days
             upvoteWindow: 1000 * 60 * 60 * 24 * 7,
@@ -65,20 +61,6 @@ export class SubmitQuoteCommandHandlerService
     this.logger.debug(
       `Created quote ${quoteId}.`,
       SubmitQuoteCommandHandlerService.name,
-    )
-
-    const { channelId, messageId } = payload
-    const message = await this.discordHelper.getMessage(
-      guildId,
-      channelId,
-      messageId,
-    )
-
-    await this.commandBus.execute(
-      new WatchPendingQuoteCommand({
-        ...submitted,
-        message,
-      }),
     )
   }
 }

@@ -165,8 +165,14 @@ export class CatchUpService implements OnApplicationBootstrap {
   }
 
   async onApplicationBootstrap() {
+    const { logger } = this
+
+    logger.log('Starting read model catch up...', CatchUpService.name)
     await this.retrievePosition()
     await this.doCatchingUp()
+
+    logger.log('Done with catching-up.', CatchUpService.name)
+
     this.eventBus.publish(new CatchUpFinishedEvent())
     this.streamEvents()
   }

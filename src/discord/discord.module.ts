@@ -1,13 +1,8 @@
 import { Module } from '@nestjs/common'
 import { discordProviders } from './discord.provider'
-import { GuildRepoService } from './guild-repo/guild-repo.service'
 import { DiscordHelperService } from './discord-helper/discord-helper.service'
 
-const exportedProviders = [
-  ...discordProviders,
-  GuildRepoService,
-  DiscordHelperService,
-]
+const exportedProviders = [...discordProviders, DiscordHelperService]
 
 @Module({
   providers: [...exportedProviders],

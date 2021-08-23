@@ -1,6 +1,7 @@
 import { ICommand } from '../command.interface'
 
 export interface ISubmitQuoteCommandPayload {
+  quoteId: string
   guildId: string
   content: string
   authorId: string

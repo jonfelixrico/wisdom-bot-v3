@@ -1,8 +1,10 @@
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
-import { IPendingQuote } from 'src/domain/entities/pending-quote.interface'
+import { IPendingQuote } from 'src/domain/entities/pending-quote.entity'
 import { IPendingQuoteAcceptedPayload } from 'src/domain/events/pending-quote-accepted.event'
 import { IPendingQuoteCancelledPayload } from 'src/domain/events/pending-quote-cancelled.event'
 import { IPendingQuoteExpirationAcknowledgedEventPayload } from 'src/domain/events/pending-quote-expiration-acknowledged.event'
+import { IPendingQuoteVoteCastedEventPayload } from 'src/domain/events/pending-quote-vote-casted.event'
+import { IPendingQuoteVoteWithdrawnEventPayload } from 'src/domain/events/pending-quote-vote-withdrawn.event'
 import { IQuoteMessageDetailsUpdatedPayload } from 'src/domain/events/quote-message-details-updated.event'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import {
@@ -13,12 +15,14 @@ import {
 const submitted: WriteRepositoryReducer<
   IQuoteSubmittedEventPayload,
   IPendingQuote
-> = ({ submitDt, expireDt, ...data }) => ({
+> = ({ submitDt, expireDt, votes, ...data }) => ({
   ...data,
   acceptDt: null,
   cancelDt: null,
   submitDt: new Date(submitDt),
   expireDt: new Date(expireDt),
+  // older submitted events may not have the `votes` array, so we have to add it in
+  votes: votes || [],
 })
 
 const cancelled: WriteRepositoryReducer<
@@ -61,12 +65,38 @@ const expirationAcknowledged: WriteRepositoryReducer<
   }
 }
 
+const voteCasted: WriteRepositoryReducer<
+  IPendingQuoteVoteCastedEventPayload,
+  IPendingQuote
+> = ({ userId, voteValue }, { votes, ...state }) => {
+  return {
+    ...state,
+    votes: [...votes, { userId, voteValue }],
+  }
+}
+
+const voteWithdrawn: WriteRepositoryReducer<
+  IPendingQuoteVoteWithdrawnEventPayload,
+  IPendingQuote
+> = ({ userId }, { votes, ...state }) => {
+  const shallowClone = [...votes]
+  const index = shallowClone.findIndex((v) => v.userId === userId)
+  shallowClone.splice(index, 1)
+
+  return {
+    ...state,
+    votes: shallowClone,
+  }
+}
+
 const {
   PENDING_QUOTE_ACCEPTED,
   PENDING_QUOTE_CANCELLED,
   QUOTE_SUBMITTED,
   QUOTE_MESSAGE_DETAILS_UPDATED,
   PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED,
+  PENDING_QUOTE_VOTE_CASTED,
+  PENDING_QUOTE_VOTE_WITHDRAWN,
 } = DomainEventNames
 export const PENDING_QUOTE_REDUCERS: WriteRepositoryReducerMap<IPendingQuote> =
   {
@@ -75,4 +105,6 @@ export const PENDING_QUOTE_REDUCERS: WriteRepositoryReducerMap<IPendingQuote> =
     [QUOTE_SUBMITTED]: submitted,
     [QUOTE_MESSAGE_DETAILS_UPDATED]: messageDetailsUpdated,
     [PENDING_QUOTE_EXPIRATION_ACKNOWLEDGED]: expirationAcknowledged,
+    [PENDING_QUOTE_VOTE_CASTED]: voteCasted,
+    [PENDING_QUOTE_VOTE_WITHDRAWN]: voteWithdrawn,
   }
