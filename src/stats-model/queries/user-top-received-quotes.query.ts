@@ -1,17 +1,17 @@
 import { IQuery } from '@nestjs/cqrs'
 
-export interface IUserTopReceivedQuotesQueryInput {
+export interface IUserTopAuthoredQuotesQueryInput {
   guildId: string
   limit: number
-  authorId: string
+  userId: string
 }
 
-export type IUserTopReceivedQuotesQueryOutput = {
+export type IUserTopAuthoredQuotesQueryOutput = {
   quoteId: string
   content: string
   receives: number
 }[]
 
-export class UserTopReceivedQuotesQuery implements IQuery {
-  constructor(readonly input: IUserTopReceivedQuotesQueryInput) {}
+export class UserTopAuthoredQuotesQuery implements IQuery {
+  constructor(readonly input: IUserTopAuthoredQuotesQueryInput) {}
 }

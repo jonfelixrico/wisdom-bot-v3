@@ -4,8 +4,8 @@ import { DiscordInteractionEvent } from 'src/discord-interactions/types/discord-
 import { sprintf } from 'sprintf-js'
 import { Logger } from '@nestjs/common'
 import {
-  UserTopReceivedQuotesQuery,
-  IUserTopReceivedQuotesQueryOutput,
+  UserTopAuthoredQuotesQuery,
+  IUserTopAuthoredQuotesQueryOutput,
 } from 'src/stats-model/queries/user-top-received-quotes.query'
 
 @EventsHandler(DiscordInteractionEvent)
@@ -32,10 +32,10 @@ export class StatsUserTopauthoredquotesInteractionHandlerService
 
     await interaction.deferReply()
 
-    const topQuotes: IUserTopReceivedQuotesQueryOutput =
+    const topQuotes: IUserTopAuthoredQuotesQueryOutput =
       await this.queryBus.execute(
-        new UserTopReceivedQuotesQuery({
-          authorId: targetUser.id,
+        new UserTopAuthoredQuotesQuery({
+          userId: targetUser.id,
           guildId: interaction.guildId,
           limit: 10,
         }),

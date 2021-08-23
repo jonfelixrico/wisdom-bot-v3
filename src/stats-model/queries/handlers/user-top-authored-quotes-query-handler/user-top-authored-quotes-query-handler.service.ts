@@ -2,20 +2,20 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
 import { QuoteInfoTypeormEntity } from 'src/stats-model/db/entities/quote-info.typeorm-entity'
 import { Connection, MoreThan } from 'typeorm'
 import {
-  UserTopReceivedQuotesQuery,
-  IUserTopReceivedQuotesQueryOutput,
+  UserTopAuthoredQuotesQuery,
+  IUserTopAuthoredQuotesQueryOutput,
 } from '../../user-top-received-quotes.query'
 
-@QueryHandler(UserTopReceivedQuotesQuery)
-export class UserTopReceivedQuotesQueryHandlerService
-  implements IQueryHandler<UserTopReceivedQuotesQuery>
+@QueryHandler(UserTopAuthoredQuotesQuery)
+export class UserTopAuthoredQuotesQueryHandlerService
+  implements IQueryHandler<UserTopAuthoredQuotesQuery>
 {
   constructor(private conn: Connection) {}
 
   async execute({
     input,
-  }: UserTopReceivedQuotesQuery): Promise<IUserTopReceivedQuotesQueryOutput> {
-    const { guildId, limit, authorId } = input
+  }: UserTopAuthoredQuotesQuery): Promise<IUserTopAuthoredQuotesQueryOutput> {
+    const { guildId, limit, userId: authorId } = input
 
     const results = await this.conn.getRepository(QuoteInfoTypeormEntity).find({
       take: limit,

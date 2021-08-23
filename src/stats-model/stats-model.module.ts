@@ -8,7 +8,7 @@ import { UserTopReceiversQueryHandlerService } from './queries/handlers/user-top
 import { GuildTopReceiversQueryHandlerService } from './queries/handlers/guild-top-receivers-query-handler/guild-top-receivers-query-handler.service'
 import { GuildTopReceivedQuotesQueryHandlerService } from './queries/handlers/guild-top-received-quotes-query-handler/guild-top-received-quotes-query-handler.service'
 import { GuildTopReceivedAuthorsQueryHandlerService } from './queries/handlers/guild-top-received-authors-query-handler/guild-top-received-authors-query-handler.service'
-import { UserTopReceivedQuotesQueryHandlerService } from './queries/handlers/user-top-received-quotes-query-handler/user-top-received-quotes-query-handler.service'
+import { UserTopAuthoredQuotesQueryHandlerService } from './queries/handlers/user-top-authored-quotes-query-handler/user-top-authored-quotes-query-handler.service'
 import { GuildStatsQueryHandlerService } from './queries/handlers/guild-stats-query-handler/guild-stats-query-handler.service'
 import { UserStatsQueryHandlerService } from './queries/handlers/user-stats-query-handler/user-stats-query-handler.service'
 
@@ -23,7 +23,7 @@ import { UserStatsQueryHandlerService } from './queries/handlers/user-stats-quer
     GuildTopReceiversQueryHandlerService,
     GuildTopReceivedQuotesQueryHandlerService,
     GuildTopReceivedAuthorsQueryHandlerService,
-    UserTopReceivedQuotesQueryHandlerService,
+    UserTopAuthoredQuotesQueryHandlerService,
     GuildStatsQueryHandlerService,
     UserStatsQueryHandlerService,
   ],
