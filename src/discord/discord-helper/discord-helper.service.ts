@@ -3,7 +3,7 @@ import {
   Client,
   DiscordAPIError,
   Guild,
-  GuildChannel,
+  Permissions,
   TextChannel,
 } from 'discord.js'
 
@@ -19,19 +19,19 @@ function is404Error(e: Error) {
 export class DiscordHelperService {
   constructor(private client: Client) {}
 
+  /**
+   * Retrieves the guild associated with the given `guildId`.
+   * When interacting with this guild, be sure to check `permissions` first!
+   *
+   * @param guildId
+   * @returns
+   */
   async getGuild(guildId: string): Promise<Guild | null> {
     const { guilds } = this.client
     try {
       const guild = await guilds.fetch(guildId)
 
-      /*
-       * From https://discord.js.org/#/docs/main/stable/class/Guild's notes
-       * "It's recommended to see if a guild is available before performing operations or reading data from it. You can check this with guild.available."
-       *
-       * Not being able to read data from a guild is critical to our use cases, so if we're not allowed to do such things to that guild, we'll consider it
-       * as not found.
-       */
-      return guild.available ? guild : null
+      return guild
     } catch (e) {
       if (is404Error(e)) {
         return null
@@ -41,26 +41,37 @@ export class DiscordHelperService {
     }
   }
 
-  async getChannel(
+  async getTextChannelAndPermissions(
     guildId: string,
     channelId: string,
-  ): Promise<GuildChannel | null> {
+  ): Promise<[TextChannel, Permissions] | null> {
     const guild = await this.getGuild(guildId)
-    if (!guild) {
+    if (!guild || !guild.available) {
       return null
     }
 
     const { channels } = guild
 
-    const channel = channels.cache.get(channelId)
-    if (channel) {
-      return channel
+    // first, we try to take the channel from the cache
+    const fromCache = channels.cache.get(channelId)
+    if (fromCache) {
+      // we'll automatically return null if not a text channel
+      return fromCache.type === 'GUILD_TEXT'
+        ? [fromCache as TextChannel, fromCache.permissionsFor(this.client.user)]
+        : null
     }
 
     try {
-      return await channels.resolve(channelId)
+      const fromResolve = await channels.resolve(channelId)
+      return fromResolve.type === 'GUILD_TEXT'
+        ? [
+            fromResolve as TextChannel,
+            fromCache.permissionsFor(this.client.user),
+          ]
+        : null
     } catch (e) {
       if (is404Error(e)) {
+        // if resovle doesn't find the channel, it will throw an error instead
         return null
       }
 
@@ -72,23 +83,74 @@ export class DiscordHelperService {
     guildId: string,
     channelId: string,
   ): Promise<TextChannel | null> {
-    const channel = await this.getChannel(guildId, channelId)
-    if (!channel || !(channel instanceof TextChannel)) {
+    const guild = await this.getGuild(guildId)
+    if (!guild) {
       return null
     }
 
-    return channel
+    const { channels } = guild
+
+    // first, we try to take the channel from the cache
+    const fromCache = channels.cache.get(channelId)
+    if (fromCache) {
+      // we'll automatically return null if not a text channel
+      return fromCache.type === 'GUILD_TEXT' ? (fromCache as TextChannel) : null
+    }
+
+    try {
+      const fromResolve = await channels.resolve(channelId)
+      return fromResolve.type === 'GUILD_TEXT'
+        ? (fromResolve as TextChannel)
+        : null
+    } catch (e) {
+      if (is404Error(e)) {
+        // if resovle doesn't find the channel, it will throw an error instead
+        return null
+      }
+
+      throw e
+    }
   }
 
-  async getMessage(guildId: string, channelId: string, messageId: string) {
-    const channel = await this.getTextChannel(guildId, channelId)
+  async getMessageFromChannel(channel: TextChannel, messageId: string) {
+    const { messages } = channel
+    try {
+      return await messages.fetch(messageId)
+    } catch (e) {
+      if (is404Error(e)) {
+        return null
+      }
+
+      throw e
+    }
+  }
+
+  async getMessage(
+    guildId: string,
+    channelId: string,
+    messageId: string,
+    force?: boolean,
+  ) {
+    const guild = await this.getGuild(guildId)
+
+    if (!guild || !guild.available) {
+      return null
+    }
+
+    const [channel, permissions] =
+      (await this.getTextChannelAndPermissions(guildId, channelId)) || []
+
     if (!channel) {
+      return null
+    }
+
+    if (!permissions.has('READ_MESSAGE_HISTORY')) {
       return null
     }
 
     const { messages } = channel
     try {
-      return await messages.fetch(messageId)
+      return await messages.fetch(messageId, { force })
     } catch (e) {
       if (is404Error(e)) {
         return null
@@ -102,7 +164,6 @@ export class DiscordHelperService {
     guildId: string,
     channelId: string,
     messageId: string,
-    reason?: string,
   ): Promise<boolean> {
     const channel = await this.getTextChannel(guildId, channelId)
     if (!channel) {
@@ -111,7 +172,7 @@ export class DiscordHelperService {
 
     const { messages } = channel
     try {
-      await messages.delete(messageId, reason)
+      await messages.delete(messageId)
       return true
     } catch (e) {
       if (is404Error(e)) {

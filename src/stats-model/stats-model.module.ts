@@ -1,28 +1,31 @@
 import { Module } from '@nestjs/common'
 import { EventStoreModule } from 'src/event-store/event-store.module'
-import { statsModelTypeormProvider } from './typeorm/stats-model-typeorm.provider'
-import { StatsModelCatchUpService } from './services/catch-up/stats-model-catch-up.service'
-import { GuildTopContributorsQueryHandlerService } from './query-handlers/guild-top-contributors-query-handler/guild-top-contributors-query-handler.service'
-import { AuthorTopContributorsQueryHandlerService } from './query-handlers/author-top-contributors-query-handler/author-top-contributors-query-handler.service'
-import { CqrsModule } from '@nestjs/cqrs'
-import { AuthorTopReceiversQueryHandlerService } from './query-handlers/author-top-receivers-query-handler/author-top-receivers-query-handler.service'
-import { GuildTopReceiversQueryHandlerService } from './query-handlers/guild-top-receivers-query-handler/guild-top-receivers-query-handler.service'
-import { GuildTopReceivedQuotesQueryHandlerService } from './query-handlers/guild-top-received-quotes-query-handler/guild-top-received-quotes-query-handler.service'
-import { GuildTopReceivedAuthorsQueryHandlerService } from './query-handlers/guild-top-received-authors-query-handler/guild-top-received-authors-query-handler.service'
-import { AuthorTopReceivedQuotesQueryHandlerService } from './query-handlers/author-top-received-quotes-query-handler/author-top-received-quotes-query-handler.service'
+import { dbProvider } from './db/db.provider'
+import { StatsModelCatchUpService } from './event-sourcing/stats-model-catch-up/stats-model-catch-up.service'
+import { GuildTopContributorsQueryHandlerService } from './queries/handlers/guild-top-contributors-query-handler/guild-top-contributors-query-handler.service'
+import { UserTopContributorsQueryHandlerService } from './queries/handlers/user-top-contributors-query-handler/user-top-contributors-query-handler.service'
+import { UserTopReceiversQueryHandlerService } from './queries/handlers/user-top-receivers-query-handler/user-top-receivers-query-handler.service'
+import { GuildTopReceiversQueryHandlerService } from './queries/handlers/guild-top-receivers-query-handler/guild-top-receivers-query-handler.service'
+import { GuildTopReceivedQuotesQueryHandlerService } from './queries/handlers/guild-top-received-quotes-query-handler/guild-top-received-quotes-query-handler.service'
+import { GuildTopReceivedAuthorsQueryHandlerService } from './queries/handlers/guild-top-received-authors-query-handler/guild-top-received-authors-query-handler.service'
+import { UserTopAuthoredQuotesQueryHandlerService } from './queries/handlers/user-top-authored-quotes-query-handler/user-top-authored-quotes-query-handler.service'
+import { GuildStatsQueryHandlerService } from './queries/handlers/guild-stats-query-handler/guild-stats-query-handler.service'
+import { UserStatsQueryHandlerService } from './queries/handlers/user-stats-query-handler/user-stats-query-handler.service'
 
 @Module({
-  imports: [EventStoreModule, CqrsModule],
+  imports: [EventStoreModule],
   providers: [
-    statsModelTypeormProvider,
+    dbProvider,
     StatsModelCatchUpService,
     GuildTopContributorsQueryHandlerService,
-    AuthorTopContributorsQueryHandlerService,
-    AuthorTopReceiversQueryHandlerService,
+    UserTopContributorsQueryHandlerService,
+    UserTopReceiversQueryHandlerService,
     GuildTopReceiversQueryHandlerService,
     GuildTopReceivedQuotesQueryHandlerService,
     GuildTopReceivedAuthorsQueryHandlerService,
-    AuthorTopReceivedQuotesQueryHandlerService,
+    UserTopAuthoredQuotesQueryHandlerService,
+    GuildStatsQueryHandlerService,
+    UserStatsQueryHandlerService,
   ],
 })
 export class StatsModelModule {}

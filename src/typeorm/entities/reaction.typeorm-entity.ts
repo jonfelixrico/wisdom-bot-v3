@@ -30,8 +30,4 @@ export class ReactionTypeormEntity {
   // This is here to boost the performance of retrieving reactions from a certain guild
   @Column()
   guildId: string
-
-  // This is here to avoid joining tables when retrieving the total number of reactions of an author
-  @Column()
-  parentQuoteAuthorId: string
 }

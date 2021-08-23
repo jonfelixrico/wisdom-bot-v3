@@ -7,7 +7,6 @@ import { PendingQuoteWriteRepository } from './abstract/pending-quote-write-repo
 import { QuoteWriteRepository } from './abstract/quote-write-repository.abstract'
 import { ReceiveWriteRepository } from './abstract/receive-write-repository.abstract'
 import { DomainEventPublisherService } from './domain-event-publisher/domain-event-publisher.service'
-import { CqrsModule } from '@nestjs/cqrs'
 import { EsdbHelperService } from './esdb-helper/esdb-helper.service'
 import { GuildWriteRepositoryService } from './guild-write-repository/guild-write-repository.service'
 import { GuildWriteRepository } from './abstract/guild-write-repository.abstract'
@@ -37,7 +36,7 @@ const providersToExport: Provider[] = [
     DomainEventPublisherService,
     EsdbHelperService,
   ],
-  imports: [EventStoreModule, CqrsModule],
+  imports: [EventStoreModule],
   exports: providersToExport,
 })
 export class WriteRepositoriesModule {}

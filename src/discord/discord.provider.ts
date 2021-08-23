@@ -1,15 +1,18 @@
 import { Provider } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { Client } from 'discord.js'
-import { CommandoClient } from 'discord.js-commando'
+import { Client, Intents } from 'discord.js'
+import { DISCORD_PROVIDER } from './discord.provider-token'
 
 export const discordProviders: Provider[] = [
   {
-    provide: CommandoClient,
+    provide: Client,
     useFactory: (cfg: ConfigService) =>
       new Promise(async (resolve, reject) => {
         try {
-          const client = new CommandoClient()
+          const client = new Client({
+            intents: [Intents.FLAGS.GUILDS],
+          })
+
           client.once('ready', () => {
             resolve(client)
           })
@@ -21,7 +24,8 @@ export const discordProviders: Provider[] = [
     inject: [ConfigService],
   },
   {
-    provide: Client,
-    useExisting: CommandoClient,
+    inject: [Client],
+    useFactory: (client: Client) => client,
+    provide: DISCORD_PROVIDER,
   },
 ]

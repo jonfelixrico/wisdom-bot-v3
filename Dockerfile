@@ -12,7 +12,7 @@
 # https://www.bretfisher.com/node-docker-good-defaults/
 # http://goldbergyoni.com/checklist-best-practice-of-node-js-in-production/
 
-FROM node:14-alpine as builder
+FROM node:16.6-alpine as builder
 
 ENV NODE_ENV build
 
@@ -26,7 +26,7 @@ RUN yarn ci \
 
 # ---
 
-FROM node:14-alpine
+FROM node:16.6-alpine
 
 ENV NODE_ENV production
 

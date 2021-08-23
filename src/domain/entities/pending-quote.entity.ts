@@ -1,20 +1,26 @@
 import { DomainEntity } from '../abstracts/domain-entity.abstract'
 import { PendingQuoteAcceptedEvent } from '../events/pending-quote-accepted.event'
 import { PendingQuoteCancelledEvent } from '../events/pending-quote-cancelled.event'
-import { QuoteSubmittedEvent } from '../events/quote-submitted.event'
-import { IQuoteToSubmit } from './quote-to-submit.interface'
-import { v4 } from 'uuid'
 import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
 import { DomainError } from '../errors/domain-error.class'
 import { QuoteMessageDetailsUpdatedEvent } from '../events/quote-message-details-updated.event'
 import { PendingQuoteExpirationAcknowledgedEvent } from '../events/pending-quote-expiration-acknowledged.event'
+import { PendingQuoteVoteCastedEvent } from '../events/pending-quote-vote-casted.event'
+import { PendingQuoteVoteWithdrawnEvent } from '../events/pending-quote-vote-withdrawn.event'
+import { sumBy } from 'lodash'
 
 const {
   QUOTE_APPROVED,
   QUOTE_CANCELLED,
   QUOTE_EXPIRED,
   QUOTE_INVALID_EXPIRATION_ACK,
+  PENDING_QUOTE_USER_ALREADY_VOTED,
 } = DomainErrorCodes
+
+export interface IVote {
+  userId: string
+  voteValue: number
+}
 
 export interface IPendingQuote {
   quoteId: string
@@ -38,7 +44,8 @@ export interface IPendingQuote {
   // for approval/expiration
   expireDt: Date
   upvoteCount: number
-  upvoteEmoji: string
+
+  votes: IVote[]
 }
 
 export interface IQuoteMessageDetails {
@@ -56,7 +63,6 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
 
   expireDt: Date
   upvoteCount: number
-  upvoteEmoji: string
 
   channelId?: string
   messageId?: string
@@ -65,6 +71,7 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
   acceptDt?: Date
   cancelDt?: Date
   expireAckDt?: Date
+  votes: IVote[]
 
   // TODO create private flag for created
 
@@ -81,7 +88,7 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     messageId,
     expireDt,
     upvoteCount,
-    upvoteEmoji,
+    votes,
   }: IPendingQuote) {
     super()
 
@@ -97,7 +104,7 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     this.messageId = messageId
     this.expireDt = expireDt
     this.upvoteCount = upvoteCount
-    this.upvoteEmoji = upvoteEmoji
+    this.votes = votes
   }
 
   get isExpired() {
@@ -173,28 +180,58 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
     )
   }
 
+  private get totalVotes() {
+    return sumBy(this.votes, (v) => v.voteValue)
+  }
+
+  checkIfHasVoted(userId: string): boolean {
+    return this.votes.some((vote) => userId === vote.userId)
+  }
+
   /**
-   * Creates a quote.
-   * @param quote Data required to create a quote.
+   * Casts a vote for the pending quote. If this is the final vote needed for approval,
+   * then the quote gets flagged as accepted.
+   * @param vote
    */
-  static submit(quote: IQuoteToSubmit) {
-    const quoteId = v4()
+  castVote(vote: IVote) {
+    const { votes, quoteId, upvoteCount } = this
 
-    const submitEvent = new QuoteSubmittedEvent({
-      ...quote,
-      quoteId,
-    })
+    if (this.checkIfHasVoted(vote.userId)) {
+      throw new DomainError(PENDING_QUOTE_USER_ALREADY_VOTED)
+    }
 
-    const entity = new PendingQuote({
-      ...quote,
-      quoteId,
-      acceptDt: null,
-      cancelDt: null,
-      expireAckDt: null,
-    })
+    this.checkIfPending()
 
-    entity.apply(submitEvent)
+    votes.push(vote)
+    this.apply(
+      new PendingQuoteVoteCastedEvent({
+        ...vote,
+        voteDt: new Date(),
+        quoteId,
+      }),
+    )
 
-    return entity
+    if (this.totalVotes >= upvoteCount) {
+      this.accept()
+    }
+  }
+
+  withdrawVote(userId: string) {
+    const { votes, quoteId } = this
+
+    const index = votes.findIndex((v) => v.userId === userId)
+    if (index === -1) {
+      // userId not found in votes
+      throw new DomainError(PENDING_QUOTE_USER_ALREADY_VOTED)
+    }
+
+    votes.splice(index, 1)
+    this.apply(
+      new PendingQuoteVoteWithdrawnEvent({
+        quoteId,
+        userId,
+        withdrawDt: new Date(),
+      }),
+    )
   }
 }
