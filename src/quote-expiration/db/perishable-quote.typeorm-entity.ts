@@ -5,6 +5,9 @@ export class PerishableQuoteTypeormEntity {
   @PrimaryColumn('uuid')
   quoteId: string
 
-  @Column('timestamp with time zone')
+  @Column({
+    type: 'timestamp with time zone',
+    nullable: true,
+  })
   expireDt: Date
 }
