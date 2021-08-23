@@ -7,7 +7,7 @@ import { GuildMemberInteractionTypeormEntity } from 'src/stats-model/db/entities
 import { Connection, MoreThan } from 'typeorm'
 
 @QueryHandler(UserTopContributorsQuery)
-export class AuthorTopContributorsQueryHandlerService
+export class UserTopContributorsQueryHandlerService
   implements IQueryHandler<UserTopContributorsQuery>
 {
   constructor(private conn: Connection) {}
