@@ -4,9 +4,9 @@ import { DiscordInteractionEvent } from 'src/discord-interactions/types/discord-
 import { sprintf } from 'sprintf-js'
 import { Logger } from '@nestjs/common'
 import {
-  AuthorTopReceiversQuery,
-  IAuthorTopReceiversQueryOutput,
-} from 'src/stats-model/queries/author-top-receivers.query'
+  UserTopReceiversQuery,
+  IUserTopReceiversQueryOutput,
+} from 'src/stats-model/queries/user-top-receivers.query'
 import { SPACE_CHARACTER } from 'src/types/discord.constants'
 
 @EventsHandler(DiscordInteractionEvent)
@@ -33,14 +33,13 @@ export class StatsUserTopreceiversInteractionHandlerService
 
     await interaction.deferReply()
 
-    const topQuotes: IAuthorTopReceiversQueryOutput =
-      await this.queryBus.execute(
-        new AuthorTopReceiversQuery({
-          authorId: targetUser.id,
-          guildId: interaction.guildId,
-          limit: 10,
-        }),
-      )
+    const topQuotes: IUserTopReceiversQueryOutput = await this.queryBus.execute(
+      new UserTopReceiversQuery({
+        userId: targetUser.id,
+        guildId: interaction.guildId,
+        limit: 10,
+      }),
+    )
 
     const embed: MessageEmbedOptions = {
       author: {

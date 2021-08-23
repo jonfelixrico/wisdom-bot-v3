@@ -46,7 +46,7 @@ interface IIncrementGuildMemeberInteractionPropertyInput {
   userId: string
   targetUserId: string
   // TODO rename submitted to submissions in the typeorm entity
-  propertyToIncrement: 'receives' | 'submitted'
+  propertyToIncrement: 'receives' | 'submissions'
 }
 
 async function incrementGuildMemeberInteractionProperty(
@@ -104,7 +104,7 @@ const submit: TypeormReducer<IQuoteSubmittedEventPayload> = async (
       guildId,
       userId: submitterId,
       targetUserId: authorId,
-      propertyToIncrement: 'submitted',
+      propertyToIncrement: 'submissions',
     },
     manager,
   )

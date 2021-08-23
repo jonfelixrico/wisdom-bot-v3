@@ -1,14 +1,14 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
 import {
-  AuthorTopContributorsQuery,
-  IAuthorTopContributorsQueryOutput,
-} from 'src/stats-model/queries/author-top-contributor.query'
+  UserTopContributorsQuery,
+  IUserTopContributorsQueryOutput,
+} from 'src/stats-model/queries/user-top-contributors.query'
 import { GuildMemberInteractionTypeormEntity } from 'src/stats-model/db/entities/guild-member-interaction.typeorm-entity'
 import { Connection, MoreThan } from 'typeorm'
 
-@QueryHandler(AuthorTopContributorsQuery)
-export class AuthorTopContributorsQueryHandlerService
-  implements IQueryHandler<AuthorTopContributorsQuery>
+@QueryHandler(UserTopContributorsQuery)
+export class UserTopContributorsQueryHandlerService
+  implements IQueryHandler<UserTopContributorsQuery>
 {
   constructor(private conn: Connection) {}
 
@@ -18,23 +18,23 @@ export class AuthorTopContributorsQueryHandlerService
 
   async execute({
     input,
-  }: AuthorTopContributorsQuery): Promise<IAuthorTopContributorsQueryOutput> {
-    const { guildId, limit, authorId } = input
+  }: UserTopContributorsQuery): Promise<IUserTopContributorsQueryOutput> {
+    const { guildId, limit, userId: authorId } = input
 
     const results = await this.repo.find({
       where: {
         guildId,
         targetUserId: authorId,
-        submitted: MoreThan(0),
+        submissions: MoreThan(0),
       },
       take: limit,
       order: {
         // TODO create tiebreaker for same `submitted` count
-        submitted: 'DESC',
+        submissions: 'DESC',
       },
     })
 
-    return results.map(({ userId, submitted }) => {
+    return results.map(({ userId, submissions: submitted }) => {
       return {
         userId,
         contributions: submitted,
