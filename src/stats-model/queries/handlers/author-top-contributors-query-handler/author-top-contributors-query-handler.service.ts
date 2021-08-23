@@ -1,14 +1,14 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
 import {
-  AuthorTopContributorsQuery,
-  IAuthorTopContributorsQueryOutput,
+  UserTopContributorsQuery,
+  IUserTopContributorsQueryOutput,
 } from 'src/stats-model/queries/author-top-contributor.query'
 import { GuildMemberInteractionTypeormEntity } from 'src/stats-model/db/entities/guild-member-interaction.typeorm-entity'
 import { Connection, MoreThan } from 'typeorm'
 
-@QueryHandler(AuthorTopContributorsQuery)
+@QueryHandler(UserTopContributorsQuery)
 export class AuthorTopContributorsQueryHandlerService
-  implements IQueryHandler<AuthorTopContributorsQuery>
+  implements IQueryHandler<UserTopContributorsQuery>
 {
   constructor(private conn: Connection) {}
 
@@ -18,8 +18,8 @@ export class AuthorTopContributorsQueryHandlerService
 
   async execute({
     input,
-  }: AuthorTopContributorsQuery): Promise<IAuthorTopContributorsQueryOutput> {
-    const { guildId, limit, authorId } = input
+  }: UserTopContributorsQuery): Promise<IUserTopContributorsQueryOutput> {
+    const { guildId, limit, userId: authorId } = input
 
     const results = await this.repo.find({
       where: {
