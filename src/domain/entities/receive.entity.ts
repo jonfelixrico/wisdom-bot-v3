@@ -3,8 +3,13 @@ import { DomainEntity } from '../abstracts/domain-entity.abstract'
 import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
 import { DomainError } from '../errors/domain-error.class'
 import { ReceiveReactedEvent } from '../events/receive-reacted.event'
+import { ReceiveReactionWithdrawnEvent } from '../events/receive-reaction-withdrawn.event'
 
-const { REACTION_DUPLICATE_USER, REACTION_INVALID_KARMA } = DomainErrorCodes
+const {
+  REACTION_DUPLICATE_USER,
+  REACTION_INVALID_KARMA,
+  REACTION_USER_NOT_REACTED,
+} = DomainErrorCodes
 
 interface IReaction {
   readonly reactionId: string
@@ -26,6 +31,10 @@ export interface IReceiveEntity {
 interface IReceiveReactionInput {
   readonly userId: string
   readonly karma: number
+}
+
+interface IWithdrawReactionInput {
+  readonly userId: string
 }
 
 export class Receive extends DomainEntity implements IReceiveEntity {
@@ -78,6 +87,25 @@ export class Receive extends DomainEntity implements IReceiveEntity {
         reactionId,
         receiveId,
         karma,
+        userId,
+      }),
+    )
+  }
+
+  withdrawReaction({ userId }: IWithdrawReactionInput) {
+    const { receiveId, reactions } = this
+
+    const index = reactions.findIndex((r) => r.userId === userId)
+
+    if (index === -1) {
+      throw new DomainError(REACTION_USER_NOT_REACTED)
+    }
+
+    reactions.splice(index, 1)
+
+    this.apply(
+      new ReceiveReactionWithdrawnEvent({
+        receiveId,
         userId,
       }),
     )
