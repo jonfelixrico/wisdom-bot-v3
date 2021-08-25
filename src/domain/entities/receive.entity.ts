@@ -1,4 +1,3 @@
-import { v4 } from 'uuid'
 import { DomainEntity } from '../abstracts/domain-entity.abstract'
 import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
 import { DomainError } from '../errors/domain-error.class'
@@ -12,7 +11,6 @@ const {
 } = DomainErrorCodes
 
 interface IReaction {
-  readonly reactionId: string
   readonly userId: string
   readonly karma: number
 }
@@ -72,10 +70,8 @@ export class Receive extends DomainEntity implements IReceiveEntity {
     }
 
     const reactionDt = new Date()
-    const reactionId = v4()
 
     reactions.push({
-      reactionId,
       userId,
       karma,
     })
@@ -84,7 +80,6 @@ export class Receive extends DomainEntity implements IReceiveEntity {
     this.apply(
       new ReceiveReactedEvent({
         reactionDt,
-        reactionId,
         receiveId,
         karma,
         userId,
