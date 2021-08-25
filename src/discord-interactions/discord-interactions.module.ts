@@ -19,7 +19,7 @@ import { StatsUserTopauthoredquotesInteractionHandlerService } from './handlers/
 import { StatsUserTopcontributorsInteractionHandlerService } from './handlers/stats-user-topcontributors-interaction-handler/stats-user-topcontributors-interaction-handler.service'
 import { StatsUserTopreceiversInteractionHandlerService } from './handlers/stats-user-topreceivers-interaction-handler/stats-user-topreceivers-interaction-handler.service'
 import { StatsUserGeneralInteractionHandlerService } from './handlers/stats-user-general-interaction-handler/stats-user-general-interaction-handler.service'
-import { ReceiveMessageUpdaterService } from './downstream/receive-message-updater/receive-message-updater.service';
+import { ReceiveMessageUpdaterService } from './downstream/receive-message-updater/receive-message-updater.service'
 
 @Module({
   imports: [DiscordModule, ReadModelQueryModule],
