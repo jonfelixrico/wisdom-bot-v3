@@ -119,11 +119,11 @@ export class Receive extends DomainEntity implements IReceiveEntity {
     )
   }
 
-  updateMessageDetails(details: IReceiveMessageDetails) {
-    const { receiveId, messageId, channelId } = this
+  updateMessageDetails({ messageId, channelId }: IReceiveMessageDetails) {
+    const { receiveId } = this
 
-    this.messageId = messageId ?? details.messageId
-    this.channelId = channelId ?? details.channelId
+    this.messageId = messageId ?? this.messageId
+    this.channelId = channelId ?? this.channelId
 
     this.apply(
       new ReceiveMessageDetailsUpdatedEvent({
