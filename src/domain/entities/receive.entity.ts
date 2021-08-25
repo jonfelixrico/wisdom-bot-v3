@@ -31,10 +31,6 @@ interface IReceiveReactionInput {
   readonly karma: number
 }
 
-interface IWithdrawReactionInput {
-  readonly userId: string
-}
-
 export class Receive extends DomainEntity implements IReceiveEntity {
   receiveId: string
   quoteId: string
@@ -91,7 +87,7 @@ export class Receive extends DomainEntity implements IReceiveEntity {
     )
   }
 
-  withdrawReaction({ userId }: IWithdrawReactionInput) {
+  withdrawReaction(userId: string) {
     const { receiveId, reactions } = this
 
     const index = reactions.findIndex((r) => r.userId === userId)
