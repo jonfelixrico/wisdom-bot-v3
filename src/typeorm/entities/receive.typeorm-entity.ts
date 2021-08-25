@@ -42,4 +42,9 @@ export class ReceiveTypeormEntity {
     },
   })
   revision: bigint
+
+  @Column({
+    default: 0,
+  })
+  receiveCountSnapshot: number
 }
