@@ -1,6 +1,7 @@
 import { DomainEntity } from '../abstracts/domain-entity.abstract'
 import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
 import { DomainError } from '../errors/domain-error.class'
+import { ReceiveMessageDetailsUpdatedEvent } from '../events/receive-message-details-updated.event'
 import { ReceiveReactedEvent } from '../events/receive-reacted.event'
 import { ReceiveReactionWithdrawnEvent } from '../events/receive-reaction-withdrawn.event'
 
@@ -15,14 +16,21 @@ interface IReaction {
   readonly karma: number
 }
 
+interface IReceiveMessageDetails {
+  channelId: string
+  messageId: string
+}
+
 export interface IReceiveEntity {
   receiveId: string
   receiveDt: Date
   quoteId: string
   guildId: string
   channelId: string
-  messageId: string
   userId: string
+
+  messageId?: string
+  interactionToken?: string
 
   reactions: IReaction[]
 }
@@ -36,11 +44,14 @@ export class Receive extends DomainEntity implements IReceiveEntity {
   receiveId: string
   quoteId: string
   channelId: string
-  messageId: string
+
   reactions: IReaction[]
   guildId: string
   receiveDt: Date
   userId: string
+
+  messageId?: string
+  interactionToken?: string
 
   constructor({
     channelId,
@@ -104,6 +115,21 @@ export class Receive extends DomainEntity implements IReceiveEntity {
       new ReceiveReactionWithdrawnEvent({
         receiveId,
         userId,
+      }),
+    )
+  }
+
+  updateMessageDetails({ messageId, channelId }: IReceiveMessageDetails) {
+    const { receiveId } = this
+
+    this.messageId = messageId ?? this.messageId
+    this.channelId = channelId ?? this.channelId
+
+    this.apply(
+      new ReceiveMessageDetailsUpdatedEvent({
+        receiveId,
+        messageId,
+        channelId,
       }),
     )
   }

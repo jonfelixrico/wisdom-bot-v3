@@ -1,18 +1,20 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ReceiveMessageUpdaterService } from './receive-message-updater.service';
+import { Test, TestingModule } from '@nestjs/testing'
+import { ReceiveMessageUpdaterService } from './receive-message-updater.service'
 
 describe('ReceiveMessageUpdaterService', () => {
-  let service: ReceiveMessageUpdaterService;
+  let service: ReceiveMessageUpdaterService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [ReceiveMessageUpdaterService],
-    }).compile();
+    }).compile()
 
-    service = module.get<ReceiveMessageUpdaterService>(ReceiveMessageUpdaterService);
-  });
+    service = module.get<ReceiveMessageUpdaterService>(
+      ReceiveMessageUpdaterService,
+    )
+  })
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-});
+    expect(service).toBeDefined()
+  })
+})
