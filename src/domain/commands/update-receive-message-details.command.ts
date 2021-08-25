@@ -1,7 +1,7 @@
 import { ICommand } from '../command.interface'
 
 export interface IUpdateReceiveMessageDetailsCommandPayload {
-  quoteId: string
+  receiveId: string
   messageId: string
   channelId: string
 }
