@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
+import { ReceiveTypeormEntity } from './receive.typeorm-entity'
 
 @Entity({
   name: 'reaction',
@@ -11,6 +12,15 @@ export class ReactionTypeormEntity {
     nullable: true,
   })
   receiveId: string
+
+  @ManyToOne(() => ReceiveTypeormEntity, {
+    nullable: true,
+  })
+  @JoinColumn({
+    name: 'receiveId',
+    referencedColumnName: 'id',
+  })
+  receive: Promise<ReceiveTypeormEntity>
 
   @Column()
   reactionDt: Date
