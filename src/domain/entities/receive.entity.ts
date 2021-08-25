@@ -22,6 +22,7 @@ export interface IReceiveEntity {
   guildId: string
   channelId: string
   messageId: string
+  userId: string
 
   reactions: IReaction[]
 }
@@ -39,6 +40,7 @@ export class Receive extends DomainEntity implements IReceiveEntity {
   reactions: IReaction[]
   guildId: string
   receiveDt: Date
+  userId: string
 
   constructor({
     channelId,
