@@ -2,7 +2,6 @@ import { Logger } from '@nestjs/common'
 import { CommandBus, EventsHandler, IEventHandler } from '@nestjs/cqrs'
 import { sprintf } from 'sprintf-js'
 import { DiscordInteractionEvent } from 'src/discord-interactions/types/discord-interaction.event'
-import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 import { ReceiveQuoteCommand } from 'src/domain/commands/receive-quote.command'
 import { QuoteQueryService } from 'src/read-model-query/quote-query/quote-query.service'
 
@@ -14,7 +13,6 @@ export class ReceiveInteractionHandlerService
     private logger: Logger,
     private quoteQuery: QuoteQueryService,
     private commandBus: CommandBus,
-    private helper: DiscordHelperService,
   ) {}
 
   async handle({ interaction }: DiscordInteractionEvent) {
