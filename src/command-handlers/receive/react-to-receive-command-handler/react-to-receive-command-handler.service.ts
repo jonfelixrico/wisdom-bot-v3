@@ -22,6 +22,11 @@ export class ReactToReceiveCommandHandlerService
     }
 
     const { entity, revision } = receive
+
+    if (entity.hasUserReacted(userId)) {
+      entity.withdrawReaction(userId)
+    }
+
     entity.react({ karma, userId })
 
     this.repo.publishEvents(entity, revision)
