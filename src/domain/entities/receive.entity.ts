@@ -61,11 +61,15 @@ export class Receive extends DomainEntity implements IReceiveEntity {
     this.receiveDt = receiveDt
   }
 
+  hasUserReacted(userId): boolean {
+    return this.reactions.some((reaction) => reaction.userId === userId)
+  }
+
   react({ karma = 1, userId }: IReceiveReactionInput) {
     const { reactions } = this
     if (karma === 0) {
       throw new DomainError(REACTION_INVALID_KARMA)
-    } else if (reactions.some((reaction) => reaction.userId === userId)) {
+    } else if (this.hasUserReacted(userId)) {
       throw new DomainError(REACTION_DUPLICATE_USER)
     }
 
