@@ -32,6 +32,10 @@ const created: TypeormReducer<IReceiveCreatedPayload> = async (
     return false
   }
 
+  const receiveCount = await manager.count(QuoteTypeormEntity, {
+    where: { id: quoteId },
+  })
+
   await manager.insert(ReceiveTypeormEntity, {
     id: receiveId,
     channelId,
@@ -41,6 +45,7 @@ const created: TypeormReducer<IReceiveCreatedPayload> = async (
     receiveDt,
     userId,
     revision,
+    receiveCountSnapshot: receiveCount + 1,
   })
 
   return true
