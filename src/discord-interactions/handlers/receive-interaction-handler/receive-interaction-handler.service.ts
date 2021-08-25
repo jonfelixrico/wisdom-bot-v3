@@ -27,7 +27,7 @@ export class ReceiveInteractionHandlerService
     const { logger, quoteQuery, commandBus } = this
     const { guild, channel, user: receiver, options } = interaction
 
-    await interaction.deferReply()
+    const reply = await interaction.deferReply({ fetchReply: true })
 
     const author = options.getUser('author')
 
@@ -52,6 +52,7 @@ export class ReceiveInteractionHandlerService
         channelId: channel.id,
         quoteId,
         userId: receiver.id,
+        messageId: reply.id,
       }),
     )
 
