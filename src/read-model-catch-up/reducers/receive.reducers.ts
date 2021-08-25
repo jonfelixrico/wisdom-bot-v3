@@ -120,12 +120,12 @@ const messageUpdated: TypeormReducer<IReceiveMessageDetailsUpdatedPayload> =
       .getRepository(ReceiveTypeormEntity)
       .update(
         {
-          ...otherData,
-          revision,
-        },
-        {
           revision: revision - 1n,
           id: receiveId,
+        },
+        {
+          ...otherData,
+          revision,
         },
       )
 
