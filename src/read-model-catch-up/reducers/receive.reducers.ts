@@ -57,14 +57,6 @@ const reacted: TypeormReducer<IReceiveReactedPayload> = async (
 ) => {
   const { reactionDt, karma, receiveId, userId } = data
 
-  const receive = await manager.findOne(ReceiveTypeormEntity, {
-    id: receiveId,
-  })
-
-  if (!receive) {
-    return false
-  }
-
   const { affected } = await manager.update(
     ReceiveTypeormEntity,
     {
@@ -86,7 +78,6 @@ const reacted: TypeormReducer<IReceiveReactedPayload> = async (
     karma,
     userId,
     receiveId,
-    guildId: receive.guildId,
   })
 
   return true
