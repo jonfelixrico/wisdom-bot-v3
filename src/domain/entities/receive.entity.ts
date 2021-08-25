@@ -1,6 +1,7 @@
 import { DomainEntity } from '../abstracts/domain-entity.abstract'
 import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
 import { DomainError } from '../errors/domain-error.class'
+import { ReceiveMessageDetailsUpdatedEvent } from '../events/receive-message-details-updated.event'
 import { ReceiveReactedEvent } from '../events/receive-reacted.event'
 import { ReceiveReactionWithdrawnEvent } from '../events/receive-reaction-withdrawn.event'
 
@@ -13,6 +14,11 @@ const {
 interface IReaction {
   readonly userId: string
   readonly karma: number
+}
+
+interface IReceiveMessageDetails {
+  channelId: string
+  messageId: string
 }
 
 export interface IReceiveEntity {
@@ -109,6 +115,21 @@ export class Receive extends DomainEntity implements IReceiveEntity {
       new ReceiveReactionWithdrawnEvent({
         receiveId,
         userId,
+      }),
+    )
+  }
+
+  updateMessageDetails(details: IReceiveMessageDetails) {
+    const { receiveId, messageId, channelId } = this
+
+    this.messageId = messageId ?? details.messageId
+    this.channelId = channelId ?? details.channelId
+
+    this.apply(
+      new ReceiveMessageDetailsUpdatedEvent({
+        receiveId,
+        messageId,
+        channelId,
       }),
     )
   }
