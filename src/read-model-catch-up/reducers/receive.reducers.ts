@@ -23,6 +23,7 @@ const created: TypeormReducer<IReceiveCreatedPayload> = async (
     receiveId,
     userId,
     guildId,
+    interactionToken,
   } = data
 
   const quote = await manager.findOne(QuoteTypeormEntity, {
@@ -47,6 +48,7 @@ const created: TypeormReducer<IReceiveCreatedPayload> = async (
     userId,
     revision,
     receiveCountSnapshot: receiveCount + 1,
+    interactionToken,
   })
 
   return true
