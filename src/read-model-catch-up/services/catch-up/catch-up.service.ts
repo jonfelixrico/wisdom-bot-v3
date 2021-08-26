@@ -99,6 +99,7 @@ export class CatchUpService implements OnApplicationBootstrap {
         await runner.rollbackTransaction()
       }
     } catch (e) {
+      this.logger.error(e.message, e.stack, CatchUpService.name)
       await runner.rollbackTransaction()
     } finally {
       await runner.release()
