@@ -30,7 +30,7 @@ export class ReceiveReactionButtonHandlerService
       return
     }
 
-    await interaction.deferReply()
+    await interaction.deferReply({ ephemeral: true })
 
     const [receiveId, strKarma] = CUSTOM_ID_REGEXP.exec(
       interaction.customId,
