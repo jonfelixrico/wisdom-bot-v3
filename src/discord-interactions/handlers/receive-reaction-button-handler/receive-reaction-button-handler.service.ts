@@ -43,12 +43,22 @@ export class ReceiveReactionButtonHandlerService
 
     if (!receive) {
       await interaction.editReply(
-        'Sorry, but that quote is no longer accepting reactions.',
+        'Sorry, but that quote is no longer accepting reactions',
       )
       return
     }
 
     const userId = interaction.user.id
+    const vote = receive.reactions.find(
+      (reaction) => reaction.userId === userId,
+    )
+
+    if (vote && vote.karma === karma) {
+      interaction.editReply(
+        sprintf('You have already reacted with %s', EMOJI_MAPPING[vote.karma]),
+      )
+      return
+    }
 
     try {
       await this.commandBus.execute(
@@ -59,12 +69,10 @@ export class ReceiveReactionButtonHandlerService
         }),
       )
 
-      const vote = receive.reactions.find(
-        (reaction) => reaction.userId === userId,
-      )
-
       if (!vote) {
-        await interaction.editReply(`You have voted ${EMOJI_MAPPING[karma]}`)
+        await interaction.editReply(
+          `You have reacted with ${EMOJI_MAPPING[karma]}`,
+        )
         return
       }
 
