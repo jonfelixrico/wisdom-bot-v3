@@ -9,7 +9,7 @@ export class ReactToReceiveCommandHandlerService
 {
   constructor(private repo: ReceiveWriteRepository, private logger: Logger) {}
 
-  async execute({ payload }: ReactToReceiveCommand): Promise<any> {
+  async execute({ payload }: ReactToReceiveCommand): Promise<boolean> {
     const { karma, receiveId, userId } = payload
 
     const receive = await this.repo.findById(receiveId)
@@ -18,7 +18,7 @@ export class ReactToReceiveCommandHandlerService
         `Did not process ReactToReceiveCommand for receive ${receiveId} not found.`,
         ReactToReceiveCommandHandlerService.name,
       )
-      return null
+      return false
     }
 
     const { entity, revision } = receive
@@ -35,6 +35,6 @@ export class ReactToReceiveCommandHandlerService
       ReactToReceiveCommandHandlerService.name,
     )
 
-    return entity
+    return true
   }
 }
