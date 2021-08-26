@@ -9,7 +9,7 @@ import { DiscordInteractionEvent } from 'src/discord-interactions/types/discord-
 import { ReactToReceiveCommand } from 'src/domain/commands/react-to-receive.command'
 import { IReceiveQueryOutput, ReceiveQuery } from 'src/queries/receive.query'
 
-const CUSTOM_ID_REGEXP = /receive\/(.+)\/(.+)/
+const CUSTOM_ID_REGEXP = /^receive\/(.+)\/react\/(.+)$/
 
 const EMOJI_MAPPING = {
   '1': '👍',
