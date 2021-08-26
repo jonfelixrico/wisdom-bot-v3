@@ -5,7 +5,7 @@ import { ReceiveTypeormEntity } from './receive.typeorm-entity'
   name: 'reaction',
 })
 export class ReactionTypeormEntity {
-  @PrimaryColumn('uuid')
+  @PrimaryColumn('varchar')
   id: string
 
   @Column({
