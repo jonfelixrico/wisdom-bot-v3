@@ -20,6 +20,7 @@ import { StatsUserTopcontributorsInteractionHandlerService } from './handlers/st
 import { StatsUserTopreceiversInteractionHandlerService } from './handlers/stats-user-topreceivers-interaction-handler/stats-user-topreceivers-interaction-handler.service'
 import { StatsUserGeneralInteractionHandlerService } from './handlers/stats-user-general-interaction-handler/stats-user-general-interaction-handler.service'
 import { ReceiveMessageUpdaterService } from './downstream/receive-message-updater/receive-message-updater.service'
+import { ReceiveReactionButtonHandlerService } from './handlers/receive-reaction-button-handler/receive-reaction-button-handler.service'
 
 @Module({
   imports: [DiscordModule, ReadModelQueryModule],
@@ -43,6 +44,7 @@ import { ReceiveMessageUpdaterService } from './downstream/receive-message-updat
     StatsUserTopreceiversInteractionHandlerService,
     StatsUserGeneralInteractionHandlerService,
     ReceiveMessageUpdaterService,
+    ReceiveReactionButtonHandlerService,
   ],
 })
 export class DiscordInteractionsModule {}
