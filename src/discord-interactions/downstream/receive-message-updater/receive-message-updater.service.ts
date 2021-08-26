@@ -3,10 +3,14 @@ import { CommandBus, EventBus, ofType, QueryBus } from '@nestjs/cqrs'
 import {
   Client,
   InteractionWebhook,
+  MessageActionRow,
+  MessageButton,
+  MessageEditOptions,
   MessageEmbedOptions,
   Util,
 } from 'discord.js'
 import { debounceTime, filter, groupBy, mergeMap } from 'rxjs/operators'
+import { sprintf } from 'sprintf-js'
 import { DiscordHelperService } from 'src/discord/discord-helper/discord-helper.service'
 import { UpdateReceiveMessageDetailsCommand } from 'src/domain/commands/update-receive-message-details.command'
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
@@ -41,9 +45,7 @@ export class ReceiveMessageUpdaterService implements OnModuleInit {
       receive.interactionToken,
     )
 
-    const message = await webhook.send({
-      embeds: [await this.generateEmbed(receive)],
-    })
+    const message = await webhook.send(await this.generateResponse(receive))
 
     await this.commandBus.execute(
       new UpdateReceiveMessageDetailsCommand({
@@ -127,7 +129,7 @@ export class ReceiveMessageUpdaterService implements OnModuleInit {
       return
     }
 
-    await message.edit({ embeds: [await this.generateEmbed(receive)] })
+    await message.edit(await this.generateResponse(receive))
 
     logger.verbose(
       `Updated the displayed message for receive ${receiveId}`,
@@ -135,20 +137,30 @@ export class ReceiveMessageUpdaterService implements OnModuleInit {
     )
   }
 
-  private async generateEmbed({
+  private async generateResponse({
     quote,
     userId,
     guildId,
     receiveCountSnapshot,
-  }: IReceiveQueryOutput): Promise<MessageEmbedOptions> {
+    receiveId,
+    reactions,
+  }: IReceiveQueryOutput): Promise<MessageEditOptions> {
     const { helper } = this
     const { content, authorId, submitDt } = quote
-    return {
+
+    const points = reactions.reduce((sum, reaction) => sum + reaction.karma, 0)
+
+    const embed: MessageEmbedOptions = {
       description: [
         `**"${Util.escapeMarkdown(content)}"**`,
         `- <@${authorId}>, ${submitDt.getFullYear()}`,
         '',
         `Received by <@${userId}>`,
+        '',
+        sprintf(
+          'This received quote has garnered a total of **%d** points. To contribute points, give this a 👍 or 👎 by clicking a button below',
+          points,
+        ),
       ].join('\n'),
 
       author: {
@@ -170,6 +182,26 @@ export class ReceiveMessageUpdaterService implements OnModuleInit {
           quote.authorId,
         ),
       },
+    }
+
+    const row = new MessageActionRow({
+      components: [
+        new MessageButton({
+          customId: `receive/${receiveId}/react/1`,
+          style: 'SUCCESS',
+          emoji: '👍',
+        }),
+        new MessageButton({
+          customId: `receive/${receiveId}/react/-1`,
+          style: 'DANGER',
+          emoji: '👎',
+        }),
+      ],
+    })
+
+    return {
+      embeds: [embed],
+      components: [row],
     }
   }
 
