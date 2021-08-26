@@ -8,6 +8,8 @@ import {
   TypeormReducer,
 } from '../../types/typeorm-reducers.types'
 import { QuoteTypeormEntity } from 'src/typeorm/entities/quote.typeorm-entity'
+import { IReceiveReactionWithdrawnEventPayload } from 'src/domain/events/receive-reaction-withdrawn.event'
+import { IReceiveMessageDetailsUpdatedPayload } from 'src/domain/events/receive-message-details-updated.event'
 
 const created: TypeormReducer<IReceiveCreatedPayload> = async (
   { data, revision },
@@ -21,6 +23,7 @@ const created: TypeormReducer<IReceiveCreatedPayload> = async (
     receiveId,
     userId,
     guildId,
+    interactionToken,
   } = data
 
   const quote = await manager.findOne(QuoteTypeormEntity, {
@@ -31,6 +34,10 @@ const created: TypeormReducer<IReceiveCreatedPayload> = async (
     return false
   }
 
+  const receiveCount = await manager.count(ReceiveTypeormEntity, {
+    where: { quoteId },
+  })
+
   await manager.insert(ReceiveTypeormEntity, {
     id: receiveId,
     channelId,
@@ -40,6 +47,8 @@ const created: TypeormReducer<IReceiveCreatedPayload> = async (
     receiveDt,
     userId,
     revision,
+    receiveCountSnapshot: receiveCount + 1,
+    interactionToken,
   })
 
   return true
@@ -49,15 +58,7 @@ const reacted: TypeormReducer<IReceiveReactedPayload> = async (
   { revision, data },
   manager,
 ) => {
-  const { reactionDt, reactionId, karma, receiveId, userId } = data
-
-  const receive = await manager.findOne(ReceiveTypeormEntity, {
-    id: receiveId,
-  })
-
-  if (!receive) {
-    return false
-  }
+  const { reactionDt, karma, receiveId, userId } = data
 
   const { affected } = await manager.update(
     ReceiveTypeormEntity,
@@ -76,18 +77,71 @@ const reacted: TypeormReducer<IReceiveReactedPayload> = async (
 
   await manager.insert(ReactionTypeormEntity, {
     reactionDt,
-    id: reactionId,
+    id: [receiveId, userId].join('/'),
     karma,
     userId,
     receiveId,
-    guildId: receive.guildId,
   })
 
   return true
 }
 
-const { RECEIVE_CREATED, RECEIVE_REACTED } = DomainEventNames
+const reactionWithdrawn: TypeormReducer<IReceiveReactionWithdrawnEventPayload> =
+  async ({ data, revision }, manager) => {
+    const { receiveId, userId } = data
+
+    const { affected } = await manager.update(
+      ReceiveTypeormEntity,
+      {
+        id: receiveId,
+        revision: revision - 1n,
+      },
+      {
+        revision,
+      },
+    )
+
+    if (!affected) {
+      return false
+    }
+
+    await manager.getRepository(ReactionTypeormEntity).delete({
+      id: [receiveId, userId].join('/'),
+    })
+
+    return true
+  }
+
+const messageUpdated: TypeormReducer<IReceiveMessageDetailsUpdatedPayload> =
+  async ({ data, revision }, manager) => {
+    const { receiveId, ...otherData } = data
+
+    const { affected } = await manager
+      .getRepository(ReceiveTypeormEntity)
+      .update(
+        {
+          revision: revision - 1n,
+          id: receiveId,
+        },
+        {
+          ...otherData,
+          revision,
+        },
+      )
+
+    return !!affected
+  }
+
+const {
+  RECEIVE_CREATED,
+  RECEIVE_REACTED,
+  RECEIVE_REACTION_WITHDRAWN,
+  RECEIVE_MESSAGE_DETAILS_UPDATED,
+} = DomainEventNames
+
 export const RECEIVE_REDUCERS: TypeormReducerMap = Object.freeze({
   [RECEIVE_CREATED]: created,
   [RECEIVE_REACTED]: reacted,
+  [RECEIVE_REACTION_WITHDRAWN]: reactionWithdrawn,
+  [RECEIVE_MESSAGE_DETAILS_UPDATED]: messageUpdated,
 })

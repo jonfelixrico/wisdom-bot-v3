@@ -24,10 +24,10 @@ export class CommandManagerService implements OnApplicationBootstrap {
 
     const routes: `/${string}`[] = []
 
-    routes.push(Routes.applicationCommands(applicationId))
-
     if (debugGuildId) {
       routes.push(Routes.applicationGuildCommands(applicationId, debugGuildId))
+    } else {
+      routes.push(Routes.applicationCommands(applicationId))
     }
 
     return routes

@@ -1,11 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
 import { ReceiveTypeormEntity } from './receive.typeorm-entity'
 
 @Entity({
   name: 'reaction',
 })
 export class ReactionTypeormEntity {
-  @PrimaryColumn('uuid')
+  @PrimaryColumn('varchar')
   id: string
 
   @Column({
@@ -15,6 +15,10 @@ export class ReactionTypeormEntity {
 
   @ManyToOne(() => ReceiveTypeormEntity, {
     nullable: true,
+  })
+  @JoinColumn({
+    name: 'receiveId',
+    referencedColumnName: 'id',
   })
   receive: Promise<ReceiveTypeormEntity>
 
@@ -26,8 +30,4 @@ export class ReactionTypeormEntity {
 
   @Column({ type: 'integer' })
   karma: number
-
-  // This is here to boost the performance of retrieving reactions from a certain guild
-  @Column()
-  guildId: string
 }

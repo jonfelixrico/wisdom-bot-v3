@@ -1,5 +1,13 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm'
 import { QuoteTypeormEntity } from './quote.typeorm-entity'
+import { ReactionTypeormEntity } from './reaction.typeorm-entity'
 
 @Entity({
   name: 'receive',
@@ -16,10 +24,21 @@ export class ReceiveTypeormEntity {
   @ManyToOne(() => QuoteTypeormEntity, {
     nullable: true,
   })
+  @JoinColumn({
+    name: 'quoteId',
+    referencedColumnName: 'id',
+  })
   quote: Promise<QuoteTypeormEntity>
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   messageId: string
+
+  @Column({
+    nullable: true,
+  })
+  interactionToken: string
 
   @Column()
   guildId: string
@@ -42,4 +61,12 @@ export class ReceiveTypeormEntity {
     },
   })
   revision: bigint
+
+  @Column({
+    default: 0,
+  })
+  receiveCountSnapshot: number
+
+  @OneToMany(() => ReactionTypeormEntity, (reaction) => reaction.receive)
+  reactions: Promise<Array<ReactionTypeormEntity>>
 }

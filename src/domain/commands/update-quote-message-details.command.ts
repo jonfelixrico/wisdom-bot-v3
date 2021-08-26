@@ -1,13 +1,13 @@
 import { ICommand } from '../command.interface'
 
-export interface IUpdateQuoteMessageDetailsCommand {
+export interface IUpdateQuoteMessageDetailsCommandPayload {
   quoteId: string
   messageId: string
   channelId: string
 }
 
 export class UpdateQuoteMessageDetailsCommand
-  implements ICommand<IUpdateQuoteMessageDetailsCommand>
+  implements ICommand<IUpdateQuoteMessageDetailsCommandPayload>
 {
-  constructor(readonly payload: IUpdateQuoteMessageDetailsCommand) {}
+  constructor(readonly payload: IUpdateQuoteMessageDetailsCommandPayload) {}
 }
