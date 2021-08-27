@@ -29,6 +29,11 @@ export class QuoteTypeormEntity {
   @Column({
     nullable: true,
   })
+  interactionToken: string
+
+  @Column({
+    nullable: true,
+  })
   channelId: string
 
   @Column({

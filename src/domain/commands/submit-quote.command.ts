@@ -10,6 +10,7 @@ export interface ISubmitQuoteCommandPayload {
   // for tracking
   channelId?: string
   messageId?: string
+  interactionToken?: string
 }
 
 export class SubmitQuoteCommand

@@ -29,6 +29,7 @@ const submitted: TypeormReducer<IQuoteSubmittedEventPayload> = async (
     submitDt,
     upvoteCount,
     upvoteEmoji,
+    interactionToken,
   } = data
 
   await manager.insert(QuoteTypeormEntity, {
@@ -44,6 +45,7 @@ const submitted: TypeormReducer<IQuoteSubmittedEventPayload> = async (
     submitDt,
     upvoteCount,
     upvoteEmoji,
+    interactionToken,
   })
 
   return true
