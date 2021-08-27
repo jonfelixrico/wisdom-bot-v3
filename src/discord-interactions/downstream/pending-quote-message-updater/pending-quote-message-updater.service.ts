@@ -46,7 +46,7 @@ const DEAD_END_EVENTS = new Set<string>([
 ])
 
 @Injectable()
-export class PendingQuoteMessageUpdater implements OnModuleInit {
+export class PendingQuoteMessageUpdaterService implements OnModuleInit {
   constructor(
     private eventBus: EventBus,
     private queryBus: QueryBus,
@@ -151,7 +151,7 @@ export class PendingQuoteMessageUpdater implements OnModuleInit {
 
     logger.debug(
       `Updating message for quote ${quoteId}`,
-      PendingQuoteMessageUpdater.name,
+      PendingQuoteMessageUpdaterService.name,
     )
 
     const pendingQuote = (await this.queryBus.execute(
@@ -161,7 +161,7 @@ export class PendingQuoteMessageUpdater implements OnModuleInit {
     if (!pendingQuote) {
       logger.warn(
         `Attempted to update message for unknown quote ${quoteId}`,
-        PendingQuoteMessageUpdater.name,
+        PendingQuoteMessageUpdaterService.name,
       )
       return
     }
@@ -178,7 +178,7 @@ export class PendingQuoteMessageUpdater implements OnModuleInit {
     if (!guild.available) {
       logger.warn(
         `Guild ${guildId} is inaccessible. Can't update.`,
-        PendingQuoteMessageUpdater.name,
+        PendingQuoteMessageUpdaterService.name,
       )
       return
     }
@@ -189,7 +189,7 @@ export class PendingQuoteMessageUpdater implements OnModuleInit {
     if (!channel) {
       logger.warn(
         `Channel ${channelId} not found. Can't update.`,
-        PendingQuoteMessageUpdater.name,
+        PendingQuoteMessageUpdaterService.name,
       )
       return
     }
@@ -197,7 +197,7 @@ export class PendingQuoteMessageUpdater implements OnModuleInit {
     if (!permissions.has('READ_MESSAGE_HISTORY')) {
       logger.warn(
         `No history read rights for ${channelId}. Can't update.`,
-        PendingQuoteMessageUpdater.name,
+        PendingQuoteMessageUpdaterService.name,
       )
       return
     }
@@ -206,7 +206,7 @@ export class PendingQuoteMessageUpdater implements OnModuleInit {
     if (!message) {
       logger.warn(
         `Attempted cannot find message ${messageId} for quote ${quoteId}`,
-        PendingQuoteMessageUpdater.name,
+        PendingQuoteMessageUpdaterService.name,
       )
       return
     }
@@ -214,7 +214,7 @@ export class PendingQuoteMessageUpdater implements OnModuleInit {
     if (!message.editable || message.deleted) {
       logger.warn(
         `Message ${messageId} can no longer be updated.`,
-        PendingQuoteMessageUpdater.name,
+        PendingQuoteMessageUpdaterService.name,
       )
       return
     }
@@ -225,7 +225,7 @@ export class PendingQuoteMessageUpdater implements OnModuleInit {
 
     logger.verbose(
       `Updated the displayed message for quote ${quoteId}`,
-      PendingQuoteMessageUpdater.name,
+      PendingQuoteMessageUpdaterService.name,
     )
   }
 
