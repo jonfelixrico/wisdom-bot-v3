@@ -6,8 +6,6 @@ import { CommandManagerService } from './services/command-manager/command-manage
 import { ReadModelQueryModule } from 'src/read-model-query/read-model-query.module'
 import { SubmitInteractionHandlerService } from './handlers/submit-interaction-handler/submit-interaction-handler.service'
 import { QuoteVoteBtnInteractionHandlerService } from './handlers/quote-vote-btn-interaction-handler/quote-vote-btn-interaction-handler.service'
-import { PendingQuoteVoteChangeMessageUpdaterService } from './downstream/pending-quote-vote-change-message-updater/pending-quote-vote-change-message-updater.service'
-import { PendingQuoteResponseGeneratorService } from './services/pending-quote-response-generator/pending-quote-response-generator.service'
 import { QuoteAcceptedAnnouncerService } from './downstream/quote-accepted-announcer/quote-accepted-announcer.service'
 import { QuoteExpiredAnnouncerService } from './downstream/quote-expired-announcer/quote-expired-announcer.service'
 import { StatsServerGeneralInteractionHandlerService } from './handlers/stats-server-general-interaction-handler/stats-server-general-interaction-handler.service'
@@ -31,8 +29,6 @@ import { PendingQuoteMessageUpdaterService } from './downstream/pending-quote-me
     CommandManagerService,
     SubmitInteractionHandlerService,
     QuoteVoteBtnInteractionHandlerService,
-    PendingQuoteVoteChangeMessageUpdaterService,
-    PendingQuoteResponseGeneratorService,
     QuoteAcceptedAnnouncerService,
     QuoteExpiredAnnouncerService,
     StatsServerGeneralInteractionHandlerService,
