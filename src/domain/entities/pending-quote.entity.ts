@@ -40,6 +40,7 @@ export interface IPendingQuote {
   // for tracking
   channelId?: string
   messageId?: string
+  interactionToken?: string
 
   // for approval/expiration
   expireDt: Date
@@ -66,6 +67,7 @@ export class PendingQuote extends DomainEntity implements IPendingQuote {
 
   channelId?: string
   messageId?: string
+  interactionToken?: string
 
   // These are pending quote status flags
   acceptDt?: Date

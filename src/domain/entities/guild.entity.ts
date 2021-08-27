@@ -15,6 +15,7 @@ export interface ISubmittedQuote {
   // for tracking
   channelId?: string
   messageId?: string
+  interactionToken?: string
 }
 
 export class Guild extends DomainEntity implements IGuildEntity {
