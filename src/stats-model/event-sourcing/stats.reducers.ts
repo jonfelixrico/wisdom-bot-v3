@@ -9,6 +9,7 @@ import { EntityManager } from 'typeorm'
 import { GuildMemberInteractionTypeormEntity } from '../db/entities/guild-member-interaction.typeorm-entity'
 import { GuildMemberTypeormEntity } from '../db/entities/guild-member.typeorm-entity'
 import { QuoteInfoTypeormEntity } from '../db/entities/quote-info.typeorm-entity'
+import { QuoteReceiveInfoTypeormEntity } from '../db/entities/quote-receive-info.typeorm-entity'
 
 interface IIncrementGuildMemberPropertyInput {
   guildId: string
@@ -125,7 +126,7 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
   { data },
   manager,
 ) => {
-  const { quoteId, userId, guildId } = data
+  const { quoteId, userId, guildId, receiveId } = data
 
   const quoteRepo = manager.getRepository(QuoteInfoTypeormEntity)
 
@@ -178,6 +179,11 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
     },
     manager,
   )
+
+  await manager.insert(QuoteReceiveInfoTypeormEntity, {
+    quoteId,
+    receiveId,
+  })
 
   return true
 }
