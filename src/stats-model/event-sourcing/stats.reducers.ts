@@ -230,14 +230,14 @@ const reacted: TypeormReducer<IReceiveReactedPayload> = async (
     return false
   }
 
-  const { receives, totalKarma, guildId, authorId } = quote
+  const { reactions, totalKarma, guildId, authorId } = quote
 
   const { affected } = await quoteRepo.update(
     {
       quoteId,
     },
     {
-      receives: receives + 1,
+      reactions: reactions + 1,
       totalKarma: totalKarma + karma,
     },
   )
