@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm'
 
-@Entity('quote-reaction')
-export class QuoteReactionTypeormEntity {
+@Entity('quote-reaction-info')
+export class QuoteReactionInfoTypeormEntity {
   @PrimaryColumn('varchar')
   id: string
 
