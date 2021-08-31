@@ -270,6 +270,8 @@ const reacted: TypeormReducer<IReceiveReactedPayload> = async (
     karma,
     quoteId,
   })
+
+  return true
 }
 
 const reactionWithdrawn: TypeormReducer<IReceiveReactionWithdrawnEventPayload> =
@@ -343,6 +345,8 @@ const reactionWithdrawn: TypeormReducer<IReceiveReactionWithdrawnEventPayload> =
     await reactionRepo.delete({
       id: reactionId,
     })
+
+    return true
   }
 
 const {
