@@ -14,11 +14,21 @@ import { QuoteReceiveInfoTypeormEntity } from '../db/entities/quote-receive-info
 interface IIncrementGuildMemberPropertyInput {
   guildId: string
   userId: string
-  propertyToIncrement: 'receives' | 'submissions' | 'quoteReceives'
+  propertyToIncrement:
+    | 'receives'
+    | 'submissions'
+    | 'quoteReceives'
+    | 'reactions'
+  incrementValue?: 1 | -1
 }
 
 async function incrementGuildMemberProperty(
-  { guildId, userId, propertyToIncrement }: IIncrementGuildMemberPropertyInput,
+  {
+    guildId,
+    userId,
+    propertyToIncrement,
+    incrementValue,
+  }: IIncrementGuildMemberPropertyInput,
   manager: EntityManager,
 ) {
   const repo = manager.getRepository(GuildMemberTypeormEntity)
@@ -37,7 +47,8 @@ async function incrementGuildMemberProperty(
   await repo.update(
     { guildId, userId },
     {
-      [propertyToIncrement]: guildMember[propertyToIncrement] + 1,
+      [propertyToIncrement]:
+        guildMember[propertyToIncrement] + (incrementValue ?? 1),
     },
   )
 }
@@ -47,7 +58,8 @@ interface IIncrementGuildMemeberInteractionPropertyInput {
   userId: string
   targetUserId: string
   // TODO rename submitted to submissions in the typeorm entity
-  propertyToIncrement: 'receives' | 'submissions'
+  propertyToIncrement: 'receives' | 'submissions' | 'reactions'
+  incrementValue?: 1 | -1
 }
 
 async function incrementGuildMemeberInteractionProperty(
@@ -56,6 +68,7 @@ async function incrementGuildMemeberInteractionProperty(
     propertyToIncrement,
     targetUserId,
     userId,
+    incrementValue,
   }: IIncrementGuildMemeberInteractionPropertyInput,
   manager: EntityManager,
 ) {
@@ -73,7 +86,8 @@ async function incrementGuildMemeberInteractionProperty(
     await repo.update(
       { id: interaction.id },
       {
-        [propertyToIncrement]: interaction[propertyToIncrement] + 1,
+        [propertyToIncrement]:
+          interaction[propertyToIncrement] + (incrementValue ?? 1),
       },
     )
     return
