@@ -14,5 +14,5 @@ export class QuoteReceiveInfoTypeormEntity {
     name: 'quoteId',
     referencedColumnName: 'quoteId',
   })
-  quote: QuoteInfoTypeormEntity
+  quote: Promise<QuoteInfoTypeormEntity>
 }
