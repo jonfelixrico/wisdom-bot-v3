@@ -2,6 +2,7 @@ import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import { IReceiveCreatedPayload } from 'src/domain/events/receive-created.event'
 import { IReceiveReactedPayload } from 'src/domain/events/receive-reacted.event'
+import { IReceiveReactionWithdrawnEventPayload } from 'src/domain/events/receive-reaction-withdrawn.event'
 import {
   TypeormReducer,
   TypeormReducerMap,
@@ -203,7 +204,7 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
   return true
 }
 
-const receiveReacted: TypeormReducer<IReceiveReactedPayload> = async (
+const reacted: TypeormReducer<IReceiveReactedPayload> = async (
   { data },
   manager,
 ) => {
@@ -264,10 +265,75 @@ const receiveReacted: TypeormReducer<IReceiveReactedPayload> = async (
   )
 }
 
-const { QUOTE_SUBMITTED, RECEIVE_CREATED, RECEIVE_REACTED } = DomainEventNames
+const reactionWithdrawn: TypeormReducer<IReceiveReactionWithdrawnEventPayload> =
+  async ({ data }, manager) => {
+    const { receiveId, karma, userId } = data
+    const receiveData = await manager.findOne(QuoteReceiveInfoTypeormEntity, {
+      where: { receiveId },
+    })
+
+    if (!receiveData) {
+      return false
+    }
+
+    const quoteRepo = manager.getRepository(QuoteInfoTypeormEntity)
+
+    const { quoteId } = receiveData
+
+    const quote = await quoteRepo.findOne({
+      where: { quoteId },
+    })
+
+    if (!quote) {
+      return false
+    }
+
+    const { receives, totalKarma, guildId, authorId } = quote
+
+    const { affected } = await quoteRepo.update(
+      { quoteId },
+      {
+        receives: receives - 1,
+        totalKarma: totalKarma - karma,
+      },
+    )
+
+    if (!affected) {
+      return false
+    }
+
+    await incrementGuildMemberProperty(
+      {
+        userId,
+        guildId,
+        propertyToIncrement: 'reactions',
+        incrementValue: -1,
+      },
+      manager,
+    )
+
+    await incrementGuildMemeberInteractionProperty(
+      {
+        guildId,
+        userId,
+        targetUserId: authorId,
+        propertyToIncrement: 'reactions',
+        incrementValue: -1,
+      },
+      manager,
+    )
+  }
+
+const {
+  QUOTE_SUBMITTED,
+  RECEIVE_CREATED,
+  RECEIVE_REACTED,
+  RECEIVE_REACTION_WITHDRAWN,
+} = DomainEventNames
 
 export const STATS_REDUCERS: TypeormReducerMap = {
   [QUOTE_SUBMITTED]: submit,
   [RECEIVE_CREATED]: receive,
-  [RECEIVE_REACTED]: receiveReacted,
+  [RECEIVE_REACTED]: reacted,
+  [RECEIVE_REACTION_WITHDRAWN]: reactionWithdrawn,
 }
