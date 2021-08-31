@@ -22,4 +22,9 @@ export class QuoteInfoTypeormEntity {
     default: 0,
   })
   receives: number
+
+  @Column({
+    default: 0,
+  })
+  totalKarma: number
 }

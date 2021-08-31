@@ -27,4 +27,9 @@ export class GuildMemberTypeormEntity {
     default: 0,
   })
   submissions: number
+
+  @Column({
+    default: 0,
+  })
+  reactions: number
 }
