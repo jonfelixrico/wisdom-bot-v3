@@ -11,6 +11,7 @@ import { EntityManager } from 'typeorm'
 import { GuildMemberInteractionTypeormEntity } from '../db/entities/guild-member-interaction.typeorm-entity'
 import { GuildMemberTypeormEntity } from '../db/entities/guild-member.typeorm-entity'
 import { QuoteInfoTypeormEntity } from '../db/entities/quote-info.typeorm-entity'
+import { QuoteReactionInfoTypeormEntity } from '../db/entities/quote-reaction-info.typeorm-entity'
 import { QuoteReceiveInfoTypeormEntity } from '../db/entities/quote-receive-info.typeorm-entity'
 
 interface IIncrementGuildMemberPropertyInput {
@@ -263,11 +264,17 @@ const reacted: TypeormReducer<IReceiveReactedPayload> = async (
     },
     manager,
   )
+
+  await manager.insert(QuoteReactionInfoTypeormEntity, {
+    id: [receiveId, userId].join('/'),
+    karma,
+    quoteId,
+  })
 }
 
 const reactionWithdrawn: TypeormReducer<IReceiveReactionWithdrawnEventPayload> =
   async ({ data }, manager) => {
-    const { receiveId, karma, userId } = data
+    const { receiveId, userId } = data
     const receiveData = await manager.findOne(QuoteReceiveInfoTypeormEntity, {
       where: { receiveId },
     })
@@ -288,13 +295,23 @@ const reactionWithdrawn: TypeormReducer<IReceiveReactionWithdrawnEventPayload> =
       return false
     }
 
-    const { receives, totalKarma, guildId, authorId } = quote
+    const reactionId = [receiveId, userId].join('/')
+    const reactionRepo = manager.getRepository(QuoteReactionInfoTypeormEntity)
+    const reaction = await reactionRepo.findOne({
+      where: { id: reactionId },
+    })
+
+    if (!reaction) {
+      return false
+    }
+
+    const { reactions, totalKarma, guildId, authorId } = quote
 
     const { affected } = await quoteRepo.update(
       { quoteId },
       {
-        receives: receives - 1,
-        totalKarma: totalKarma - karma,
+        reactions: reactions - 1,
+        totalKarma: totalKarma - reaction.karma,
       },
     )
 
@@ -322,6 +339,10 @@ const reactionWithdrawn: TypeormReducer<IReceiveReactionWithdrawnEventPayload> =
       },
       manager,
     )
+
+    await reactionRepo.delete({
+      id: reactionId,
+    })
   }
 
 const {
