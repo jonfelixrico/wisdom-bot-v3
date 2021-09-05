@@ -18,7 +18,9 @@ export class ReceiveTypeormEntity {
   })
   quote: Promise<QuoteTypeormEntity>
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   messageId: string
 
   @Column()
