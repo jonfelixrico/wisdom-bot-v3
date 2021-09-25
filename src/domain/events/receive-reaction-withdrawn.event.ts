@@ -5,6 +5,8 @@ import { EventPayload } from './event-payload.type'
 export interface IReceiveReactionWithdrawnEventPayload extends EventPayload {
   readonly receiveId: string
   readonly userId: string
+  readonly oldKarma: -1 | 1
+  readonly reactionRemoveDt: Date
 }
 
 export class ReceiveReactionWithdrawnEvent extends DomainEvent<IReceiveReactionWithdrawnEventPayload> {

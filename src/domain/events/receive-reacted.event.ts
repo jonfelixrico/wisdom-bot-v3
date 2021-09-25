@@ -6,7 +6,7 @@ export interface IReceiveReactedPayload extends EventPayload {
   readonly reactionDt: Date
   readonly receiveId: string
   readonly userId: string
-  readonly karma: number
+  readonly karma: -1 | 1
 }
 
 export class ReceiveReactedEvent extends DomainEvent<IReceiveReactedPayload> {
