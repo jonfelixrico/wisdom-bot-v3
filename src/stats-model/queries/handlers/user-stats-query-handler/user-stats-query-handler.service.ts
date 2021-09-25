@@ -4,7 +4,7 @@ import { GuildMemberTypeormEntity } from 'src/stats-model/db/entities/guild-memb
 import {
   IUserStatsQueryOutput,
   UserStatsQuery,
-} from 'src/stats-model/queries/user-stats.query'
+} from 'src/stats-model/queries/query-classes/user-stats.query'
 import { Connection } from 'typeorm'
 
 @QueryHandler(UserStatsQuery)

@@ -6,7 +6,7 @@ import { Logger } from '@nestjs/common'
 import {
   UserTopReceiversQuery,
   IUserTopReceiversQueryOutput,
-} from 'src/stats-model/queries/user-top-receivers.query'
+} from 'src/stats-model/queries/query-classes/user-top-receivers.query'
 import { SPACE_CHARACTER } from 'src/types/discord.constants'
 
 @EventsHandler(DiscordInteractionEvent)

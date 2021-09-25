@@ -6,7 +6,7 @@ import { Logger } from '@nestjs/common'
 import {
   GuildTopReceivedQuotesQuery,
   IGuildTopReceivedQuotesQueryOutput,
-} from 'src/stats-model/queries/guild-top-received-quotes.query'
+} from 'src/stats-model/queries/query-classes/guild-top-received-quotes.query'
 
 @EventsHandler(DiscordInteractionEvent)
 export class StatsServerTopquotesInteractionHandlerService

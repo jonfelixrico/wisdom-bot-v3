@@ -3,7 +3,7 @@ import { QuoteInfoTypeormEntity } from 'src/stats-model/db/entities/quote-info.t
 import {
   IUserTopAuthoredQuotesQueryOutput,
   UserTopAuthoredQuotesQuery,
-} from 'src/stats-model/queries/user-top-received-quotes.query'
+} from 'src/stats-model/queries/query-classes/user-top-received-quotes.query'
 import { Connection, MoreThan } from 'typeorm'
 
 @QueryHandler(UserTopAuthoredQuotesQuery)

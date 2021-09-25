@@ -3,7 +3,7 @@ import { QuoteInfoTypeormEntity } from 'src/stats-model/db/entities/quote-info.t
 import {
   GuildTopReceivedQuotesQuery,
   IGuildTopReceivedQuotesQueryOutput,
-} from 'src/stats-model/queries/guild-top-received-quotes.query'
+} from 'src/stats-model/queries/query-classes/guild-top-received-quotes.query'
 import { Connection, MoreThan } from 'typeorm'
 
 @QueryHandler(GuildTopReceivedQuotesQuery)

@@ -3,7 +3,7 @@ import { GuildMemberTypeormEntity } from 'src/stats-model/db/entities/guild-memb
 import {
   GuildStatsQuery,
   IGuildStatsQueryOutput,
-} from 'src/stats-model/queries/guild-stats.query'
+} from 'src/stats-model/queries/query-classes/guild-stats.query'
 import { Connection } from 'typeorm'
 
 type ReduceResults = Omit<IGuildStatsQueryOutput, 'guildId' | 'userCount'>

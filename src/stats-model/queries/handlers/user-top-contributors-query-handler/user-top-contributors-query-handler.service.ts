@@ -2,7 +2,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
 import {
   UserTopContributorsQuery,
   IUserTopContributorsQueryOutput,
-} from 'src/stats-model/queries/user-top-contributors.query'
+} from 'src/stats-model/queries/query-classes/user-top-contributors.query'
 import { GuildMemberInteractionTypeormEntity } from 'src/stats-model/db/entities/guild-member-interaction.typeorm-entity'
 import { Connection, MoreThan } from 'typeorm'
 

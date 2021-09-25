@@ -3,7 +3,7 @@ import { GuildMemberTypeormEntity } from 'src/stats-model/db/entities/guild-memb
 import {
   GuildTopContributorsQuery,
   IGuildTopContributorsQueryOutput,
-} from 'src/stats-model/queries/guild-top-contributors.query'
+} from 'src/stats-model/queries/query-classes/guild-top-contributors.query'
 import { Connection, MoreThan } from 'typeorm'
 
 @QueryHandler(GuildTopContributorsQuery)

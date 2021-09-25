@@ -6,7 +6,7 @@ import { Logger } from '@nestjs/common'
 import {
   GuildTopReceivedAuthorsQuery,
   IGuildTopReceivedAuthorsQueryOutput,
-} from 'src/stats-model/queries/guild-top-received-authors.query'
+} from 'src/stats-model/queries/query-classes/guild-top-received-authors.query'
 
 @EventsHandler(DiscordInteractionEvent)
 export class StatsServerTopauthorsInteractionHandlerService
