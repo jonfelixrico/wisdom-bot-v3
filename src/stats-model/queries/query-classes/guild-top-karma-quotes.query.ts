@@ -16,6 +16,10 @@ export type GuildTopKarmaQuotesQueryOutput =
 
 export type GuildTopKarmaQuotesQueryInput = BaseGuildQueryInput
 
+/**
+ * This queries for the top N quotes with postive karma points only, where placement is determined
+ * by the amount of karma points.
+ */
 export class GuildTopKarmaQuotesQuery implements IQuery {
   constructor(readonly input: GuildTopKarmaQuotesQueryInput) {}
 }
