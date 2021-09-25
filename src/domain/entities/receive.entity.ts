@@ -1,4 +1,4 @@
-import { ReactionKarma } from 'src/domain/common/reaction-karma.type'
+import { Karma } from 'src/domain/common/karma.type'
 import { DomainEntity } from '../abstracts/domain-entity.abstract'
 import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
 import { DomainError } from '../errors/domain-error.class'
@@ -14,7 +14,7 @@ const {
 
 interface IReaction {
   readonly userId: string
-  readonly karma: ReactionKarma
+  readonly karma: Karma
 }
 
 interface IReceiveMessageDetails {

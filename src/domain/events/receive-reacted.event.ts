@@ -1,4 +1,4 @@
-import { ReactionKarma } from 'src/domain/common/reaction-karma.type'
+import { Karma } from 'src/domain/common/karma.type'
 import { DomainEvent } from '../abstracts/domain-event.abstract'
 import { DomainEventNames } from '../domain-event-names.enum'
 import { EventPayload } from './event-payload.type'
@@ -7,7 +7,7 @@ export interface IReceiveReactedPayload extends EventPayload {
   readonly reactionDt: Date
   readonly receiveId: string
   readonly userId: string
-  readonly karma: ReactionKarma
+  readonly karma: Karma
 }
 
 export class ReceiveReactedEvent extends DomainEvent<IReceiveReactedPayload> {
