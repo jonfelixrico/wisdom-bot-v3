@@ -1,10 +1,10 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
 import { QuoteInfoTypeormEntity } from 'src/stats-model/db/entities/quote-info.typeorm-entity'
-import { Connection, MoreThan } from 'typeorm'
 import {
-  UserTopAuthoredQuotesQuery,
   IUserTopAuthoredQuotesQueryOutput,
-} from '../../user-top-received-quotes.query'
+  UserTopAuthoredQuotesQuery,
+} from 'src/stats-model/queries/user-top-received-quotes.query'
+import { Connection, MoreThan } from 'typeorm'
 
 @QueryHandler(UserTopAuthoredQuotesQuery)
 export class UserTopAuthoredQuotesQueryHandlerService
