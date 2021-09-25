@@ -1,6 +1,9 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
 import { QuoteInfoTypeormEntity } from './quote-info.typeorm-entity'
 
+/**
+ * This entity keeps track of which receives belong to which quotes.
+ */
 @Entity('quote-receive-info')
 export class QuoteReceiveInfoTypeormEntity {
   @PrimaryColumn('uuid')
