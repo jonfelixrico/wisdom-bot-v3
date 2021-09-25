@@ -1,6 +1,9 @@
 import { DomainEventNames } from 'src/domain/domain-event-names.enum'
 import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.event'
 import { IReceiveCreatedPayload } from 'src/domain/events/receive-created.event'
+import { IReceiveReactedPayload } from 'src/domain/events/receive-reacted.event'
+import { IReceiveReactionWithdrawnEventPayload } from 'src/domain/events/receive-reaction-withdrawn.event'
+import { QuoteReceiveInfoTypeormEntity } from 'src/stats-model/db/entities/quote-receive-info.typeorm-entity'
 import {
   TypeormReducer,
   TypeormReducerMap,
@@ -13,11 +16,21 @@ import { QuoteInfoTypeormEntity } from '../db/entities/quote-info.typeorm-entity
 interface IIncrementGuildMemberPropertyInput {
   guildId: string
   userId: string
-  propertyToIncrement: 'receives' | 'submissions' | 'quoteReceives'
+  propertyToIncrement:
+    | 'receives'
+    | 'submissions'
+    | 'quoteReceives'
+    | 'reactions'
+  incrementValue?: 1 | -1
 }
 
 async function incrementGuildMemberProperty(
-  { guildId, userId, propertyToIncrement }: IIncrementGuildMemberPropertyInput,
+  {
+    guildId,
+    userId,
+    propertyToIncrement,
+    incrementValue,
+  }: IIncrementGuildMemberPropertyInput,
   manager: EntityManager,
 ) {
   const repo = manager.getRepository(GuildMemberTypeormEntity)
@@ -36,7 +49,8 @@ async function incrementGuildMemberProperty(
   await repo.update(
     { guildId, userId },
     {
-      [propertyToIncrement]: guildMember[propertyToIncrement] + 1,
+      [propertyToIncrement]:
+        guildMember[propertyToIncrement] + (incrementValue ?? 1),
     },
   )
 }
@@ -46,7 +60,8 @@ interface IIncrementGuildMemeberInteractionPropertyInput {
   userId: string
   targetUserId: string
   // TODO rename submitted to submissions in the typeorm entity
-  propertyToIncrement: 'receives' | 'submissions'
+  propertyToIncrement: 'receives' | 'submissions' | 'reactions'
+  incrementValue?: 1 | -1
 }
 
 async function incrementGuildMemeberInteractionProperty(
@@ -55,6 +70,7 @@ async function incrementGuildMemeberInteractionProperty(
     propertyToIncrement,
     targetUserId,
     userId,
+    incrementValue,
   }: IIncrementGuildMemeberInteractionPropertyInput,
   manager: EntityManager,
 ) {
@@ -72,7 +88,8 @@ async function incrementGuildMemeberInteractionProperty(
     await repo.update(
       { id: interaction.id },
       {
-        [propertyToIncrement]: interaction[propertyToIncrement] + 1,
+        [propertyToIncrement]:
+          interaction[propertyToIncrement] + (incrementValue ?? 1),
       },
     )
     return
@@ -182,9 +199,137 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
   return true
 }
 
-const { QUOTE_SUBMITTED, RECEIVE_CREATED } = DomainEventNames
+const reacted: TypeormReducer<IReceiveReactedPayload> = async (
+  { data },
+  manager,
+) => {
+  const { receiveId, karma, userId } = data
+  const receiveData = await manager.findOne(QuoteReceiveInfoTypeormEntity, {
+    where: { receiveId },
+  })
+
+  if (!receiveData) {
+    return false
+  }
+
+  const quoteRepo = manager.getRepository(QuoteInfoTypeormEntity)
+
+  const { quoteId } = receiveData
+
+  const quote = await quoteRepo.findOne({
+    where: { quoteId },
+  })
+
+  if (!quote) {
+    return false
+  }
+
+  const { reactions, totalKarma, guildId, authorId } = quote
+
+  const { affected } = await quoteRepo.update(
+    {
+      quoteId,
+    },
+    {
+      reactions: reactions + 1,
+      totalKarma: totalKarma + karma,
+    },
+  )
+
+  if (!affected) {
+    return false
+  }
+
+  await incrementGuildMemberProperty(
+    {
+      userId,
+      guildId,
+      propertyToIncrement: 'reactions',
+    },
+    manager,
+  )
+
+  await incrementGuildMemeberInteractionProperty(
+    {
+      guildId,
+      userId,
+      targetUserId: authorId,
+      propertyToIncrement: 'reactions',
+    },
+    manager,
+  )
+
+  return true
+}
+
+const reactionWithdrawn: TypeormReducer<IReceiveReactionWithdrawnEventPayload> =
+  async ({ data }, manager) => {
+    const { receiveId, userId, oldKarma } = data
+    const receiveData = await manager.findOne(QuoteReceiveInfoTypeormEntity, {
+      where: { receiveId },
+    })
+
+    if (!receiveData) {
+      return false
+    }
+
+    const quoteRepo = manager.getRepository(QuoteInfoTypeormEntity)
+
+    const { quoteId } = receiveData
+
+    const quote = await quoteRepo.findOne({ where: { quoteId } })
+    if (!quote) {
+      return false
+    }
+
+    const { reactions, totalKarma, guildId, authorId } = quote
+
+    const { affected } = await quoteRepo.update(
+      { quoteId },
+      {
+        reactions: reactions - 1,
+        totalKarma: totalKarma - oldKarma,
+      },
+    )
+
+    if (!affected) {
+      return false
+    }
+
+    await incrementGuildMemberProperty(
+      {
+        userId,
+        guildId,
+        propertyToIncrement: 'reactions',
+        incrementValue: -1,
+      },
+      manager,
+    )
+
+    await incrementGuildMemeberInteractionProperty(
+      {
+        guildId,
+        userId,
+        targetUserId: authorId,
+        propertyToIncrement: 'reactions',
+        incrementValue: -1,
+      },
+      manager,
+    )
+
+    return true
+  }
+
+const {
+  QUOTE_SUBMITTED,
+  RECEIVE_CREATED,
+  RECEIVE_REACTED,
+  RECEIVE_REACTION_WITHDRAWN,
+} = DomainEventNames
 
 export const STATS_REDUCERS: TypeormReducerMap = {
   [QUOTE_SUBMITTED]: submit,
   [RECEIVE_CREATED]: receive,
+  [RECEIVE_REACTED]: reacted,
+  [RECEIVE_REACTION_WITHDRAWN]: reactionWithdrawn,
 }

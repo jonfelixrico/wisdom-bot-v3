@@ -1,10 +1,10 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
 import { QuoteInfoTypeormEntity } from 'src/stats-model/db/entities/quote-info.typeorm-entity'
-import { Connection, MoreThan } from 'typeorm'
 import {
   GuildTopReceivedQuotesQuery,
   IGuildTopReceivedQuotesQueryOutput,
-} from '../../guild-top-received-quotes.query'
+} from 'src/stats-model/queries/query-classes/guild-top-received-quotes.query'
+import { Connection, MoreThan } from 'typeorm'
 
 @QueryHandler(GuildTopReceivedQuotesQuery)
 export class GuildTopReceivedQuotesQueryHandlerService

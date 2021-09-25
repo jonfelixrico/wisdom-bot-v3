@@ -6,7 +6,7 @@ import { Logger } from '@nestjs/common'
 import {
   GuildTopContributorsQuery,
   IGuildTopContributorsQueryOutput,
-} from 'src/stats-model/queries/guild-top-contributors.query'
+} from 'src/stats-model/queries/query-classes/guild-top-contributors.query'
 
 @EventsHandler(DiscordInteractionEvent)
 export class StatsServerTopcontributorsInteractionHandlerService

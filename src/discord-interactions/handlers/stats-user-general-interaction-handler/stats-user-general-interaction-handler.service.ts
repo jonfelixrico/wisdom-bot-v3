@@ -6,7 +6,7 @@ import { Logger } from '@nestjs/common'
 import {
   IUserStatsQueryOutput,
   UserStatsQuery,
-} from 'src/stats-model/queries/user-stats.query'
+} from 'src/stats-model/queries/query-classes/user-stats.query'
 
 @EventsHandler(DiscordInteractionEvent)
 export class StatsUserGeneralInteractionHandlerService

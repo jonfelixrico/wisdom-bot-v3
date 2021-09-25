@@ -1,10 +1,10 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
 import { GuildMemberTypeormEntity } from 'src/stats-model/db/entities/guild-member.typeorm-entity'
-import { Connection, MoreThan } from 'typeorm'
 import {
   GuildTopReceiversQuery,
   IGuildTopReceiversQueryOutput,
-} from '../../guild-top-receivers.query'
+} from 'src/stats-model/queries/query-classes/guild-top-receivers.query'
+import { Connection, MoreThan } from 'typeorm'
 
 @QueryHandler(GuildTopReceiversQuery)
 export class GuildTopReceiversQueryHandlerService

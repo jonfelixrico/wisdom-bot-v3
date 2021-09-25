@@ -1,8 +1,11 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
 import { omit } from 'lodash'
 import { GuildMemberTypeormEntity } from 'src/stats-model/db/entities/guild-member.typeorm-entity'
+import {
+  IUserStatsQueryOutput,
+  UserStatsQuery,
+} from 'src/stats-model/queries/query-classes/user-stats.query'
 import { Connection } from 'typeorm'
-import { IUserStatsQueryOutput, UserStatsQuery } from '../../user-stats.query'
 
 @QueryHandler(UserStatsQuery)
 export class UserStatsQueryHandlerService

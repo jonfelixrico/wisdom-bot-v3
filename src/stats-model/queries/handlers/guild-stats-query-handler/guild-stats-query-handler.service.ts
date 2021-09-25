@@ -1,10 +1,10 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs'
 import { GuildMemberTypeormEntity } from 'src/stats-model/db/entities/guild-member.typeorm-entity'
-import { Connection } from 'typeorm'
 import {
   GuildStatsQuery,
   IGuildStatsQueryOutput,
-} from '../../guild-stats.query'
+} from 'src/stats-model/queries/query-classes/guild-stats.query'
+import { Connection } from 'typeorm'
 
 type ReduceResults = Omit<IGuildStatsQueryOutput, 'guildId' | 'userCount'>
 

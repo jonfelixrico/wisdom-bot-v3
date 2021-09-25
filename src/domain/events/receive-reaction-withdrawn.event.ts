@@ -1,3 +1,4 @@
+import { Karma } from 'src/domain/common/karma.type'
 import { DomainEvent } from '../abstracts/domain-event.abstract'
 import { DomainEventNames } from '../domain-event-names.enum'
 import { EventPayload } from './event-payload.type'
@@ -5,6 +6,8 @@ import { EventPayload } from './event-payload.type'
 export interface IReceiveReactionWithdrawnEventPayload extends EventPayload {
   readonly receiveId: string
   readonly userId: string
+  readonly oldKarma: Karma
+  readonly reactionRemoveDt: Date
 }
 
 export class ReceiveReactionWithdrawnEvent extends DomainEvent<IReceiveReactionWithdrawnEventPayload> {

@@ -1,3 +1,4 @@
+import { Karma } from 'src/domain/common/karma.type'
 import { DomainEntity } from '../abstracts/domain-entity.abstract'
 import { DomainErrorCodes } from '../errors/domain-error-codes.enum'
 import { DomainError } from '../errors/domain-error.class'
@@ -13,7 +14,7 @@ const {
 
 interface IReaction {
   readonly userId: string
-  readonly karma: number
+  readonly karma: Karma
 }
 
 interface IReceiveMessageDetails {
@@ -33,11 +34,6 @@ export interface IReceiveEntity {
   interactionToken?: string
 
   reactions: IReaction[]
-}
-
-interface IReceiveReactionInput {
-  readonly userId: string
-  readonly karma: number
 }
 
 export class Receive extends DomainEntity implements IReceiveEntity {
@@ -74,9 +70,11 @@ export class Receive extends DomainEntity implements IReceiveEntity {
     return this.reactions.some((reaction) => reaction.userId === userId)
   }
 
-  react({ karma = 1, userId }: IReceiveReactionInput) {
+  react({ karma, userId }: IReaction) {
     const { reactions } = this
-    if (karma === 0) {
+    const numericKarma = karma as number
+
+    if (numericKarma !== 1 && numericKarma !== -1) {
       throw new DomainError(REACTION_INVALID_KARMA)
     } else if (this.hasUserReacted(userId)) {
       throw new DomainError(REACTION_DUPLICATE_USER)
@@ -109,12 +107,15 @@ export class Receive extends DomainEntity implements IReceiveEntity {
       throw new DomainError(REACTION_USER_NOT_REACTED)
     }
 
+    const reaction = reactions[index]
     reactions.splice(index, 1)
 
     this.apply(
       new ReceiveReactionWithdrawnEvent({
         receiveId,
         userId,
+        reactionRemoveDt: new Date(),
+        oldKarma: reaction.karma,
       }),
     )
   }

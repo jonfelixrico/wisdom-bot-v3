@@ -29,4 +29,9 @@ export class GuildMemberInteractionTypeormEntity {
     comment: 'Times user has received a quote belonging to targetUser',
   })
   receives: number
+
+  @Column({
+    default: 0,
+  })
+  reactions: number
 }

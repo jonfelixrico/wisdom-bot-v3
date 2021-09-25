@@ -4,7 +4,7 @@ import { DiscordInteractionEvent } from 'src/discord-interactions/types/discord-
 import {
   GuildStatsQuery,
   IGuildStatsQueryOutput,
-} from 'src/stats-model/queries/guild-stats.query'
+} from 'src/stats-model/queries/query-classes/guild-stats.query'
 import { sprintf } from 'sprintf-js'
 import { Logger } from '@nestjs/common'
 
