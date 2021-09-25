@@ -1,9 +1,10 @@
+import { Karma } from 'src/domain/common/karma.type'
 import { ICommand } from '../command.interface'
 
 export interface IReactToReceiveCommandPayload {
   readonly receiveId: string
   readonly userId: string
-  readonly karma: number
+  readonly karma: Karma
 }
 
 export class ReactToReceiveCommand

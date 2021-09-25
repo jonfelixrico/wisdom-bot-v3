@@ -7,6 +7,7 @@ import {
 import { sprintf } from 'sprintf-js'
 import { DiscordInteractionEvent } from 'src/discord-interactions/types/discord-interaction.event'
 import { ReactToReceiveCommand } from 'src/domain/commands/react-to-receive.command'
+import { Karma } from 'src/domain/common/karma.type'
 import { IReceiveQueryOutput, ReceiveQuery } from 'src/queries/receive.query'
 
 const CUSTOM_ID_REGEXP = /^receive\/(.+)\/react\/(.+)$/
@@ -35,7 +36,7 @@ export class ReceiveReactionButtonHandlerService
     const [receiveId, strKarma] = CUSTOM_ID_REGEXP.exec(
       interaction.customId,
     ).slice(1)
-    const karma = parseInt(strKarma)
+    const karma = parseInt(strKarma) as Karma
 
     const receive: IReceiveQueryOutput = await this.queryBus.execute(
       new ReceiveQuery({ receiveId }),
