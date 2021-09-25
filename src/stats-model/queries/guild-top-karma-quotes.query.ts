@@ -1,18 +1,21 @@
 import { IQuery } from '@nestjs/cqrs'
+import { IQuoteEntity } from 'src/domain/entities/quote.entity'
+import { BaseGuildQueryInput } from './base-guild-query-input.type'
 
-export type IGuildTopKarmaQuotesQueryOutput = {
-  quoteId: string
-  content: string
+export type SlimQuoteEntity = Omit<
+  IQuoteEntity,
+  'acceptDt' | 'guildId' | 'submitterId'
+>
+export interface GuildTopKarmaQuotesQueryOutputItem extends SlimQuoteEntity {
   karma: number
-  reactions: number
-  authorId: string
-}[]
-
-export interface IGuildTopKarmaQuotesQueryInput {
-  guildId: string
-  limit: number
+  reactionCount: number
 }
 
+export type GuildTopKarmaQuotesQueryOutput =
+  GuildTopKarmaQuotesQueryOutputItem[]
+
+export type GuildTopKarmaQuotesQueryInput = BaseGuildQueryInput
+
 export class GuildTopKarmaQuotesQuery implements IQuery {
-  constructor(readonly input: IGuildTopKarmaQuotesQueryInput) {}
+  constructor(readonly input: GuildTopKarmaQuotesQueryInput) {}
 }
