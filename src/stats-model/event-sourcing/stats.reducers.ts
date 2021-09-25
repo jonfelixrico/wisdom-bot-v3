@@ -3,6 +3,7 @@ import { IQuoteSubmittedEventPayload } from 'src/domain/events/quote-submitted.e
 import { IReceiveCreatedPayload } from 'src/domain/events/receive-created.event'
 import { IReceiveReactedPayload } from 'src/domain/events/receive-reacted.event'
 import { IReceiveReactionWithdrawnEventPayload } from 'src/domain/events/receive-reaction-withdrawn.event'
+import { QuoteReceiveInfoTypeormEntity } from 'src/stats-model/db/entities/quote-receive-info.typeorm-entity'
 import {
   TypeormReducer,
   TypeormReducerMap,
@@ -11,8 +12,6 @@ import { EntityManager } from 'typeorm'
 import { GuildMemberInteractionTypeormEntity } from '../db/entities/guild-member-interaction.typeorm-entity'
 import { GuildMemberTypeormEntity } from '../db/entities/guild-member.typeorm-entity'
 import { QuoteInfoTypeormEntity } from '../db/entities/quote-info.typeorm-entity'
-import { QuoteReactionInfoTypeormEntity } from '../db/entities/quote-reaction-info.typeorm-entity'
-import { QuoteReceiveInfoTypeormEntity } from '../db/entities/quote-receive-info.typeorm-entity'
 
 interface IIncrementGuildMemberPropertyInput {
   guildId: string
@@ -143,7 +142,7 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
   { data },
   manager,
 ) => {
-  const { quoteId, userId, guildId, receiveId } = data
+  const { quoteId, userId, guildId } = data
 
   const quoteRepo = manager.getRepository(QuoteInfoTypeormEntity)
 
@@ -196,11 +195,6 @@ const receive: TypeormReducer<IReceiveCreatedPayload> = async (
     },
     manager,
   )
-
-  await manager.insert(QuoteReceiveInfoTypeormEntity, {
-    quoteId,
-    receiveId,
-  })
 
   return true
 }
@@ -265,18 +259,12 @@ const reacted: TypeormReducer<IReceiveReactedPayload> = async (
     manager,
   )
 
-  await manager.insert(QuoteReactionInfoTypeormEntity, {
-    id: [receiveId, userId].join('/'),
-    karma,
-    quoteId,
-  })
-
   return true
 }
 
 const reactionWithdrawn: TypeormReducer<IReceiveReactionWithdrawnEventPayload> =
   async ({ data }, manager) => {
-    const { receiveId, userId } = data
+    const { receiveId, userId, oldKarma } = data
     const receiveData = await manager.findOne(QuoteReceiveInfoTypeormEntity, {
       where: { receiveId },
     })
@@ -289,21 +277,8 @@ const reactionWithdrawn: TypeormReducer<IReceiveReactionWithdrawnEventPayload> =
 
     const { quoteId } = receiveData
 
-    const quote = await quoteRepo.findOne({
-      where: { quoteId },
-    })
-
+    const quote = await quoteRepo.findOne({ where: { quoteId } })
     if (!quote) {
-      return false
-    }
-
-    const reactionId = [receiveId, userId].join('/')
-    const reactionRepo = manager.getRepository(QuoteReactionInfoTypeormEntity)
-    const reaction = await reactionRepo.findOne({
-      where: { id: reactionId },
-    })
-
-    if (!reaction) {
       return false
     }
 
@@ -313,7 +288,7 @@ const reactionWithdrawn: TypeormReducer<IReceiveReactionWithdrawnEventPayload> =
       { quoteId },
       {
         reactions: reactions - 1,
-        totalKarma: totalKarma - reaction.karma,
+        totalKarma: totalKarma - oldKarma,
       },
     )
 
@@ -341,10 +316,6 @@ const reactionWithdrawn: TypeormReducer<IReceiveReactionWithdrawnEventPayload> =
       },
       manager,
     )
-
-    await reactionRepo.delete({
-      id: reactionId,
-    })
 
     return true
   }
