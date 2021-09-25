@@ -29,5 +29,5 @@ export class ReactionTypeormEntity {
   userId: string
 
   @Column({ type: 'integer' })
-  karma: number
+  karma: 1 | -1
 }
