@@ -1,6 +1,6 @@
 import { IQuery } from '@nestjs/cqrs'
 import { IQuoteEntity } from 'src/domain/entities/quote.entity'
-import { BaseGuildQueryInput } from './base-guild-query-input.type'
+import { BaseGuildQueryInput } from 'src/stats-model/queries/base-guild-query-input.type'
 
 export type SlimQuoteEntity = Omit<
   IQuoteEntity,
