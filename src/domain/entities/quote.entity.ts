@@ -5,8 +5,9 @@ import { Receive } from './receive.entity'
 
 interface IQuoteReceiveInput {
   readonly userId: string
-  readonly messageId: string
   readonly channelId: string
+  readonly messageId?: string
+  readonly interactionToken?: string
 }
 
 export interface IQuoteEntity {
