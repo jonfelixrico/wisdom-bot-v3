@@ -1,7 +1,6 @@
 import { NO_STREAM } from '@eventstore/db-client'
 import { Logger } from '@nestjs/common'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { isNil, omitBy } from 'lodash'
 import { ReceiveQuoteCommand } from 'src/domain/commands/receive-quote.command'
 import { QuoteWriteRepository } from 'src/write-repositories/abstract/quote-write-repository.abstract'
 import { ReceiveWriteRepository } from 'src/write-repositories/abstract/receive-write-repository.abstract'
@@ -31,7 +30,7 @@ export class ReceiveQuoteCommandHandlerService
       channelId,
       messageId,
       userId,
-      ...omitBy({ interactionToken, messageId }, isNil),
+      interactionToken,
     })
 
     await this.receiveRepo.publishEvents(receive, NO_STREAM)
