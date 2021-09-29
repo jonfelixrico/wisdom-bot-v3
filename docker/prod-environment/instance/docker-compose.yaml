@@ -8,7 +8,7 @@ services:
     build: ../../../.
     restart: unless-stopped
     env_file:
-      - .env
+      - discord.env
     environment:
       - READ_DB_SYNC=true
       - READ_DB_URL=postgresql://root:password@postgres.db:5432/readmodel
